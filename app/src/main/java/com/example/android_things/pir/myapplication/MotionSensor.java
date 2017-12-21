@@ -1,5 +1,7 @@
 package com.example.android_things.pir.myapplication;
 
+import com.google.android.things.pio.Gpio;
+
 interface MotionSensor {
 
     void startup();
@@ -7,7 +9,7 @@ interface MotionSensor {
     void shutdown();
 
     interface Listener {
-        void onMovement();
+        void onMovement(Gpio gpio);
     }
 
 }

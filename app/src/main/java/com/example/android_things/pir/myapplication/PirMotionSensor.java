@@ -48,7 +48,7 @@ class PirMotionSensor implements MotionSensor {
     private final GpioCallback callback = new GpioCallback() {
         @Override
         public boolean onGpioEdge(Gpio gpio) {
-            listener.onMovement();
+            listener.onMovement(gpio);
             return true; // True to continue listening
         }
     };

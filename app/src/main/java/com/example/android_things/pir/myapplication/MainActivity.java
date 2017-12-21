@@ -34,8 +34,12 @@ public class MainActivity extends Activity implements MotionSensor.Listener {
     }
 
     @Override
-    public void onMovement() {
-        Log.d("lizhi===", "MOVEMENT DETECTED");
+    public void onMovement(Gpio gpio) {
+        try {
+            Log.d("lizhi===", "MOVEMENT DETECTED with GPIO value: " + gpio.getValue());
+        } catch (IOException e) {
+            throw new IllegalStateException("Can't get GPIO value: ", e);
+        }
     }
 
     @Override
