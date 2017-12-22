@@ -28,9 +28,9 @@ class PirMotionSensor implements MotionSensor {
             // data. Therefore we will use Gpio.DIRECTION_IN.
             bus.setDirection(Gpio.DIRECTION_IN);
             // GPIO is binary (true or false) so we are declaring what voltage signal equates to
-            // true, a low or high voltage. For our sensor according to the datasheet a high voltage
-            // means movement. Therefore we will use Gpio.ACTIVE_HIGH.
-            bus.setActiveType(Gpio.ACTIVE_HIGH);
+            // true, a low or high voltage. For our sensor according to the datasheet a low voltage
+            // means movement. Therefore we will use Gpio.ACTIVE_LOW.
+            bus.setActiveType(Gpio.ACTIVE_LOW);
             // This is what state change we want monitor, from high voltage to low, low to high or
             // both. Meaning we could listen for movement starting, ending or both. We want to
             // listen for movement starting. Therefore we will use Gpio.EDGE_RISING.
@@ -59,7 +59,7 @@ class PirMotionSensor implements MotionSensor {
         try {
             bus.close();
         } catch (IOException e) {
-            Log.e("TUT", "Failed to shut down. You might get errors next time you try to start.", e);
+            Log.e("===lizhi", "Failed to shut down. You might get errors next time you try to start.", e);
         }
     }
 
