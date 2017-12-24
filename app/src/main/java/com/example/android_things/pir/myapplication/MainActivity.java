@@ -10,6 +10,9 @@ import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.PeripheralManagerService;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class MainActivity extends Activity implements MotionSensor.Listener {
 
@@ -18,6 +21,7 @@ public class MainActivity extends Activity implements MotionSensor.Listener {
     private volatile long last_movement_unix_time_ms = 0;
     private int movement_cool_down_ms = 500;
     private int movement_cool_down_error_ms = 50;
+    private DetectionIndicatorController detection_indicator_controller;
 
     private Gpio ledBus = null;
 
@@ -26,13 +30,17 @@ public class MainActivity extends Activity implements MotionSensor.Listener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Gpio bus = openMotionSensorGpioBus();
-        motionSensor = new PirMotionSensor(bus, this);
-        motionSensor.startup();
-
         initLedGpioBus();
 
-        movement_indicator = findViewById(R.id.movement_indicator);
+        Button movement_indicator = findViewById(R.id.movement_indicator);
+        detection_indicator_controller = new DetectionIndicatorController(
+                getApplicationContext(), movement_indicator);
+
+        Gpio bus = openMotionSensorGpioBus();
+        List<MotionSensor.Listener> motion_sensor_listeners
+                = new ArrayList<>(Arrays.asList(this, detection_indicator_controller));
+        motionSensor = new PirMotionSensor(bus, motion_sensor_listeners);
+        motionSensor.startup();
     }
 
     private Gpio openMotionSensorGpioBus() {
@@ -58,13 +66,6 @@ public class MainActivity extends Activity implements MotionSensor.Listener {
     @Override
     public void onMovement(Gpio gpio) {
         try {
-            if (gpio.getValue() == true) {
-                movement_indicator.setBackgroundColor(getResources().getColor(R.color.red));
-                movement_indicator.setText("MOVEMENT DETECTED!!!");
-            } else {
-                initMovementIndicator();
-            }
-
             if (ledBus != null) {
                 ledBus.setValue(gpio.getValue());
             }
@@ -86,10 +87,5 @@ public class MainActivity extends Activity implements MotionSensor.Listener {
             }
         }
         super.onDestroy();
-    }
-
-    private void initMovementIndicator() {
-        movement_indicator.setBackgroundColor(getResources().getColor(R.color.darkgreen));
-        movement_indicator.setText("No Movement");
     }
 }

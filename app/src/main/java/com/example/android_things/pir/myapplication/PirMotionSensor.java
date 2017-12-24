@@ -6,6 +6,7 @@ import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.GpioCallback;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * HC-SR501
@@ -14,11 +15,11 @@ class PirMotionSensor implements MotionSensor {
 
     private final Gpio bus;
 
-    private final MotionSensor.Listener listener;
+    private final List<Listener> listeners;
 
-    PirMotionSensor(Gpio bus, Listener listener) {
+    PirMotionSensor(Gpio bus, List<Listener> listeners) {
         this.bus = bus;
-        this.listener = listener;
+        this.listeners = listeners;
     }
 
     @Override
@@ -34,7 +35,7 @@ class PirMotionSensor implements MotionSensor {
             // This is what state change we want monitor, from high voltage to low, low to high or
             // both. Meaning we could listen for movement starting, ending or both. We want to
             // listen for movement starting. Therefore we will use Gpio.EDGE_RISING.
-            bus.setEdgeTriggerType(Gpio.EDGE_RISING);
+            bus.setEdgeTriggerType(Gpio.EDGE_BOTH);
         } catch (IOException e) {
             throw new IllegalStateException("Sensor can't start - App is foobar'd", e);
         }
@@ -48,7 +49,9 @@ class PirMotionSensor implements MotionSensor {
     private final GpioCallback callback = new GpioCallback() {
         @Override
         public boolean onGpioEdge(Gpio gpio) {
-            listener.onMovement(gpio);
+            for (Listener listener : listeners) {
+                listener.onMovement(gpio);
+            }
             return true; // True to continue listening
         }
     };
