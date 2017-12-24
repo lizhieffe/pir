@@ -26,11 +26,6 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.e("===lizhi", "222");
-        Gpio bus = openMotionSensorGpioBus();
-        motionSensor = new PirMotionSensor(bus, motion_sensor_listeners);
-        motionSensor.startup();
-
         Log.e("===lizhi", "333");
         Button movement_indicator = findViewById(R.id.movement_indicator);
         UIDetectionIndicator ui_detection_indicator = new UIDetectionIndicator(
@@ -47,6 +42,11 @@ public class MainActivity extends Activity {
         for (DetectionIndicator d : detection_indicators) {
             d.start();
         }
+
+        Log.e("===lizhi", "222");
+        Gpio bus = openMotionSensorGpioBus();
+        motionSensor = new PirMotionSensor(bus, motion_sensor_listeners);
+        motionSensor.startup();
     }
 
     private Gpio openMotionSensorGpioBus() {
