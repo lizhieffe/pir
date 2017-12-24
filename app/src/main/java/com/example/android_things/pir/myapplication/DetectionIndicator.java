@@ -5,4 +5,6 @@ package com.example.android_things.pir.myapplication;
  */
 
 public interface DetectionIndicator {
+    public void start();
+    public void close();
 }

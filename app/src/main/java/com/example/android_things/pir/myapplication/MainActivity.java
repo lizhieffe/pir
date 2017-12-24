@@ -2,7 +2,6 @@ package com.example.android_things.pir.myapplication;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.widget.Button;
 
@@ -10,37 +9,44 @@ import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.PeripheralManagerService;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends Activity implements MotionSensor.Listener {
+public class MainActivity extends Activity {
 
     private PirMotionSensor motionSensor;
-    private Button movement_indicator;
-    private volatile long last_movement_unix_time_ms = 0;
-    private int movement_cool_down_ms = 500;
-    private int movement_cool_down_error_ms = 50;
-    private DetectionIndicatorController detection_indicator_controller;
-
-    private Gpio ledBus = null;
+    private List<MotionSensor.Listener> motion_sensor_listeners;
+    private List<DetectionIndicator> detection_indicators;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.e("===lizhi", "111");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initLedGpioBus();
-
-        Button movement_indicator = findViewById(R.id.movement_indicator);
-        detection_indicator_controller = new DetectionIndicatorController(
-                getApplicationContext(), movement_indicator);
-
+        Log.e("===lizhi", "222");
         Gpio bus = openMotionSensorGpioBus();
-        List<MotionSensor.Listener> motion_sensor_listeners
-                = new ArrayList<>(Arrays.asList(this, detection_indicator_controller));
         motionSensor = new PirMotionSensor(bus, motion_sensor_listeners);
         motionSensor.startup();
+
+        Log.e("===lizhi", "333");
+        Button movement_indicator = findViewById(R.id.movement_indicator);
+        UIDetectionIndicator ui_detection_indicator = new UIDetectionIndicator(
+                getApplicationContext(), movement_indicator);
+        LedDetectionIndicator led_detection_indicator = new LedDetectionIndicator();
+
+        Log.e("===lizhi", "444");
+        MotionSensor.Listener[] msl_array = {ui_detection_indicator, led_detection_indicator};
+        motion_sensor_listeners = new ArrayList<>(Arrays.asList(msl_array));
+
+        DetectionIndicator[] di_array = {ui_detection_indicator, led_detection_indicator};
+        detection_indicators = new ArrayList<>(Arrays.asList(di_array));
+
+        for (DetectionIndicator d : detection_indicators) {
+            d.start();
+        }
     }
 
     private Gpio openMotionSensorGpioBus() {
@@ -54,38 +60,12 @@ public class MainActivity extends Activity implements MotionSensor.Listener {
         return bus;
     }
 
-    private void initLedGpioBus() {
-        try {
-            ledBus = new PeripheralManagerService().openGpio("BCM26");
-            ledBus.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
-        } catch (IOException e) {
-            throw new IllegalStateException("Can't open GPIO - can't create app.", e);
-        }
-    }
-
-    @Override
-    public void onMovement(Gpio gpio) {
-        try {
-            if (ledBus != null) {
-                ledBus.setValue(gpio.getValue());
-            }
-
-            Log.d("lizhi===", "MOVEMENT DETECTED with GPIO value: " + gpio.getValue());
-        } catch (IOException e) {
-            throw new IllegalStateException("Can't get GPIO value: ", e);
-        }
-    }
-
     @Override
     protected void onDestroy() {
-        motionSensor.shutdown();
-        if (ledBus != null) {
-            try {
-                ledBus.close();
-            } catch (IOException e) {
-                Log.e("===lizhi", "Error on PeripheralIO API", e);
-            }
+        for (DetectionIndicator d : detection_indicators) {
+            d.close();
         }
+        motionSensor.shutdown();
         super.onDestroy();
     }
 }

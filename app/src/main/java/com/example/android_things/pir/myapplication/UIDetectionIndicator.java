@@ -11,7 +11,7 @@ import java.io.IOException;
  * Created by lizhieffe on 12/23/17.
  */
 
-class UIDetectionIndicator implements MotionSensor.Listener {
+class UIDetectionIndicator implements MotionSensor.Listener, DetectionIndicator {
     private Context context;
     private Button movement_indicator;
 
@@ -22,7 +22,16 @@ class UIDetectionIndicator implements MotionSensor.Listener {
     UIDetectionIndicator(Context context, Button movement_indicator) {
         this.context = context;
         this.movement_indicator = movement_indicator;
+    }
+
+    @Override
+    public void start() {
         setNoMovementDetected();
+    }
+
+    @Override
+    public void close() {
+        setMovementDetected();
     }
 
     @Override
