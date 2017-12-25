@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Button;
 
+import com.android_things.sensor_experiment.motion.MotionDetectionEvent;
 import com.android_things.sensor_experiment.motion.MotionDetectorListener;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
 
@@ -39,7 +40,7 @@ public class UIDetectorIndicator
     }
 
     @Override
-    synchronized public void onDetected() {
+    synchronized public void onDetected(MotionDetectionEvent event) {
         if (System.currentTimeMillis() - last_indication_unix_time_ms
                 >= indication_cool_down_ms) {
             setMovementDetected();

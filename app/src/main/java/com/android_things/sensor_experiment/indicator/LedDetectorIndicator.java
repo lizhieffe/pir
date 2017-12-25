@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.android_things.sensor_experiment.motion.MotionDetectionEvent;
 import com.android_things.sensor_experiment.motion.MotionDetectorListener;
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.PeripheralManagerService;
@@ -41,7 +42,7 @@ public class LedDetectorIndicator
     }
 
     @Override
-    synchronized public void onDetected() {
+    synchronized public void onDetected(MotionDetectionEvent event) {
         try {
             if (ledBus != null) {
                 if (System.currentTimeMillis() - last_indication_unix_time_ms

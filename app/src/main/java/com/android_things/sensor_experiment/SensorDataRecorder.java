@@ -3,6 +3,7 @@ package com.android_things.sensor_experiment;
 import android.content.Context;
 import android.util.Log;
 
+import com.android_things.sensor_experiment.motion.MotionDetectionEvent;
 import com.android_things.sensor_experiment.motion.MotionDetectorListener;
 import com.android_things.sensor_experiment.utils.FileSystemUtil;
 
@@ -50,7 +51,7 @@ class SensorDataRecorder implements MotionDetectorListener {
     }
 
     @Override
-    synchronized public void onDetected() {
+    synchronized public void onDetected(MotionDetectionEvent event) {
         mPirData.add(new PirData(currentTimeMillis(), true));
 
         if (mPirData.size() == WRITE_EVERY_N_ITEM) {

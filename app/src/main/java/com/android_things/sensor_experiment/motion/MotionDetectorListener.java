@@ -5,5 +5,5 @@ package com.android_things.sensor_experiment.motion;
  */
 
 public interface MotionDetectorListener {
-    public void onDetected();
+    public void onDetected(MotionDetectionEvent event);
 }

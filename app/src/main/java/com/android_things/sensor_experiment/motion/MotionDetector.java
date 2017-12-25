@@ -29,7 +29,9 @@ public class MotionDetector {
         public void onMovement(Gpio gpio) {
             try {
                 if (gpio.getValue()) {
-                    notifyListeners();
+                    MotionDetectionEvent event = new MotionDetectionEvent();
+                    event.mSource = MotionDetectionEvent.Source.PIR;
+                    notifyListeners(event);
                 }
             } catch (IOException e) {
                 Log.e(TAG, "Cannot get GPIO value: ", e);
@@ -64,7 +66,10 @@ public class MotionDetector {
                         curr_distance = mProximitySensor.readDistanceSync();
                         if (!is_first_iteration &&
                                 Math.abs(curr_distance - prev_distance) > 30) {
-                            notifyListeners();
+                            MotionDetectionEvent event = new MotionDetectionEvent();
+                            event.mSource = MotionDetectionEvent.Source.PROXIMITY;
+                            event.mProxmityParam = curr_distance;
+                            notifyListeners(event);
                             Log.e(TAG, "Proximity detected. Distance is: " + curr_distance);
                         }
                         prev_distance = curr_distance;
@@ -103,9 +108,9 @@ public class MotionDetector {
         mListener.add(listener);
     }
 
-    synchronized void notifyListeners() {
+    synchronized void notifyListeners(MotionDetectionEvent event) {
         for (MotionDetectorListener listener : mListener) {
-            listener.onDetected();
+            listener.onDetected(event);
         }
     }
 }
