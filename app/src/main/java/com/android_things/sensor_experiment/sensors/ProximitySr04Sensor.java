@@ -68,11 +68,9 @@ public class ProximitySr04Sensor implements MotionSensor {
 
         while (mEchoGpio.getValue() == false);
         long echo_start = System.nanoTime();
-        Log.i(TAG, "Echo ARRIVED!");
 
         while (mEchoGpio.getValue() == true);
         long echo_stop = System.nanoTime();
-        Log.i(TAG, "Echo Ended!");
 
         // Calculate distance in centimeters. The constants
         // are coming from the datasheet, and calculated from the assumed speed

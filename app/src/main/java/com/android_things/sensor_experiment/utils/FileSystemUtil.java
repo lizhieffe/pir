@@ -1,4 +1,4 @@
-package com.android_things.sensor_experiment;
+package com.android_things.sensor_experiment.utils;
 
 import android.content.Context;
 import android.os.Environment;

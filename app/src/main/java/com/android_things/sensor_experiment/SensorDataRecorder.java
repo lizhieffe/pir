@@ -3,7 +3,9 @@ package com.android_things.sensor_experiment;
 import android.content.Context;
 import android.util.Log;
 
+import com.android_things.sensor_experiment.motion.MotionDetectionListener;
 import com.android_things.sensor_experiment.sensors.MotionSensor;
+import com.android_things.sensor_experiment.utils.FileSystemUtil;
 import com.google.android.things.pio.Gpio;
 
 import java.io.BufferedWriter;
@@ -19,7 +21,7 @@ import static java.lang.System.currentTimeMillis;
  * Created by lizhieffe on 12/24/17.
  */
 
-class SensorDataRecorder implements MotionSensor.Listener {
+class SensorDataRecorder implements MotionDetectionListener {
     private static int WRITE_EVERY_N_ITEM = 100;
 
     private Context mContext;
@@ -50,13 +52,8 @@ class SensorDataRecorder implements MotionSensor.Listener {
     }
 
     @Override
-    public void onMovement(Gpio gpio) {
-        try {
-            mPirData.add(new PirData(currentTimeMillis(), gpio.getValue()));
-            Log.i("===lizhi", "recording data to memory");
-        } catch(Exception e) {
-            Log.e("===lizhi", "Cannot record pir data: " + e);
-        }
+    synchronized public void onDetected() {
+        mPirData.add(new PirData(currentTimeMillis(), true));
 
         if (mPirData.size() == WRITE_EVERY_N_ITEM) {
             try {
