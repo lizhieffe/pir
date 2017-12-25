@@ -72,11 +72,6 @@ public class UIDetectorIndicator
         @Override
         protected Void doInBackground(IndicatorUpdateParams... params) {
             mParams = params[0];
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
             if (mParams.mDelayMs > 0) {
                 try {
                     Thread.sleep(mParams.mDelayMs);
@@ -84,6 +79,11 @@ public class UIDetectorIndicator
                     Log.e(TAG, "Cannot sleep: ", e);
                 }
             }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
             if (mParams.mType == IndicatorUpdateType.MOVEMENT) {
                 movement_indicator.setBackgroundColor(
                         context.getResources().getColor(R.color.red));
