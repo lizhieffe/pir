@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.widget.Button;
 
 import com.android_things.sensor_experiment.pir.sensor_test.R;
+import com.android_things.sensor_experiment.sensors.MotionSensor;
 import com.google.android.things.pio.Gpio;
 import java.io.IOException;
 

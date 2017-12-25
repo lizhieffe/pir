@@ -1,8 +1,8 @@
-package com.android_things.sensor_experiment;
+package com.android_things.sensor_experiment.sensors;
 
 import com.google.android.things.pio.Gpio;
 
-interface MotionSensor {
+public interface MotionSensor {
 
     void startup();
 

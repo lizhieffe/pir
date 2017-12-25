@@ -1,7 +1,8 @@
-package com.android_things.sensor_experiment;
+package com.android_things.sensor_experiment.sensors;
 
 import android.util.Log;
 
+import com.android_things.sensor_experiment.sensors.MotionSensor;
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.GpioCallback;
 
@@ -11,13 +12,13 @@ import java.util.List;
 /**
  * HC-SR501
  */
-class PirMotionSensor implements MotionSensor {
+public class PirMotionSensor implements MotionSensor {
 
     private final Gpio bus;
 
     private final List<Listener> listeners;
 
-    PirMotionSensor(Gpio bus, List<Listener> listeners) {
+    public PirMotionSensor(Gpio bus, List<Listener> listeners) {
         this.bus = bus;
         this.listeners = listeners;
     }

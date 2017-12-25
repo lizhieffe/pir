@@ -3,6 +3,7 @@ package com.android_things.sensor_experiment;
 import android.os.Handler;
 import android.util.Log;
 
+import com.android_things.sensor_experiment.sensors.MotionSensor;
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.PeripheralManagerService;
 
