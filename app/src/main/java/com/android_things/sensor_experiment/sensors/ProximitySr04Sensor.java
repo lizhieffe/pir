@@ -36,7 +36,7 @@ public class ProximitySr04Sensor implements MotionSensor {
             mTriggerGpio = service.openGpio(TRIGGER_PIN);
             mTriggerGpio.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
         } catch (IOException e) {
-            Log.e(TAG, "Error on PeripheralIO API: ", e);
+            Log.d(TAG, "ProximitySr04Sensor.startup: Error on PeripheralIO API", e);
         }
     }
 

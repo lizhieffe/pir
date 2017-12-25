@@ -3,10 +3,8 @@ package com.android_things.sensor_experiment;
 import android.content.Context;
 import android.util.Log;
 
-import com.android_things.sensor_experiment.motion.MotionDetectionListener;
-import com.android_things.sensor_experiment.sensors.MotionSensor;
+import com.android_things.sensor_experiment.motion.MotionDetectorListener;
 import com.android_things.sensor_experiment.utils.FileSystemUtil;
-import com.google.android.things.pio.Gpio;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -21,7 +19,7 @@ import static java.lang.System.currentTimeMillis;
  * Created by lizhieffe on 12/24/17.
  */
 
-class SensorDataRecorder implements MotionDetectionListener {
+class SensorDataRecorder implements MotionDetectorListener {
     private static int WRITE_EVERY_N_ITEM = 100;
 
     private Context mContext;

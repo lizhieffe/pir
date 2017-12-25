@@ -20,7 +20,7 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
  */
 
 public class MotionDetector {
-    private List<MotionDetectionListener> mListener;
+    private List<MotionDetectorListener> mListener;
 
     private PirMotionSensor mPirSensor;
     private final MotionSensor.Listener mPirSensorCallback
@@ -99,12 +99,12 @@ public class MotionDetector {
         }
     }
 
-    public void addListener(MotionDetectionListener listener) {
+    public void addListener(MotionDetectorListener listener) {
         mListener.add(listener);
     }
 
     synchronized void notifyListeners() {
-        for (MotionDetectionListener listener : mListener) {
+        for (MotionDetectorListener listener : mListener) {
             listener.onDetected();
         }
     }

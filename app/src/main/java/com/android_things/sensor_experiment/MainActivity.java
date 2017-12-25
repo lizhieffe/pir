@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.widget.Button;
 
 import com.android_things.sensor_experiment.indicator.DetectionIndicator;
-import com.android_things.sensor_experiment.indicator.LedDetectionIndicator;
-import com.android_things.sensor_experiment.indicator.UIDetectionIndicator;
+import com.android_things.sensor_experiment.indicator.LedDetectorIndicator;
+import com.android_things.sensor_experiment.indicator.UIDetectorIndicator;
 import com.android_things.sensor_experiment.motion.MotionDetector;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
 
@@ -26,9 +26,9 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         Button movement_indicator = findViewById(R.id.movement_indicator);
-        UIDetectionIndicator ui_detection_indicator = new UIDetectionIndicator(
+        UIDetectorIndicator ui_detection_indicator = new UIDetectorIndicator(
                 getApplicationContext(), movement_indicator);
-        LedDetectionIndicator led_detection_indicator = new LedDetectionIndicator();
+        LedDetectorIndicator led_detection_indicator = new LedDetectorIndicator();
         SensorDataRecorder sensorDataRecorder = new SensorDataRecorder(getApplicationContext());
 
         DetectionIndicator[] di_array = {ui_detection_indicator, led_detection_indicator};
