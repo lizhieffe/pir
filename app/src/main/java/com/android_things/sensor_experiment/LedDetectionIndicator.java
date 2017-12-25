@@ -1,4 +1,4 @@
-package com.example.android_things.pir.myapplication;
+package com.android_things.sensor_experiment;
 
 import android.os.Handler;
 import android.util.Log;

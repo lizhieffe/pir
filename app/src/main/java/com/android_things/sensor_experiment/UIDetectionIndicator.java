@@ -1,9 +1,10 @@
-package com.example.android_things.pir.myapplication;
+package com.android_things.sensor_experiment;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.os.Handler;
 import android.widget.Button;
+
+import com.android_things.sensor_experiment.pir.sensor_test.R;
 import com.google.android.things.pio.Gpio;
 import java.io.IOException;
 

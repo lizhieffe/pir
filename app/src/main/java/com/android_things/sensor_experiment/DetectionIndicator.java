@@ -1,4 +1,4 @@
-package com.example.android_things.pir.myapplication;
+package com.android_things.sensor_experiment;
 
 /**
  * Created by lizhieffe on 12/23/17.

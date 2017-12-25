@@ -1,4 +1,4 @@
-package com.example.android_things.pir.myapplication;
+package com.android_things.sensor_experiment;
 
 import com.google.android.things.pio.Gpio;
 

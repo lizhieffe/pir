@@ -1,15 +1,15 @@
-package com.example.android_things.pir.myapplication;
+package com.android_things.sensor_experiment;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 
+import com.android_things.sensor_experiment.pir.sensor_test.R;
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.PeripheralManagerService;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,9 +31,11 @@ public class MainActivity extends Activity {
         UIDetectionIndicator ui_detection_indicator = new UIDetectionIndicator(
                 getApplicationContext(), movement_indicator);
         LedDetectionIndicator led_detection_indicator = new LedDetectionIndicator();
+        SensorDataRecorder sensorDataRecorder = new SensorDataRecorder(getApplicationContext());
 
         Log.e("===lizhi", "444");
-        MotionSensor.Listener[] msl_array = {ui_detection_indicator, led_detection_indicator};
+        MotionSensor.Listener[] msl_array = {ui_detection_indicator, led_detection_indicator,
+                sensorDataRecorder};
         motion_sensor_listeners = new ArrayList<>(Arrays.asList(msl_array));
 
         DetectionIndicator[] di_array = {ui_detection_indicator, led_detection_indicator};

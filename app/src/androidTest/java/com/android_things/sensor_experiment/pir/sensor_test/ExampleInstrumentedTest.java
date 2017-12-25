@@ -1,4 +1,4 @@
-package com.example.android_things.pir.myapplication;
+package com.android_things.sensor_experiment.pir.sensor_test;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
