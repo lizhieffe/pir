@@ -70,7 +70,6 @@ public class MotionDetector {
                             event.mSource = MotionDetectionEvent.Source.PROXIMITY;
                             event.mProxmityParam = curr_distance;
                             notifyListeners(event);
-                            Log.e(TAG, "Proximity detected. Distance is: " + curr_distance);
                         }
                         prev_distance = curr_distance;
                         if (is_first_iteration) {
@@ -109,6 +108,8 @@ public class MotionDetector {
     }
 
     synchronized void notifyListeners(MotionDetectionEvent event) {
+        Log.d(TAG, "MotionDetector.notifyListeners: motion detected: "
+                + event.toString());
         for (MotionDetectorListener listener : mListener) {
             listener.onDetected(event);
         }
