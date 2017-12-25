@@ -1,4 +1,4 @@
-package com.android_things.sensor_experiment;
+package com.android_things.sensor_experiment.indicator;
 
 /**
  * Created by lizhieffe on 12/23/17.

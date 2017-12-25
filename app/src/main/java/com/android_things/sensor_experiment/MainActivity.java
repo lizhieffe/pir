@@ -2,17 +2,14 @@ package com.android_things.sensor_experiment;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 
+import com.android_things.sensor_experiment.indicator.DetectionIndicator;
+import com.android_things.sensor_experiment.indicator.LedDetectionIndicator;
+import com.android_things.sensor_experiment.indicator.UIDetectionIndicator;
 import com.android_things.sensor_experiment.motion.MotionDetector;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
-import com.android_things.sensor_experiment.sensors.MotionSensor;
-import com.android_things.sensor_experiment.sensors.ProximitySr04Sensor;
-import com.google.android.things.pio.Gpio;
-import com.google.android.things.pio.PeripheralManagerService;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

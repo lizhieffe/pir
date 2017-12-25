@@ -1,11 +1,10 @@
-package com.android_things.sensor_experiment;
+package com.android_things.sensor_experiment.indicator;
 
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
 import com.android_things.sensor_experiment.motion.MotionDetectionListener;
-import com.android_things.sensor_experiment.sensors.MotionSensor;
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.PeripheralManagerService;
 
@@ -17,7 +16,7 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
  * Created by lizhieffe on 12/23/17.
  */
 
-class LedDetectionIndicator
+public class LedDetectionIndicator
         implements MotionDetectionListener, DetectionIndicator {
     private Gpio ledBus = null;
 
