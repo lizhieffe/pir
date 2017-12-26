@@ -9,6 +9,7 @@ import com.android_things.sensor_experiment.indicator.LedDetectorIndicator;
 import com.android_things.sensor_experiment.indicator.UIDetectorIndicator;
 import com.android_things.sensor_experiment.motion.MotionDetector;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
+import com.android_things.sensor_experiment.sensors.AmbientLightSen14350Sensor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +20,7 @@ public class MainActivity extends Activity {
     private List<DetectionIndicator> detection_indicators;
 
     private MotionDetector mMotionDetector;
+    private AmbientLightSen14350Sensor mAmbientLightSensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,9 @@ public class MainActivity extends Activity {
         mMotionDetector.addListener(ui_detection_indicator);
         mMotionDetector.addListener(led_detection_indicator);
         mMotionDetector.addListener(sensorDataRecorder);
+
+        mAmbientLightSensor = new AmbientLightSen14350Sensor();
+        mAmbientLightSensor.startup();
     }
 
     @Override
@@ -50,8 +55,8 @@ public class MainActivity extends Activity {
         for (DetectionIndicator d : detection_indicators) {
             d.close();
         }
-        // proximity_sensor.shutdown();
         mMotionDetector.shutdown();
+        mAmbientLightSensor.shutdown();
         super.onDestroy();
     }
 }

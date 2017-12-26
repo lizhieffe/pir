@@ -80,6 +80,7 @@ public class ProximitySr04Sensor implements MotionSensor {
         }
     }
 
+    // TODO: refactor this method to reuse code from the async version.
     // Returned value unit is cm.
     public double readDistanceSync() throws IOException, InterruptedException {
         if (mTriggerGpio == null || mEchoGpio == null) {
