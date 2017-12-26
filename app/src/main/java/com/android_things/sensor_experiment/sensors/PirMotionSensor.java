@@ -9,6 +9,7 @@ import com.google.android.things.pio.PeripheralManagerService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 import static com.android_things.sensor_experiment.base.Constants.TAG;
 
@@ -19,11 +20,10 @@ public class PirMotionSensor implements MotionSensor {
 
     private Gpio mBus;
 
-    private List<Listener> mListeners;
+    private List<Listener> mListeners = new ArrayList<>();
 
     @Override
     public void startup() {
-        mListeners = new ArrayList<>();
         try {
             // BCM4 is the GPIO pin I have the sensor connected to on my raspberry pi
             mBus = new PeripheralManagerService().openGpio("BCM4");

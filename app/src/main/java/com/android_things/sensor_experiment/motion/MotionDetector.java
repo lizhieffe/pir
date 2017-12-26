@@ -10,7 +10,6 @@ import com.google.android.things.pio.Gpio;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 
 import static com.android_things.sensor_experiment.base.Constants.TAG;
 
@@ -27,6 +26,7 @@ public class MotionDetector {
         @Override
         public void onMovement(Gpio gpio) {
             try {
+                Log.d(TAG, "MotionDetector.onMovement: gpio getvalue " + gpio.getValue());
                 if (gpio.getValue()) {
                     MotionDetectionEvent event = new MotionDetectionEvent();
                     event.mSource = MotionDetectionEvent.Source.PIR;
