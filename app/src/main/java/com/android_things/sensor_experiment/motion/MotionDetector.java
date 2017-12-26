@@ -75,7 +75,8 @@ public class MotionDetector {
                         if (is_first_iteration) {
                             is_first_iteration = false;
                         }
-                        Thread.sleep(1000);
+                        // Time interval to read the proximity sensor.
+                        Thread.sleep(250);
                     } catch (IOException e) {
                         Log.e(TAG, "Cannot measure distance: ", e);
                     } catch (InterruptedException e) {
