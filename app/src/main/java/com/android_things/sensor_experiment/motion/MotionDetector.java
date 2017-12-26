@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static com.android_things.sensor_experiment.base.Constants.TAG;
 
@@ -41,7 +40,22 @@ public class MotionDetector {
     };
 
     private ProximitySr04Sensor mProximitySensor;
-    private ExecutorService mProximitySensorCheckerExecutor;
+    private double mPrevDistance = 0;
+    private double mCurrDistance = 0;
+    private final ProximitySr04Sensor.Listener mProximitySensorCallback
+            = new ProximitySr04Sensor.Listener() {
+        @Override
+        public void onEvent(ProximitySr04Sensor.Event event) {
+            mCurrDistance = event.distance;
+            if (Math.abs(mCurrDistance - mPrevDistance) > 30) {
+                MotionDetectionEvent motionDetectionEvent = new MotionDetectionEvent();
+                motionDetectionEvent.mSource = MotionDetectionEvent.Source.PROXIMITY;
+                motionDetectionEvent.mProxmityParam = mCurrDistance;
+                notifyListeners(motionDetectionEvent);
+            }
+            mPrevDistance = mCurrDistance;
+        }
+    };
 
     public MotionDetector() {
         mListener = new ArrayList<>();
@@ -50,41 +64,11 @@ public class MotionDetector {
     }
 
     public void start() {
-        mPirSensor.startup();
         mPirSensor.addListener(mPirSensorCallback);
+        mPirSensor.startup();
 
+        mProximitySensor.addListener(mProximitySensorCallback);
         mProximitySensor.startup();
-        mProximitySensorCheckerExecutor = Executors.newSingleThreadExecutor();
-        mProximitySensorCheckerExecutor.submit(new Runnable() {
-            @Override
-            public void run() {
-                boolean is_first_iteration = true;
-                double prev_distance = 0;
-                double curr_distance;
-                while (true) {
-                    try {
-                        curr_distance = mProximitySensor.readDistanceSync();
-                        if (!is_first_iteration &&
-                                Math.abs(curr_distance - prev_distance) > 30) {
-                            MotionDetectionEvent event = new MotionDetectionEvent();
-                            event.mSource = MotionDetectionEvent.Source.PROXIMITY;
-                            event.mProxmityParam = curr_distance;
-                            notifyListeners(event);
-                        }
-                        prev_distance = curr_distance;
-                        if (is_first_iteration) {
-                            is_first_iteration = false;
-                        }
-                        // Time interval to read the proximity sensor.
-                        Thread.sleep(250);
-                    } catch (IOException e) {
-                        Log.e(TAG, "Cannot measure distance: ", e);
-                    } catch (InterruptedException e) {
-                        Log.e(TAG, "Cannot measure distance: ", e);
-                    }
-                }
-            }
-        });
     }
 
     public void shutdown() {
@@ -98,9 +82,6 @@ public class MotionDetector {
         if (mProximitySensor != null) {
             mProximitySensor.shutdown();
             mProximitySensor = null;
-        }
-        if (mProximitySensorCheckerExecutor != null) {
-            mProximitySensorCheckerExecutor.shutdown();
         }
     }
 
