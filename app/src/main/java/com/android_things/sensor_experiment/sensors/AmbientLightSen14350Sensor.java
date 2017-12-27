@@ -76,7 +76,7 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
             mDevice.writeRegByte(CONTROL_REG, (byte) 0x3);
 
             byte power_byte = mDevice.readRegByte(CONTROL_REG);
-            setHighGain();
+            setGain(GainType.HIGH);
 
             setIntegrationTime(IntegrationTime.INT_TIME_402_MS);
 
@@ -173,10 +173,15 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
     }
 
     // High gain increases the detection sensitivity.
-    private void setHighGain() {
+    public enum GainType {
+        HIGH,
+        LOW,
+    }
+
+    private void setGain(GainType gainType) {
         try {
             byte regVal = mDevice.readRegByte(TIMING_REG);
-            regVal |= 0x00010000;
+            regVal |= gainType == GainType.HIGH ? 0x00010000 : 0x00010000;
             mDevice.writeRegByte(TIMING_REG, regVal);
         } catch (IOException e) {
             Log.d(TAG, "AmbientLightSen14350Sensor.setHighGain: cannot set high gain: ", e);
