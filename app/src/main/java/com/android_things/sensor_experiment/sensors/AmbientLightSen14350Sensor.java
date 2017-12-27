@@ -77,25 +77,8 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
 
             byte power_byte = mDevice.readRegByte(CONTROL_REG);
             setGain(GainType.HIGH);
-
             setIntegrationTime(IntegrationTime.INT_TIME_402_MS);
-
-            Thread.sleep(4000);
-            for (int i = 0; i < 100; i++) {
-                Log.d(TAG, "AmbientLightSen14350Sensor.connect: 444");
-                byte level_read_lower = mDevice.readRegByte(DATA0LOW_REG);
-                Log.d(TAG, "AmbientLightSen14350Sensor.connect: 555");
-                byte level_read_upper = mDevice.readRegByte(DATA0HI_REG);
-                Log.d(TAG, "AmbientLightSen14350Sensor.connect: 666");
-                int level_read = (((int)level_read_upper) << 8) + (int)level_read_lower;
-                Log.d(TAG, "AmbientLightSen14350Sensor.connect: level read = " + level_read);
-                level_read_lower = mDevice.readRegByte(DATA1LOW_REG);
-                level_read_upper = mDevice.readRegByte(DATA1HI_REG);
-                level_read = (((int)level_read_upper) << 8) + (int)level_read_lower;
-                Log.d(TAG, "AmbientLightSen14350Sensor.connect: level read = " + level_read);
-                Thread.sleep(1000);
-            }
-        } catch (IOException|InterruptedException e) {
+        } catch (IOException e) {
             Log.d(TAG, "AmbientLightSen14350Sensor.connect: cannot connect device: ", e);
         }
     }
@@ -174,8 +157,21 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
 
     // High gain increases the detection sensitivity.
     public enum GainType {
+        UNKNOWN,
         HIGH,
         LOW,
+    }
+
+    private static final byte GAIN_MASK = 0b00010000;
+
+    private GainType getGain() {
+        try {
+            byte regVal = mDevice.readRegByte(TIMING_REG);
+            return (regVal & GAIN_MASK) == 0 ? GainType.LOW : GainType.HIGH;
+        } catch (IOException e) {
+            Log.d(TAG, "AmbientLightSen14350Sensor.setHighGain: cannot set high gain: ", e);
+            return GainType.UNKNOWN;
+        }
     }
 
     private void setGain(GainType gainType) {
@@ -186,5 +182,100 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
         } catch (IOException e) {
             Log.d(TAG, "AmbientLightSen14350Sensor.setHighGain: cannot set high gain: ", e);
         }
+    }
+
+    private int getCH0Level() {
+        try {
+            // int val = mDevice.readRegWord(DATA0LOW_REG);
+            // return val & 0x0000FFFF;
+            byte lowerVal = mDevice.readRegByte(DATA0LOW_REG);
+            byte upperVal = mDevice.readRegByte(DATA0HI_REG);
+            return ((((int) upperVal) << 8) + (int) lowerVal) & 0x0000FFFF;
+        } catch (IOException e) {
+            Log.e(TAG, "getCH0Level: cannot get CH0 level: ", e);
+            return 0;
+        }
+    }
+
+    private int getCH1Level() {
+        try {
+            byte lowerVal = mDevice.readRegByte(DATA1LOW_REG);
+            byte upperVal = mDevice.readRegByte(DATA1HI_REG);
+            return ((((int) upperVal) << 8) + (int) lowerVal) & 0x0000FFFF;
+        } catch (IOException e) {
+            Log.e(TAG, "getCH0Level: cannot get CH1 level: ", e);
+            return 0;
+        }
+    }
+
+    public double readLuxLevel() {
+        int ch0Int = getCH0Level();  // to mimic unsigned int
+        long ch1Int = getCH1Level();  // to mimic unsigned int
+        float ch0 = (float)getCH0Level();
+        float ch1 = (float)getCH1Level();
+        Log.d(TAG, "AmbientLightSen14350Sensor.readLuxLevel: ch0Int = "+ ch0Int);
+        Log.d(TAG, "AmbientLightSen14350Sensor.readLuxLevel: ch1Int = "+ ch1Int);
+        switch (getIntegrationTime()) {
+            case INT_TIME_13_7_MS:
+                if ((ch1Int >= 5047) || (ch0Int >= 5047))
+                {
+                    return 1.0/0.0;
+                }
+                break;
+            case INT_TIME_101_MS:
+                if ((ch1Int >= 37177) || (ch0Int >= 37177))
+                {
+                    return 1.0/0.0;
+                }
+                break;
+            case INT_TIME_402_MS:
+                if ((ch1Int >= 65535) || (ch0Int >= 65535))
+                {
+                    return 1.0/0.0;
+                }
+                break;
+        }
+        float ratio = ch1/ch0;
+        switch (getIntegrationTime())
+        {
+            case INT_TIME_13_7_MS:
+                ch0 *= 1/0.034;
+                ch1 *= 1/0.034;
+                break;
+            case INT_TIME_101_MS:
+                ch0 *= 1/0.252;
+                ch1 *= 1/0.252;
+                break;
+            case INT_TIME_402_MS:
+                ch0 *= 1;
+                ch1 *= 1;
+                break;
+        }
+
+        if (getGain() == GainType.HIGH)
+        {
+            // ch0 /= 16;
+            // ch1 /= 16;
+        }
+
+        double luxVal = 0.0;
+        if (ratio <= 0.5)
+        {
+            luxVal = (0.0304 * ch0) - ((0.062 * ch0) * (Math.pow((ch1/ch0), 1.4)));
+        }
+        else if (ratio <= 0.61)
+        {
+            luxVal = (0.0224 * ch0) - (0.031 * ch1);
+        }
+        else if (ratio <= 0.8)
+        {
+            luxVal = (0.0128 * ch0) - (0.0153 * ch1);
+        }
+        else if (ratio <= 1.3)
+        {
+            luxVal = (0.00146 * ch0) - (0.00112*ch1);
+        }
+
+        return luxVal;
     }
 }
