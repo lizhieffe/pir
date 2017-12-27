@@ -104,7 +104,7 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
     public void setIntegrationTime(IntegrationTime time) {
         try {
             byte regVal = mDevice.readRegByte(TIMING_REG);
-            regVal &= (byte)Integer.reverse(INTEGRATION_MASK);
+            regVal &= ~INTEGRATION_MASK;
             boolean shouldSet = true;
             switch (time) {
                 case INT_TIME_13_7_MS:
@@ -163,6 +163,7 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
     private GainType getGain() {
         try {
             byte regVal = mDevice.readRegByte(TIMING_REG);
+            Log.d(TAG, "AmbientLightSen14350Sensor.getGain: aaaaaaaaaaaaaaaaaaa " + regVal);
             return (regVal & GAIN_MASK) == 0 ? GainType.LOW : GainType.HIGH;
         } catch (IOException e) {
             Log.d(TAG, "AmbientLightSen14350Sensor.setHighGain: cannot set high gain: ", e);
@@ -173,8 +174,16 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
     private void setGain(GainType gainType) {
         try {
             byte regVal = mDevice.readRegByte(TIMING_REG);
-            regVal |= gainType == GainType.HIGH ? 0x00010000 : 0x00000000;
+            if (gainType == GainType.HIGH) {
+                regVal |= 0b00010000;
+            } else {
+                regVal &= ~0b00010000;
+            }
             mDevice.writeRegByte(TIMING_REG, regVal);
+            Log.d(TAG, "AmbientLightSen14350Sensor.getGain: bbbbbbbbbbbbbbbb " + regVal);
+
+            regVal = mDevice.readRegByte(TIMING_REG);
+            Log.d(TAG, "AmbientLightSen14350Sensor.getGain: cccccccccccccccc " + regVal);
         } catch (IOException e) {
             Log.d(TAG, "AmbientLightSen14350Sensor.setHighGain: cannot set high gain: ", e);
         }
