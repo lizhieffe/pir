@@ -5,6 +5,8 @@ import android.util.Log;
 import com.google.android.things.pio.I2cDevice;
 import com.google.android.things.pio.PeripheralManagerService;
 
+import junit.framework.Assert;
+
 import java.io.IOException;
 
 import static com.android_things.sensor_experiment.base.Constants.TAG;
@@ -71,16 +73,10 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
     private void connect(I2cDevice device) {
         mDevice = device;
 
-        try {
-            // Power up device.
-            mDevice.writeRegByte(CONTROL_REG, (byte) 0x3);
-
-            byte power_byte = mDevice.readRegByte(CONTROL_REG);
-            setGain(GainType.HIGH);
-            setIntegrationTime(IntegrationTime.INT_TIME_402_MS);
-        } catch (IOException e) {
-            Log.d(TAG, "AmbientLightSen14350Sensor.connect: cannot connect device: ", e);
-        }
+        // Power up device.
+        powerOn();
+        setGain(GainType.HIGH);
+        setIntegrationTime(IntegrationTime.INT_TIME_402_MS);
     }
 
     // Sensitivity to light increases with integration time, and the rate at which new data is
@@ -177,7 +173,7 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
     private void setGain(GainType gainType) {
         try {
             byte regVal = mDevice.readRegByte(TIMING_REG);
-            regVal |= gainType == GainType.HIGH ? 0x00010000 : 0x00010000;
+            regVal |= gainType == GainType.HIGH ? 0x00010000 : 0x00000000;
             mDevice.writeRegByte(TIMING_REG, regVal);
         } catch (IOException e) {
             Log.d(TAG, "AmbientLightSen14350Sensor.setHighGain: cannot set high gain: ", e);
@@ -213,8 +209,7 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
         long ch1Int = getCH1Level();  // to mimic unsigned int
         float ch0 = (float)getCH0Level();
         float ch1 = (float)getCH1Level();
-        Log.d(TAG, "AmbientLightSen14350Sensor.readLuxLevel: ch0Int = "+ ch0Int);
-        Log.d(TAG, "AmbientLightSen14350Sensor.readLuxLevel: ch1Int = "+ ch1Int);
+        Assert.assertEquals(getIntegrationTime(), IntegrationTime.INT_TIME_402_MS);
         switch (getIntegrationTime()) {
             case INT_TIME_13_7_MS:
                 if ((ch1Int >= 5047) || (ch0Int >= 5047))
@@ -236,6 +231,7 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
                 break;
         }
         float ratio = ch1/ch0;
+        Assert.assertEquals(getIntegrationTime(), IntegrationTime.INT_TIME_402_MS);
         switch (getIntegrationTime())
         {
             case INT_TIME_13_7_MS:
@@ -252,10 +248,11 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
                 break;
         }
 
+        Assert.assertEquals(getGain(), GainType.HIGH);
         if (getGain() == GainType.HIGH)
         {
-            // ch0 /= 16;
-            // ch1 /= 16;
+            ch0 /= 16;
+            ch1 /= 16;
         }
 
         double luxVal = 0.0;
@@ -277,5 +274,17 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
         }
 
         return luxVal;
+    }
+
+    void powerOn() {
+        try {
+            byte regVal = mDevice.readRegByte(CONTROL_REG);
+            mDevice.writeRegByte(CONTROL_REG, (byte)(regVal | (byte) 0x3));
+
+            regVal = mDevice.readRegByte(CONTROL_REG);
+            Assert.assertEquals(regVal & 0x3, (byte)0x3);
+        } catch (IOException e) {
+            Log.e(TAG, "AmbientLightSen14350Sensor.powerOn: ", e);
+        }
     }
 }
