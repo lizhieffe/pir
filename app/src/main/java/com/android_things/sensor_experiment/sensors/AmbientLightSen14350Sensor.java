@@ -55,9 +55,9 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
         }
     }
 
-    public double readLuxLevel() {
+    public float readLuxLevel() {
         int ch0Int = getCH0Level();  // to mimic unsigned int
-        long ch1Int = getCH1Level();  // to mimic unsigned int
+        int ch1Int = getCH1Level();  // to mimic unsigned int
         float ch0 = (float)getCH0Level();
         float ch1 = (float)getCH1Level();
         Assert.assertEquals(getIntegrationTime(), IntegrationTime.INT_TIME_402_MS);
@@ -65,19 +65,19 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
             case INT_TIME_13_7_MS:
                 if ((ch1Int >= 5047) || (ch0Int >= 5047))
                 {
-                    return 1.0/0.0;
+                    return (float)(1.0/0.0);
                 }
                 break;
             case INT_TIME_101_MS:
                 if ((ch1Int >= 37177) || (ch0Int >= 37177))
                 {
-                    return 1.0/0.0;
+                    return (float)(1.0/0.0);
                 }
                 break;
             case INT_TIME_402_MS:
                 if ((ch1Int >= 65535) || (ch0Int >= 65535))
                 {
-                    return 1.0/0.0;
+                    return (float)(1.0/0.0);
                 }
                 break;
         }
@@ -106,22 +106,22 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
             ch1 /= 16;
         }
 
-        double luxVal = 0.0;
+        float luxVal = (float)0.0;
         if (ratio <= 0.5)
         {
-            luxVal = (0.0304 * ch0) - ((0.062 * ch0) * (Math.pow((ch1/ch0), 1.4)));
+            luxVal = (float)((0.0304 * ch0) - ((0.062 * ch0) * (Math.pow((ch1/ch0), 1.4))));
         }
         else if (ratio <= 0.61)
         {
-            luxVal = (0.0224 * ch0) - (0.031 * ch1);
+            luxVal = (float)((0.0224 * ch0) - (0.031 * ch1));
         }
         else if (ratio <= 0.8)
         {
-            luxVal = (0.0128 * ch0) - (0.0153 * ch1);
+            luxVal = (float)((0.0128 * ch0) - (0.0153 * ch1));
         }
         else if (ratio <= 1.3)
         {
-            luxVal = (0.00146 * ch0) - (0.00112*ch1);
+            luxVal = (float)((0.00146 * ch0) - (0.00112*ch1));
         }
 
         return luxVal;
@@ -174,6 +174,9 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
 
     private static final byte INTEGRATION_MASK = 0b00000011;
 
+    private float mResolution;
+    private float mMaxRange;
+
     public void setIntegrationTime(IntegrationTime time) {
         try {
             byte regVal = mDevice.readRegByte(TIMING_REG);
@@ -182,12 +185,18 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
             switch (time) {
                 case INT_TIME_13_7_MS:
                     regVal |= IntegrationTime.INT_TIME_13_7_MS.getFieldValue();
+                    mResolution = SENSITIVITY_RANGE_13_7_MS[0];
+                    mMaxRange = SENSITIVITY_RANGE_13_7_MS[1];
                     break;
                 case INT_TIME_101_MS:
                     regVal |= IntegrationTime.INT_TIME_101_MS.getFieldValue();
+                    mResolution = SENSITIVITY_RANGE_101_MS[0];
+                    mMaxRange = SENSITIVITY_RANGE_101_MS[1];
                     break;
                 case INT_TIME_402_MS:
                     regVal |= IntegrationTime.INT_TIME_402_MS.getFieldValue();
+                    mResolution = SENSITIVITY_RANGE_402_MS[0];
+                    mMaxRange = SENSITIVITY_RANGE_402_MS[1];
                     break;
                 default:
                     shouldSet = false;
@@ -222,6 +231,21 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
             Log.e(TAG, "AmbientLightSen14350Sensor.setIntegrationTime: cannot set integration time: ", e);
             return IntegrationTime.UNKNOWN;
         }
+    }
+
+    // TODO: these values are borrowed from other senser's values. Figure out the correct values.
+    //
+    // Ambient light resolution is affected by the integration time.
+    public static final float[] SENSITIVITY_RANGE_13_7_MS = { 0.088f, 5741 };
+    public static final float[] SENSITIVITY_RANGE_101_MS = { 0.012f,  786 };
+    public static final float[] SENSITIVITY_RANGE_402_MS = { 0.003f,  197 };
+
+    public float getCurrentResolution() {
+        return mResolution;
+    }
+
+    public float getCurrentMaxRange() {
+        return mMaxRange;
     }
 
     // High gain increases the detection sensitivity.
