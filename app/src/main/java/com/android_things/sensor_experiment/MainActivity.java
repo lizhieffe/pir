@@ -12,6 +12,7 @@ import com.android_things.sensor_experiment.motion.MotionDetector;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
 import com.android_things.sensor_experiment.sensors.AmbientLightSen14350Sensor;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,14 +51,10 @@ public class MainActivity extends Activity {
         mMotionDetector.addListener(sensorDataRecorder);
 
         mAmbientLightSensor = new AmbientLightSen14350Sensor();
-        mAmbientLightSensor.startup();
-        for (int i = 0; i < 100; i++) {
-            Log.d(TAG, "MainActivity.onCreate: led lux = " + mAmbientLightSensor.readLuxLevel());
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-
-            }
+        try {
+            mAmbientLightSensor.startup();
+        } catch (IOException e) {
+            Log.e(TAG, "MainActivity.onCreate: cannot startup the ambient light sensor", e);
         }
     }
 

@@ -21,39 +21,112 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
     public static final String DEFAULT_I2C_BUS = "I2C1";
     public static final int DEFAULT_I2C_ADDRESS = 0x39;
 
+    // I2C bus and address for the device.
+    private String mBus;
+    private int mAddress;
+
     private I2cDevice mDevice;
+
     public AmbientLightSen14350Sensor() {
         this(DEFAULT_I2C_BUS, DEFAULT_I2C_ADDRESS);
     }
 
     public AmbientLightSen14350Sensor(String bus, int address) {
-        PeripheralManagerService pioService
-                = new PeripheralManagerService();
-        Log.d(TAG, "AmbientLightSen14350Sensor.AmbientLightSen14350Sensor: I2C bus lists: " + pioService.getI2cBusList());
-        try {
-            I2cDevice device = pioService.openI2cDevice(bus, address);
-            connect(device);
-        }  catch (IOException|RuntimeException e) {
-            Log.d(TAG, "AmbientLightSen14350Sensor.AmbientLightSen14350Sensor: cannot connect: ", e);
-        }
+        mBus = bus;
+        mAddress = address;
     }
 
     @Override
-    public void startup() {
-
+    public void startup() throws IOException {
+        PeripheralManagerService pioService
+                = new PeripheralManagerService();
+        Log.d(TAG, "AmbientLightSen14350Sensor.AmbientLightSen14350Sensor: I2C bus lists: " + pioService.getI2cBusList());
+            I2cDevice device = pioService.openI2cDevice(mBus, mAddress);
+            connect(device);
     }
 
     @Override
     public void shutdown() {
         try {
-            // Power down the device.
-            mDevice.writeRegByte(CONTROL_REG, (byte) 0x0);
-
+            powerOff();
             mDevice.close();
         } catch (IOException e) {
 
         }
     }
+
+    public double readLuxLevel() {
+        int ch0Int = getCH0Level();  // to mimic unsigned int
+        long ch1Int = getCH1Level();  // to mimic unsigned int
+        float ch0 = (float)getCH0Level();
+        float ch1 = (float)getCH1Level();
+        Assert.assertEquals(getIntegrationTime(), IntegrationTime.INT_TIME_402_MS);
+        switch (getIntegrationTime()) {
+            case INT_TIME_13_7_MS:
+                if ((ch1Int >= 5047) || (ch0Int >= 5047))
+                {
+                    return 1.0/0.0;
+                }
+                break;
+            case INT_TIME_101_MS:
+                if ((ch1Int >= 37177) || (ch0Int >= 37177))
+                {
+                    return 1.0/0.0;
+                }
+                break;
+            case INT_TIME_402_MS:
+                if ((ch1Int >= 65535) || (ch0Int >= 65535))
+                {
+                    return 1.0/0.0;
+                }
+                break;
+        }
+        float ratio = ch1/ch0;
+        Assert.assertEquals(getIntegrationTime(), IntegrationTime.INT_TIME_402_MS);
+        switch (getIntegrationTime())
+        {
+            case INT_TIME_13_7_MS:
+                ch0 *= 1/0.034;
+                ch1 *= 1/0.034;
+                break;
+            case INT_TIME_101_MS:
+                ch0 *= 1/0.252;
+                ch1 *= 1/0.252;
+                break;
+            case INT_TIME_402_MS:
+                ch0 *= 1;
+                ch1 *= 1;
+                break;
+        }
+
+        Assert.assertEquals(getGain(), GainType.HIGH);
+        if (getGain() == GainType.HIGH)
+        {
+            ch0 /= 16;
+            ch1 /= 16;
+        }
+
+        double luxVal = 0.0;
+        if (ratio <= 0.5)
+        {
+            luxVal = (0.0304 * ch0) - ((0.062 * ch0) * (Math.pow((ch1/ch0), 1.4)));
+        }
+        else if (ratio <= 0.61)
+        {
+            luxVal = (0.0224 * ch0) - (0.031 * ch1);
+        }
+        else if (ratio <= 0.8)
+        {
+            luxVal = (0.0128 * ch0) - (0.0153 * ch1);
+        }
+        else if (ratio <= 1.3)
+        {
+            luxVal = (0.00146 * ch0) - (0.00112*ch1);
+        }
+
+        return luxVal;
+    }
+
 
     // Values are obtained from official driver for Arduino.
     // https://github.com/sparkfun/SparkFun_APDS9301_Library/blob/master/src/Sparkfun_APDS9301_Library.h
@@ -213,85 +286,22 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
         }
     }
 
-    public double readLuxLevel() {
-        int ch0Int = getCH0Level();  // to mimic unsigned int
-        long ch1Int = getCH1Level();  // to mimic unsigned int
-        float ch0 = (float)getCH0Level();
-        float ch1 = (float)getCH1Level();
-        Assert.assertEquals(getIntegrationTime(), IntegrationTime.INT_TIME_402_MS);
-        switch (getIntegrationTime()) {
-            case INT_TIME_13_7_MS:
-                if ((ch1Int >= 5047) || (ch0Int >= 5047))
-                {
-                    return 1.0/0.0;
-                }
-                break;
-            case INT_TIME_101_MS:
-                if ((ch1Int >= 37177) || (ch0Int >= 37177))
-                {
-                    return 1.0/0.0;
-                }
-                break;
-            case INT_TIME_402_MS:
-                if ((ch1Int >= 65535) || (ch0Int >= 65535))
-                {
-                    return 1.0/0.0;
-                }
-                break;
-        }
-        float ratio = ch1/ch0;
-        Assert.assertEquals(getIntegrationTime(), IntegrationTime.INT_TIME_402_MS);
-        switch (getIntegrationTime())
-        {
-            case INT_TIME_13_7_MS:
-                ch0 *= 1/0.034;
-                ch1 *= 1/0.034;
-                break;
-            case INT_TIME_101_MS:
-                ch0 *= 1/0.252;
-                ch1 *= 1/0.252;
-                break;
-            case INT_TIME_402_MS:
-                ch0 *= 1;
-                ch1 *= 1;
-                break;
-        }
-
-        Assert.assertEquals(getGain(), GainType.HIGH);
-        if (getGain() == GainType.HIGH)
-        {
-            ch0 /= 16;
-            ch1 /= 16;
-        }
-
-        double luxVal = 0.0;
-        if (ratio <= 0.5)
-        {
-            luxVal = (0.0304 * ch0) - ((0.062 * ch0) * (Math.pow((ch1/ch0), 1.4)));
-        }
-        else if (ratio <= 0.61)
-        {
-            luxVal = (0.0224 * ch0) - (0.031 * ch1);
-        }
-        else if (ratio <= 0.8)
-        {
-            luxVal = (0.0128 * ch0) - (0.0153 * ch1);
-        }
-        else if (ratio <= 1.3)
-        {
-            luxVal = (0.00146 * ch0) - (0.00112*ch1);
-        }
-
-        return luxVal;
-    }
-
-    void powerOn() {
+    private void powerOn() {
         try {
             byte regVal = mDevice.readRegByte(CONTROL_REG);
             mDevice.writeRegByte(CONTROL_REG, (byte)(regVal | (byte) 0x3));
 
             regVal = mDevice.readRegByte(CONTROL_REG);
             Assert.assertEquals(regVal & 0x3, (byte)0x3);
+        } catch (IOException e) {
+            Log.e(TAG, "AmbientLightSen14350Sensor.powerOn: ", e);
+        }
+    }
+
+    private void powerOff() {
+        try {
+            byte regVal = mDevice.readRegByte(CONTROL_REG);
+            mDevice.writeRegByte(CONTROL_REG, (byte)(regVal | (byte) 0x0));
         } catch (IOException e) {
             Log.e(TAG, "AmbientLightSen14350Sensor.powerOn: ", e);
         }
