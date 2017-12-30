@@ -22,7 +22,7 @@ public class AmbientLightDetector implements EnvDetector {
 
     private AmbientLightSen14350SensorDriver mAmbientLightSensorDriver;
 
-    AmbientLightDetector(SensorManager sensorManager) {
+    public AmbientLightDetector(SensorManager sensorManager) {
         mSensorManager = sensorManager;
     }
 
@@ -31,12 +31,10 @@ public class AmbientLightDetector implements EnvDetector {
         mSensorListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
-                // Log.d(TAG, "MainActivity.onSensorChanged: " + sensorEvent.values[0]);
             }
 
             @Override
             public void onAccuracyChanged(Sensor sensor, int i) {
-                // Log.d(TAG, "MainActivity.onAccuracyChanged: value = " +i +", " + sensor.toString());
             }
         };
         Log.d(TAG, "MainActivity.onDynamicSensorConnected: 000000000");

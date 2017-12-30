@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 
+import com.android_things.sensor_experiment.detectors.AmbientLightDetector;
 import com.android_things.sensor_experiment.indicator.DetectionIndicator;
 import com.android_things.sensor_experiment.indicator.LedDetectorIndicator;
 import com.android_things.sensor_experiment.indicator.UIDetectorIndicator;
@@ -30,6 +31,7 @@ public class MainActivity extends Activity {
     private List<DetectionIndicator> detection_indicators;
 
     private MotionDetector mMotionDetector;
+    private AmbientLightDetector mAmbientLightDector;
 
     // private AmbientLightSen14350Sensor mAmbientLightSensor;
     private AmbientLightSen14350SensorDriver mAmbientLightSensorDriver;
@@ -70,50 +72,9 @@ public class MainActivity extends Activity {
         mMotionDetector.addListener(led_detection_indicator);
         mMotionDetector.addListener(sensorDataRecorder);
 
-        // mAmbientLightSensor = new AmbientLightSen14350Sensor();
-        // try {
-        //     mAmbientLightSensor.startup();
-        // } catch (IOException e) {
-        //     Log.e(TAG, "MainActivity.onCreate: cannot startup the ambient light sensor", e);
-        // }
-
         mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
-        mListener = new SensorEventListener() {
-            @Override
-            public void onSensorChanged(SensorEvent sensorEvent) {
-                // Log.d(TAG, "MainActivity.onSensorChanged: " + sensorEvent.values[0]);
-            }
-
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int i) {
-                // Log.d(TAG, "MainActivity.onAccuracyChanged: value = " +i +", " + sensor.toString());
-            }
-        };
-        Log.d(TAG, "MainActivity.onDynamicSensorConnected: 000000000");
-        mSensorManager.registerDynamicSensorCallback(new SensorManager.DynamicSensorCallback() {
-            @Override
-            public void onDynamicSensorConnected(Sensor sensor) {
-                Log.d(TAG, "MainActivity.onDynamicSensorConnected: aaaaaaaa");
-                if (sensor.getType() ==  Sensor.TYPE_LIGHT) {
-                    Log.d(TAG, "MainActivity.onDynamicSensorConnected: bbbbbbbbbbb");
-                    mSensorManager.registerListener(mListener, sensor,
-                            SensorManager.SENSOR_DELAY_NORMAL);
-                }
-            }
-        });
-
-        mAmbientLightSensorDriver = new AmbientLightSen14350SensorDriver();
-        mAmbientLightSensorDriver.registerSensor();
-
-        // for (int i = 0; i < 100; i++) {
-        //     try {
-        //         Log.d(TAG, "MainActivity.onCreate: 111111");
-        //         Log.d(TAG, "MainActivity.onCreate: lux = " + mAmbientLightSensorDriver.getDevice().readLuxLevel());
-        //         Thread.sleep(1000);
-        //     } catch (Exception e) {
-
-        //     }
-        // }
+        mAmbientLightDector = new AmbientLightDetector(mSensorManager);
+        mAmbientLightDector.start();
 
         try {
             mCcs811Sensor = new Ccs811Sensor();
@@ -147,9 +108,7 @@ public class MainActivity extends Activity {
             d.close();
         }
         mMotionDetector.shutdown();
-        // mAmbientLightSensor.shutdown();
-        mSensorManager.unregisterListener(mListener);
-        mAmbientLightSensorDriver.unregisterSensor();
+        mAmbientLightDector.shutdown();
         super.onDestroy();
     }
 }
