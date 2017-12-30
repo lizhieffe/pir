@@ -5,6 +5,7 @@ import android.util.Log;
 import com.android_things.sensor_experiment.sensors.MotionSensor;
 import com.android_things.sensor_experiment.sensors.PirMotionSensor;
 import com.android_things.sensor_experiment.sensors.ProximitySr04Sensor;
+import com.android_things.sensor_experiment.utils.EnvDetector;
 import com.google.android.things.pio.Gpio;
 
 import java.io.IOException;
@@ -17,7 +18,7 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
  * Created by lizhieffe on 12/24/17.
  */
 
-public class MotionDetector {
+public class MotionDetector implements EnvDetector {
     private List<MotionDetectorListener> mListener;
 
     private PirMotionSensor mPirSensor;
@@ -63,6 +64,7 @@ public class MotionDetector {
         mProximitySensor = new ProximitySr04Sensor();
     }
 
+    @Override
     public void start() {
         mPirSensor.addListener(mPirSensorCallback);
         mPirSensor.startup();
@@ -71,6 +73,7 @@ public class MotionDetector {
         mProximitySensor.startup();
     }
 
+    @Override
     public void shutdown() {
         if (mListener != null) {
             mListener.clear();
