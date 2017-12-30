@@ -3,8 +3,8 @@ package com.android_things.sensor_experiment;
 import android.content.Context;
 import android.util.Log;
 
-import com.android_things.sensor_experiment.motion.MotionDetectionEvent;
-import com.android_things.sensor_experiment.motion.MotionDetectorListener;
+import com.android_things.sensor_experiment.detectors.MotionDetectionEvent;
+import com.android_things.sensor_experiment.detectors.MotionDetectorListener;
 import com.android_things.sensor_experiment.utils.FileSystemUtil;
 
 import java.io.BufferedWriter;

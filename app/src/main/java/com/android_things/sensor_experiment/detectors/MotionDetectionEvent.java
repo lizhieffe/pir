@@ -1,6 +1,4 @@
-package com.android_things.sensor_experiment.motion;
-
-import com.android_things.sensor_experiment.sensors.ProximitySr04Sensor;
+package com.android_things.sensor_experiment.detectors;
 
 /**
  * Created by lizhieffe on 12/25/17.

@@ -13,9 +13,8 @@ import android.widget.Button;
 import com.android_things.sensor_experiment.indicator.DetectionIndicator;
 import com.android_things.sensor_experiment.indicator.LedDetectorIndicator;
 import com.android_things.sensor_experiment.indicator.UIDetectorIndicator;
-import com.android_things.sensor_experiment.motion.MotionDetector;
+import com.android_things.sensor_experiment.detectors.MotionDetector;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
-import com.android_things.sensor_experiment.sensors.AmbientLightSen14350Sensor;
 import com.android_things.sensor_experiment.sensors.AmbientLightSen14350SensorDriver;
 import com.android_things.sensor_experiment.sensors.Ccs811Sensor;
 

@@ -4,8 +4,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import com.android_things.sensor_experiment.motion.MotionDetectionEvent;
-import com.android_things.sensor_experiment.motion.MotionDetectorListener;
+import com.android_things.sensor_experiment.detectors.MotionDetectionEvent;
+import com.android_things.sensor_experiment.detectors.MotionDetectorListener;
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.PeripheralManagerService;
 

@@ -1,4 +1,4 @@
-package com.android_things.sensor_experiment.motion;
+package com.android_things.sensor_experiment.detectors;
 
 import android.util.Log;
 

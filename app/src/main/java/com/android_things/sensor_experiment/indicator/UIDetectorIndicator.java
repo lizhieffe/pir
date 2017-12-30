@@ -5,8 +5,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Button;
 
-import com.android_things.sensor_experiment.motion.MotionDetectionEvent;
-import com.android_things.sensor_experiment.motion.MotionDetectorListener;
+import com.android_things.sensor_experiment.detectors.MotionDetectionEvent;
+import com.android_things.sensor_experiment.detectors.MotionDetectorListener;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
 
 import static com.android_things.sensor_experiment.base.Constants.TAG;

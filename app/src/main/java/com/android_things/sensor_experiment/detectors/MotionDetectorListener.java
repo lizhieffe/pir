@@ -1,4 +1,4 @@
-package com.android_things.sensor_experiment.motion;
+package com.android_things.sensor_experiment.detectors;
 
 /**
  * Created by lizhieffe on 12/24/17.
