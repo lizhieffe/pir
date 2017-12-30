@@ -260,7 +260,6 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
     private GainType getGain() {
         try {
             byte regVal = mDevice.readRegByte(TIMING_REG);
-            Log.d(TAG, "AmbientLightSen14350Sensor.getGain: aaaaaaaaaaaaaaaaaaa " + regVal);
             return (regVal & GAIN_MASK) == 0 ? GainType.LOW : GainType.HIGH;
         } catch (IOException e) {
             Log.d(TAG, "AmbientLightSen14350Sensor.setHighGain: cannot set high gain: ", e);

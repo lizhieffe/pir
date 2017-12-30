@@ -17,6 +17,7 @@ import com.android_things.sensor_experiment.motion.MotionDetector;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
 import com.android_things.sensor_experiment.sensors.AmbientLightSen14350Sensor;
 import com.android_things.sensor_experiment.sensors.AmbientLightSen14350SensorDriver;
+import com.android_things.sensor_experiment.sensors.Ccs811Sensor;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,9 +36,19 @@ public class MainActivity extends Activity {
     private AmbientLightSen14350SensorDriver mAmbientLightSensorDriver;
     private SensorManager mSensorManager;
     private SensorEventListener mListener;
+    private Ccs811Sensor mCcs811Sensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        Log.d(TAG, "MainActivity.onCreate: ================================");
+        Log.d(TAG, "MainActivity.onCreate: ================================");
+        Log.d(TAG, "MainActivity.onCreate: ================================");
+        Log.d(TAG, "MainActivity.onCreate: ================================");
+        Log.d(TAG, "MainActivity.onCreate: ================================");
+        Log.d(TAG, "MainActivity.onCreate: ================================");
+        Log.d(TAG, "MainActivity.onCreate: ================================");
+        Log.d(TAG, "MainActivity.onCreate: ================================");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -71,12 +82,12 @@ public class MainActivity extends Activity {
         mListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
-                Log.d(TAG, "MainActivity.onSensorChanged: " + sensorEvent.values[0]);
+                // Log.d(TAG, "MainActivity.onSensorChanged: " + sensorEvent.values[0]);
             }
 
             @Override
             public void onAccuracyChanged(Sensor sensor, int i) {
-                Log.d(TAG, "MainActivity.onAccuracyChanged: value = " +i +", " + sensor.toString());
+                // Log.d(TAG, "MainActivity.onAccuracyChanged: value = " +i +", " + sensor.toString());
             }
         };
         Log.d(TAG, "MainActivity.onDynamicSensorConnected: 000000000");
@@ -104,6 +115,31 @@ public class MainActivity extends Activity {
 
         //     }
         // }
+
+        try {
+            mCcs811Sensor = new Ccs811Sensor();
+            mCcs811Sensor.setMode(Ccs811Sensor.MODE_60S);
+        } catch (IOException e) {
+            Log.e(TAG, "MainActivity.onCreate: cs811: ", e);
+        }
+
+
+        try {
+            int[] values = mCcs811Sensor.readAlgorithmResults();
+            Log.d(TAG, "MainActivity.onCreate: values size = " + values.length);
+            Log.d(TAG, "MainActivity.onCreate: values[0] = " + values[0]);
+            Log.d(TAG, "MainActivity.onCreate: values[1] = " + values[1]);
+            Log.d(TAG, "MainActivity.onCreate: values[2] = " + values[2]);
+            Log.d(TAG, "MainActivity.onCreate: values[3] = " + values[3]);
+        } catch (IOException e) {
+            Log.e(TAG, "MainActivity.onCreate: cs811: ", e);
+        }
+
+        try {
+            mCcs811Sensor.close();
+        } catch (Exception e) {
+            Log.e(TAG, "MainActivity.onCreate: cs811: ", e);
+        }
     }
 
     @Override
