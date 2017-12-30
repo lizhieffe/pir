@@ -27,7 +27,6 @@ public class MotionDetector implements EnvDetector {
         @Override
         public void onMovement(Gpio gpio) {
             try {
-                Log.d(TAG, "MotionDetector.onMovement: gpio getvalue " + gpio.getValue());
                 if (gpio.getValue()) {
                     MotionDetectionEvent event = new MotionDetectionEvent();
                     event.mSource = MotionDetectionEvent.Source.PIR;

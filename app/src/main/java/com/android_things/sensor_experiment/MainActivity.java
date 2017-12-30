@@ -2,21 +2,19 @@ package com.android_things.sensor_experiment;
 
 import android.app.Activity;
 import android.content.Context;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.android_things.sensor_experiment.detectors.AmbientLightDetector;
+import com.android_things.sensor_experiment.indicator.AmbientLightIlluminanceIdicator;
 import com.android_things.sensor_experiment.indicator.DetectionIndicator;
 import com.android_things.sensor_experiment.indicator.LedDetectorIndicator;
 import com.android_things.sensor_experiment.indicator.UIDetectorIndicator;
 import com.android_things.sensor_experiment.detectors.MotionDetector;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
-import com.android_things.sensor_experiment.sensors.AmbientLightSen14350SensorDriver;
 import com.android_things.sensor_experiment.sensors.Ccs811Sensor;
 
 import java.io.IOException;
@@ -33,25 +31,16 @@ public class MainActivity extends Activity {
     private MotionDetector mMotionDetector;
     private AmbientLightDetector mAmbientLightDector;
 
-    // private AmbientLightSen14350Sensor mAmbientLightSensor;
-    private AmbientLightSen14350SensorDriver mAmbientLightSensorDriver;
     private SensorManager mSensorManager;
-    private SensorEventListener mListener;
+
     private Ccs811Sensor mCcs811Sensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        Log.d(TAG, "MainActivity.onCreate: ================================");
-        Log.d(TAG, "MainActivity.onCreate: ================================");
-        Log.d(TAG, "MainActivity.onCreate: ================================");
-        Log.d(TAG, "MainActivity.onCreate: ================================");
-        Log.d(TAG, "MainActivity.onCreate: ================================");
-        Log.d(TAG, "MainActivity.onCreate: ================================");
-        Log.d(TAG, "MainActivity.onCreate: ================================");
-        Log.d(TAG, "MainActivity.onCreate: ================================");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
 
         Button movement_indicator = findViewById(R.id.movement_indicator);
         UIDetectorIndicator ui_detection_indicator = new UIDetectorIndicator(
@@ -72,8 +61,9 @@ public class MainActivity extends Activity {
         mMotionDetector.addListener(led_detection_indicator);
         mMotionDetector.addListener(sensorDataRecorder);
 
-        mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         mAmbientLightDector = new AmbientLightDetector(mSensorManager);
+        mAmbientLightDector.addListener(new AmbientLightIlluminanceIdicator(
+                 (TextView)findViewById(R.id.ambient_light_value_text_view)));
         mAmbientLightDector.start();
 
         try {

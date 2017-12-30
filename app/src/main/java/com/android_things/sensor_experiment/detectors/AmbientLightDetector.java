@@ -1,6 +1,5 @@
 package com.android_things.sensor_experiment.detectors;
 
-import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -9,6 +8,9 @@ import android.util.Log;
 
 import com.android_things.sensor_experiment.sensors.AmbientLightSen14350SensorDriver;
 import com.android_things.sensor_experiment.utils.EnvDetector;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.android_things.sensor_experiment.base.Constants.TAG;
 
@@ -22,6 +24,8 @@ public class AmbientLightDetector implements EnvDetector {
 
     private AmbientLightSen14350SensorDriver mAmbientLightSensorDriver;
 
+    List<AmbientLightListener> mListeners = new ArrayList<>();
+
     public AmbientLightDetector(SensorManager sensorManager) {
         mSensorManager = sensorManager;
     }
@@ -31,6 +35,9 @@ public class AmbientLightDetector implements EnvDetector {
         mSensorListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
+                for (AmbientLightListener listener : mListeners) {
+                    listener.onDetected(sensorEvent.values[0]);
+                }
             }
 
             @Override
@@ -59,5 +66,9 @@ public class AmbientLightDetector implements EnvDetector {
     public void shutdown() {
         mSensorManager.unregisterListener(mSensorListener);
         mAmbientLightSensorDriver.unregisterSensor();
+    }
+
+    public void addListener(AmbientLightListener listener) {
+        mListeners.add(listener);
     }
 }
