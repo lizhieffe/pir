@@ -215,7 +215,6 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
     public IntegrationTime getIntegrationTime() {
         try {
             byte regVal = mDevice.readRegByte(TIMING_REG);
-            Log.d(TAG, "AmbientLightSen14350Sensor.getIntegrationTime: regVal = " + regVal);
             byte integrationVal = (byte)(regVal & INTEGRATION_MASK);
             switch (integrationVal) {
                 case 0b00000000:
@@ -276,12 +275,9 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
                 regVal &= ~0b00010000;
             }
             mDevice.writeRegByte(TIMING_REG, regVal);
-            Log.d(TAG, "AmbientLightSen14350Sensor.getGain: bbbbbbbbbbbbbbbb " + regVal);
-
             regVal = mDevice.readRegByte(TIMING_REG);
-            Log.d(TAG, "AmbientLightSen14350Sensor.getGain: cccccccccccccccc " + regVal);
         } catch (IOException e) {
-            Log.d(TAG, "AmbientLightSen14350Sensor.setHighGain: cannot set high gain: ", e);
+            Log.e(TAG, "AmbientLightSen14350Sensor.setHighGain: cannot set high gain: ", e);
         }
     }
 
