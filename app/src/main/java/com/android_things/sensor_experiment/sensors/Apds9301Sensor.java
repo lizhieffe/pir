@@ -12,12 +12,12 @@ import java.io.IOException;
 import static com.android_things.sensor_experiment.base.Constants.TAG;
 
 /**
- * For Sparkfun SEN-14350 Ambient Light sensor.
+ * For APDS 9301 Ambient Light sensor with I2C interface.
  */
 
 // TODO: change implementation interface.
 @SuppressWarnings({"unused", "WeakerAccess"})
-public class AmbientLightSen14350Sensor implements MotionSensor {
+public class Apds9301Sensor implements MotionSensor {
     public static final String DEFAULT_I2C_BUS = "I2C1";
     public static final int DEFAULT_I2C_ADDRESS = 0x39;
 
@@ -27,11 +27,11 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
 
     private I2cDevice mDevice;
 
-    public AmbientLightSen14350Sensor() {
+    public Apds9301Sensor() {
         this(DEFAULT_I2C_BUS, DEFAULT_I2C_ADDRESS);
     }
 
-    public AmbientLightSen14350Sensor(String bus, int address) {
+    public Apds9301Sensor(String bus, int address) {
         mBus = bus;
         mAddress = address;
     }
@@ -40,7 +40,7 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
     public void startup() throws IOException {
         PeripheralManagerService pioService
                 = new PeripheralManagerService();
-        Log.d(TAG, "AmbientLightSen14350Sensor.AmbientLightSen14350Sensor: I2C bus lists: " + pioService.getI2cBusList());
+        Log.d(TAG, "Apds9301Sensor.Apds9301Sensor: I2C bus lists: " + pioService.getI2cBusList());
             I2cDevice device = pioService.openI2cDevice(mBus, mAddress);
             connect(device);
     }
@@ -207,7 +207,7 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
                 mDevice.writeRegByte(TIMING_REG, regVal);
             }
         } catch (IOException e) {
-            Log.e(TAG, "AmbientLightSen14350Sensor.setIntegrationTime: cannot set integration time: ", e);
+            Log.e(TAG, "Apds9301Sensor.setIntegrationTime: cannot set integration time: ", e);
         }
 
     }
@@ -227,7 +227,7 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
                     return IntegrationTime.UNKNOWN;
             }
         } catch (IOException e) {
-            Log.e(TAG, "AmbientLightSen14350Sensor.setIntegrationTime: cannot set integration time: ", e);
+            Log.e(TAG, "Apds9301Sensor.setIntegrationTime: cannot set integration time: ", e);
             return IntegrationTime.UNKNOWN;
         }
     }
@@ -261,7 +261,7 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
             byte regVal = mDevice.readRegByte(TIMING_REG);
             return (regVal & GAIN_MASK) == 0 ? GainType.LOW : GainType.HIGH;
         } catch (IOException e) {
-            Log.d(TAG, "AmbientLightSen14350Sensor.setHighGain: cannot set high gain: ", e);
+            Log.d(TAG, "Apds9301Sensor.setHighGain: cannot set high gain: ", e);
             return GainType.UNKNOWN;
         }
     }
@@ -277,7 +277,7 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
             mDevice.writeRegByte(TIMING_REG, regVal);
             regVal = mDevice.readRegByte(TIMING_REG);
         } catch (IOException e) {
-            Log.e(TAG, "AmbientLightSen14350Sensor.setHighGain: cannot set high gain: ", e);
+            Log.e(TAG, "Apds9301Sensor.setHighGain: cannot set high gain: ", e);
         }
     }
 
@@ -313,7 +313,7 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
             regVal = mDevice.readRegByte(CONTROL_REG);
             Assert.assertEquals(regVal & 0x3, (byte)0x3);
         } catch (IOException e) {
-            Log.e(TAG, "AmbientLightSen14350Sensor.powerOn: ", e);
+            Log.e(TAG, "Apds9301Sensor.powerOn: ", e);
         }
     }
 
@@ -322,7 +322,7 @@ public class AmbientLightSen14350Sensor implements MotionSensor {
             byte regVal = mDevice.readRegByte(CONTROL_REG);
             mDevice.writeRegByte(CONTROL_REG, (byte)(regVal | (byte) 0x0));
         } catch (IOException e) {
-            Log.e(TAG, "AmbientLightSen14350Sensor.powerOn: ", e);
+            Log.e(TAG, "Apds9301Sensor.powerOn: ", e);
         }
     }
 }

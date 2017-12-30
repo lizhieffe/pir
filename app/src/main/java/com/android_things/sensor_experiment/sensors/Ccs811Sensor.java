@@ -15,7 +15,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Driver for the CCS811 indoor air quality sensor.
+ * Driver for the CCS811 indoor air quality sensor with I2C interface.
  */
 public class Ccs811Sensor implements AutoCloseable {
 

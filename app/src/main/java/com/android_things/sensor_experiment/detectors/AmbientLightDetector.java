@@ -6,7 +6,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
 
-import com.android_things.sensor_experiment.sensors.AmbientLightSen14350SensorDriver;
+import com.android_things.sensor_experiment.sensors.Apds9301SensorDriver;
 import com.android_things.sensor_experiment.utils.EnvDetector;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public class AmbientLightDetector implements EnvDetector {
     private SensorManager mSensorManager;
     private SensorEventListener mSensorListener;
 
-    private AmbientLightSen14350SensorDriver mAmbientLightSensorDriver;
+    private Apds9301SensorDriver mAmbientLightSensorDriver;
 
     List<AmbientLightListener> mListeners = new ArrayList<>();
 
@@ -58,7 +58,7 @@ public class AmbientLightDetector implements EnvDetector {
             }
         });
 
-        mAmbientLightSensorDriver = new AmbientLightSen14350SensorDriver();
+        mAmbientLightSensorDriver = new Apds9301SensorDriver();
         mAmbientLightSensorDriver.registerSensor();
     }
 

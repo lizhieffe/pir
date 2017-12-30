@@ -17,35 +17,35 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
  * Created by lizhieffe on 12/28/17.
  */
 
-public class AmbientLightSen14350SensorDriver implements AutoCloseable {
+public class Apds9301SensorDriver implements AutoCloseable {
     // Driver parameters.
     private static final String DRIVER_VENDOR = "Sparkfun";
     private static final String DRIVER_NAME = "Sen14350";
     private static final int DRIVER_VERSION = 1;
     private static final String DRIVER_REQUIRED_PERMISSION = "";
 
-    private AmbientLightSen14350Sensor mDevice;
+    private Apds9301Sensor mDevice;
     private AmbientLightUserDriver mUserDriver;
 
-    public AmbientLightSen14350SensorDriver() {
-        mDevice = new AmbientLightSen14350Sensor();
+    public Apds9301SensorDriver() {
+        mDevice = new Apds9301Sensor();
         try {
             mDevice.startup();
         } catch (IOException e) {
-            Log.e(TAG, "AmbientLightSen14350SensorDriver.AmbientLightSen14350SensorDriver: ", e);
+            Log.e(TAG, "Apds9301SensorDriver.Apds9301SensorDriver: ", e);
         }
     }
 
-    public AmbientLightSen14350SensorDriver(String bus, int address) {
-        mDevice = new AmbientLightSen14350Sensor(bus, address);
+    public Apds9301SensorDriver(String bus, int address) {
+        mDevice = new Apds9301Sensor(bus, address);
         try {
             mDevice.startup();
         } catch (IOException e) {
-            Log.e(TAG, "AmbientLightSen14350SensorDriver.AmbientLightSen14350SensorDriver: ", e);
+            Log.e(TAG, "Apds9301SensorDriver.Apds9301SensorDriver: ", e);
         }
     }
 
-    public AmbientLightSen14350Sensor getDevice() {
+    public Apds9301Sensor getDevice() {
         return mDevice;
     }
 
@@ -66,7 +66,7 @@ public class AmbientLightSen14350SensorDriver implements AutoCloseable {
             throw new IllegalStateException("cannot register closed driver");
         }
 
-        Log.d(TAG, "AmbientLightSen14350SensorDriver.registerSensor: zzzzzzzzzzz");
+        Log.d(TAG, "Apds9301SensorDriver.registerSensor: zzzzzzzzzzz");
         if (mUserDriver == null) {
             mUserDriver = new AmbientLightUserDriver();
             UserDriverManager.getManager()
