@@ -2,9 +2,9 @@ package com.android_things.sensor_experiment.detectors;
 
 import android.util.Log;
 
+import com.android_things.sensor_experiment.sensors.HcSr04Sensor;
 import com.android_things.sensor_experiment.sensors.MotionSensor;
-import com.android_things.sensor_experiment.sensors.PirMotionSensor;
-import com.android_things.sensor_experiment.sensors.ProximitySr04Sensor;
+import com.android_things.sensor_experiment.sensors.Sen13285Sensor;
 import com.android_things.sensor_experiment.utils.EnvDetector;
 import com.google.android.things.pio.Gpio;
 
@@ -21,7 +21,7 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
 public class MotionDetector implements EnvDetector {
     private List<MotionDetectorListener> mListener;
 
-    private PirMotionSensor mPirSensor;
+    private Sen13285Sensor mPirSensor;
     private final MotionSensor.Listener mPirSensorCallback
             = new MotionSensor.Listener() {
         @Override
@@ -39,13 +39,13 @@ public class MotionDetector implements EnvDetector {
         }
     };
 
-    private ProximitySr04Sensor mProximitySensor;
+    private HcSr04Sensor mProximitySensor;
     private double mPrevDistance = 0;
     private double mCurrDistance = 0;
-    private final ProximitySr04Sensor.Listener mProximitySensorCallback
-            = new ProximitySr04Sensor.Listener() {
+    private final HcSr04Sensor.Listener mProximitySensorCallback
+            = new HcSr04Sensor.Listener() {
         @Override
-        public void onEvent(ProximitySr04Sensor.Event event) {
+        public void onEvent(HcSr04Sensor.Event event) {
             mCurrDistance = event.distance;
             if (Math.abs(mCurrDistance - mPrevDistance) > 30) {
                 MotionDetectionEvent motionDetectionEvent = new MotionDetectionEvent();
@@ -59,8 +59,8 @@ public class MotionDetector implements EnvDetector {
 
     public MotionDetector() {
         mListener = new ArrayList<>();
-        mPirSensor = new PirMotionSensor();
-        mProximitySensor = new ProximitySr04Sensor();
+        mPirSensor = new Sen13285Sensor();
+        mProximitySensor = new HcSr04Sensor();
     }
 
     @Override

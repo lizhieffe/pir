@@ -18,7 +18,7 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
  * Driver for the HC-SR04 proximity sensor. The working distance of the sensor
  * is about 2cm - 4m.
  */
-public class ProximitySr04Sensor implements MotionSensor {
+public class HcSr04Sensor implements MotionSensor {
     public class Event {
         public double distance = 0;  // cm
     }
@@ -65,7 +65,7 @@ public class ProximitySr04Sensor implements MotionSensor {
             mSensorSampler = new Handler(sensorSamplerThread.getLooper());
             mSensorSampler.post(mSensorSamplerTriggerRunnable);
         } catch (IOException e) {
-            Log.d(TAG, "ProximitySr04Sensor.startup: Error on PeripheralIO API", e);
+            Log.d(TAG, "HcSr04Sensor.startup: Error on PeripheralIO API", e);
         }
     }
 
@@ -155,7 +155,7 @@ public class ProximitySr04Sensor implements MotionSensor {
                     }
                 }
             } catch (IOException e) {
-                Log.d(TAG, "ProximitySr04Sensor.onGpioEdge: cannot read GPIO: ", e);
+                Log.d(TAG, "HcSr04Sensor.onGpioEdge: cannot read GPIO: ", e);
             }
             return true;
         }
@@ -169,9 +169,9 @@ public class ProximitySr04Sensor implements MotionSensor {
                 mSensorSampler.postDelayed(mSensorSamplerTriggerRunnable,
                         250);
             } catch (IOException e) {
-                Log.d(TAG, "ProximitySr04Sensor.run: Error on PeriphalIO API: ", e);
+                Log.d(TAG, "HcSr04Sensor.run: Error on PeriphalIO API: ", e);
             } catch (InterruptedException e) {
-                Log.d(TAG, "ProximitySr04Sensor.run: Error on PeriphalIO API: ", e);
+                Log.d(TAG, "HcSr04Sensor.run: Error on PeriphalIO API: ", e);
             }
         }
     };

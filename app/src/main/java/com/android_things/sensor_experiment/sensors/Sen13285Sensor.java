@@ -14,9 +14,10 @@ import java.util.concurrent.ExecutorService;
 import static com.android_things.sensor_experiment.base.Constants.TAG;
 
 /**
- * HC-SR501
+ * Driver for Sparkfun SEN-13285 PIR Motion sensor.
  */
-public class PirMotionSensor implements MotionSensor {
+
+public class Sen13285Sensor implements MotionSensor {
 
     private Gpio mBus;
 
