@@ -42,7 +42,7 @@ public class Apds9301Sensor implements MotionSensor {
                 = new PeripheralManagerService();
         Log.d(TAG, "Apds9301Sensor.Apds9301Sensor: I2C bus lists: " + pioService.getI2cBusList());
             I2cDevice device = pioService.openI2cDevice(mBus, mAddress);
-            connect(device);
+        connect(device);
     }
 
     @Override
@@ -323,6 +323,21 @@ public class Apds9301Sensor implements MotionSensor {
             mDevice.writeRegByte(CONTROL_REG, (byte)(regVal | (byte) 0x0));
         } catch (IOException e) {
             Log.e(TAG, "Apds9301Sensor.powerOn: ", e);
+        }
+    }
+
+    // Return unit is us (1e-6 sec)
+    public int getIntegrationTimeValueInUs() {
+        IntegrationTime integrationTime = getIntegrationTime();
+        switch (integrationTime) {
+            case INT_TIME_13_7_MS:
+                return 13700;
+            case INT_TIME_101_MS:
+                return 101000;
+            case INT_TIME_402_MS:
+                return 402000;
+            default:
+                return -1;
         }
     }
 }

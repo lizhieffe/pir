@@ -19,6 +19,8 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
  * is about 2cm - 4m.
  */
 public class HcSr04Sensor extends GpioCallback implements MotionSensor {
+    public static final int SENSOR_READ_INTERVAL_MS = 250;
+
     public class Event {
         public float distance = -1;  // cm
     }
@@ -117,7 +119,6 @@ public class HcSr04Sensor extends GpioCallback implements MotionSensor {
     @Override
     public boolean onGpioEdge(Gpio gpio) {
         try {
-            Log.d(TAG, "HcSr04Sensor.onGpioEdge: gpio = " + gpio.getValue());
             if (gpio.getValue()) {
                 mEchoStartMs = System.nanoTime();
                 mIsEchoStart = true;
@@ -125,7 +126,6 @@ public class HcSr04Sensor extends GpioCallback implements MotionSensor {
                 mEchoEndMs = System.nanoTime();
 
                 float distance = 0;
-                Log.d(TAG, "HcSr04Sensor.onGpioEdge: mIsEchoStart = " + mIsEchoStart);
                 if (mIsEchoStart) {
                     distance
                             = (float) (((mEchoEndMs - mEchoStartMs) / 1000.0) / 58.23); //cm
@@ -134,13 +134,12 @@ public class HcSr04Sensor extends GpioCallback implements MotionSensor {
                 }
 
                 mIsEchoStart = false;
-                Log.d(TAG, "HcSr04Sensor.onGpioEdge: distance = " + distance);
                 Event event = new Event();
                 event.distance = distance;
                 mEvent = event;
             }
         } catch (IOException e) {
-            Log.d(TAG, "HcSr04Sensor.onGpioEdge: cannot read GPIO: ", e);
+            Log.e(TAG, "HcSr04Sensor.onGpioEdge: cannot read GPIO: ", e);
         }
         return true;
     }
@@ -151,11 +150,11 @@ public class HcSr04Sensor extends GpioCallback implements MotionSensor {
             try {
                 readDistanceAsync();
                 mSensorSampler.postDelayed(mSensorSamplerTriggerRunnable,
-                        250);
+                        SENSOR_READ_INTERVAL_MS);
             } catch (IOException e) {
-                Log.d(TAG, "HcSr04Sensor.run: Error on PeriphalIO API: ", e);
+                Log.e(TAG, "HcSr04Sensor.run: Error on PeriphalIO API: ", e);
             } catch (InterruptedException e) {
-                Log.d(TAG, "HcSr04Sensor.run: Error on PeriphalIO API: ", e);
+                Log.e(TAG, "HcSr04Sensor.run: Error on PeriphalIO API: ", e);
             }
         }
     };

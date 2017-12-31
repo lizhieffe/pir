@@ -74,6 +74,8 @@ public class Ccs811SensorDriver implements AutoCloseable {
                         .setVendor(DRIVER_VENDOR)
                         .setVersion(DRIVER_VERSION)
                         .setRequiredPermission(DRIVER_REQUIRED_PERMISSION)
+                        .setMinDelay(20000000)  // 20 seconds
+                        .setMaxDelay(30000000)
                         .setDriver(this)
                         .setUuid(UUID.randomUUID())
                         .build();

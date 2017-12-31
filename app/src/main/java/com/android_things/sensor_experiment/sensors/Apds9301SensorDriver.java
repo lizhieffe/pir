@@ -86,9 +86,10 @@ public class Apds9301SensorDriver implements AutoCloseable {
         // TODO: figure out the correct value
         private static final float DRIVER_POWER = 1;
         // TODO: figure out the correct value
-        // The min and max delay for measurements is affected by the configured integration time.
-        private static final int DRIVER_MIN_DELAY_US = 80 * 1000;
-        private static final int DRIVER_MAX_DELAY_US = 640 * 1000;
+        // The min and max delay for measurements is affected by the configured
+        // integration time. They should be larger than the integration time.
+        private static final int DRIVER_MIN_DELAY_US = 500 * 1000;  // unit is 1e-6 second.
+        private static final int DRIVER_MAX_DELAY_US = 1000 * 1000;
 
         private UserSensor mUserSensor;
 
@@ -102,9 +103,9 @@ public class Apds9301SensorDriver implements AutoCloseable {
                         .setMaxRange(mDevice.getCurrentMaxRange())
                         .setResolution(mDevice.getCurrentResolution())
                         .setPower(DRIVER_POWER)
-                        .setMinDelay(DRIVER_MIN_DELAY_US)
                         .setRequiredPermission(DRIVER_REQUIRED_PERMISSION)
-                        .setMaxDelay(DRIVER_MAX_DELAY_US)
+                        .setMinDelay(mDevice.getIntegrationTimeValueInUs() + 100000)
+                        .setMaxDelay(mDevice.getIntegrationTimeValueInUs() + 200000)
                         .setUuid(UUID.randomUUID())
                         .setDriver(this)
                         .build();
