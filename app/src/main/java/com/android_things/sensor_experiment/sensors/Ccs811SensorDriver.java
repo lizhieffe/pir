@@ -15,6 +15,8 @@ import java.util.UUID;
  */
 
 public class Ccs811SensorDriver implements AutoCloseable {
+    public static final String SENSOR_STRING_TYPE = "air_quality_sensor";
+
     private static final String DRIVER_VENDOR = "Sparkfun";
     private static final String DRIVER_NAME = "Ccs811";
     private static final int DRIVER_VERSION = 1;
@@ -67,7 +69,7 @@ public class Ccs811SensorDriver implements AutoCloseable {
             if (mUserSensor == null) {
                 mUserSensor = new UserSensor.Builder()
                         .setCustomType(Sensor.TYPE_DEVICE_PRIVATE_BASE,
-                                "air_quality_sensor", Sensor.REPORTING_MODE_CONTINUOUS)
+                                SENSOR_STRING_TYPE, Sensor.REPORTING_MODE_CONTINUOUS)
                         .setName(DRIVER_NAME)
                         .setVendor(DRIVER_VENDOR)
                         .setVersion(DRIVER_VERSION)

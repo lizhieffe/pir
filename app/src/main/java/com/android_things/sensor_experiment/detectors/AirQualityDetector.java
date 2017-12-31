@@ -33,10 +33,10 @@ public class AirQualityDetector implements EnvDetector {
         mSensorListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
-                Log.d(TAG, "AirQualityDetector.onSensorChanged: on event " + event.values[0]);
-                Log.d(TAG, "AirQualityDetector.onSensorChanged: on event " + event.values[1]);
-                Log.d(TAG, "AirQualityDetector.onSensorChanged: on event " + event.values[2]);
-                Log.d(TAG, "AirQualityDetector.onSensorChanged: on event " + event.values[3]);
+                // Log.d(TAG, "AirQualityDetector.onSensorChanged: on event " + event.values[0]);
+                // Log.d(TAG, "AirQualityDetector.onSensorChanged: on event " + event.values[1]);
+                // Log.d(TAG, "AirQualityDetector.onSensorChanged: on event " + event.values[2]);
+                // Log.d(TAG, "AirQualityDetector.onSensorChanged: on event " + event.values[3]);
             }
 
             @Override
@@ -48,9 +48,8 @@ public class AirQualityDetector implements EnvDetector {
                 new SensorManager.DynamicSensorCallback() {
                     @Override
                     public void onDynamicSensorConnected(Sensor sensor) {
-                        if (sensor.getType() ==  Sensor.TYPE_DEVICE_PRIVATE_BASE) {
-                            Log.d(TAG, "AirQualityDetector.onDynamicSensorConnected: getStringType = " + sensor.getStringType());
-
+                        if (sensor.getType() ==  Sensor.TYPE_DEVICE_PRIVATE_BASE
+                                && sensor.getStringType() == Ccs811SensorDriver.SENSOR_STRING_TYPE) {
                             mSensorManager.registerListener(mSensorListener, sensor,
                                     SensorManager.SENSOR_DELAY_NORMAL);
                         }

@@ -10,6 +10,7 @@ import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.PeripheralManagerService;
 
 import java.io.IOException;
+import java.io.StringReader;
 
 import static com.android_things.sensor_experiment.base.Constants.TAG;
 
@@ -24,6 +25,7 @@ public class LedDetectorIndicator
     private long last_indication_unix_time_ms = 0;
     final private int indication_cool_down_ms = 500;
     final private int indication_cool_down_error_ms = 50;
+    private final String GPIO_PIN = "BCM26";
 
     @Override
     public void start() {
@@ -68,7 +70,7 @@ public class LedDetectorIndicator
 
     private void initLedGpioBus() {
         try {
-            ledBus = new PeripheralManagerService().openGpio("BCM26");
+            ledBus = new PeripheralManagerService().openGpio(GPIO_PIN);
             ledBus.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
         } catch (IOException e) {
             throw new IllegalStateException("Can't open GPIO - can't create app.", e);

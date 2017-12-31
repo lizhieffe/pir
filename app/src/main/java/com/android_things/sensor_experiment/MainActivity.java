@@ -34,8 +34,6 @@ public class MainActivity extends Activity {
 
     private SensorManager mSensorManager;
 
-    // private Ccs811Sensor mCcs811Sensor;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

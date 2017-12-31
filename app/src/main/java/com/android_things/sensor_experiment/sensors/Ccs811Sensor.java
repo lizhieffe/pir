@@ -13,6 +13,10 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * Driver for the CCS811 indoor air quality sensor with I2C interface.
+ *
+ * Please be aware that the CCS811 datasheet recommends a burn-in of 48 hours and
+ * a run-in of 20 minutes (you must allow 20 minutes for the sensor to warm up and
+ * output valid data).
  */
 public class Ccs811Sensor implements AutoCloseable {
 
