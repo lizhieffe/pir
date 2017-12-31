@@ -1,8 +1,14 @@
 package com.android_things.sensor_experiment.detectors;
 
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.util.Log;
 
+import com.android_things.sensor_experiment.sensors.Ccs811SensorDriver;
 import com.android_things.sensor_experiment.sensors.HcSr04Sensor;
+import com.android_things.sensor_experiment.sensors.HcSr04SensorDriver;
 import com.android_things.sensor_experiment.sensors.MotionSensor;
 import com.android_things.sensor_experiment.sensors.Sen13285Sensor;
 import com.android_things.sensor_experiment.utils.EnvDetector;
@@ -19,6 +25,9 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
  */
 
 public class MotionDetector implements EnvDetector {
+    private SensorManager mSensorManager;
+    private SensorEventListener mSensorListener;
+
     private List<MotionDetectorListener> mListener;
 
     private Sen13285Sensor mPirSensor;
@@ -40,24 +49,29 @@ public class MotionDetector implements EnvDetector {
     };
 
     private HcSr04Sensor mProximitySensor;
-    private double mPrevDistance = 0;
-    private double mCurrDistance = 0;
+    private float mPrevDistance = 0;
+    private float mCurrDistance = 0;
     private final HcSr04Sensor.Listener mProximitySensorCallback
             = new HcSr04Sensor.Listener() {
         @Override
         public void onEvent(HcSr04Sensor.Event event) {
             mCurrDistance = event.distance;
-            if (Math.abs(mCurrDistance - mPrevDistance) > 30) {
-                MotionDetectionEvent motionDetectionEvent = new MotionDetectionEvent();
-                motionDetectionEvent.mSource = MotionDetectionEvent.Source.PROXIMITY;
-                motionDetectionEvent.mProxmityParam = mCurrDistance;
-                notifyListeners(motionDetectionEvent);
+            if (mCurrDistance >= 0) {
+                if (Math.abs(mCurrDistance - mPrevDistance) > 30) {
+                    MotionDetectionEvent motionDetectionEvent = new MotionDetectionEvent();
+                    motionDetectionEvent.mSource = MotionDetectionEvent.Source.PROXIMITY;
+                    motionDetectionEvent.mProxmityParam = mCurrDistance;
+                    notifyListeners(motionDetectionEvent);
+                }
+                mPrevDistance = mCurrDistance;
             }
-            mPrevDistance = mCurrDistance;
         }
     };
 
-    public MotionDetector() {
+    private HcSr04SensorDriver mProximitySensorDriver;
+
+    public MotionDetector(SensorManager sensorManager) {
+        mSensorManager = sensorManager;
         mListener = new ArrayList<>();
         mPirSensor = new Sen13285Sensor();
         mProximitySensor = new HcSr04Sensor();
@@ -68,8 +82,45 @@ public class MotionDetector implements EnvDetector {
         mPirSensor.addListener(mPirSensorCallback);
         mPirSensor.startup();
 
-        mProximitySensor.addListener(mProximitySensorCallback);
-        mProximitySensor.startup();
+        mSensorListener = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                Log.d(TAG, "MotionDetector.onSensorChanged: on event = " + event.values[0]);
+                mCurrDistance = event.values[0];
+                if (mCurrDistance >= 0) {
+                    if (Math.abs(mCurrDistance - mPrevDistance) > 30) {
+                        MotionDetectionEvent motionDetectionEvent = new MotionDetectionEvent();
+                        motionDetectionEvent.mSource = MotionDetectionEvent.Source.PROXIMITY;
+                        motionDetectionEvent.mProxmityParam = mCurrDistance;
+                        notifyListeners(motionDetectionEvent);
+                    }
+                    mPrevDistance = mCurrDistance;
+                }
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+            }
+
+        };
+        mSensorManager.registerDynamicSensorCallback(
+                new SensorManager.DynamicSensorCallback() {
+                    @Override
+                    public void onDynamicSensorConnected(Sensor sensor) {
+                        if (sensor.getType() == sensor.TYPE_PROXIMITY) {
+                            mSensorManager.registerListener(mSensorListener, sensor,
+                                    SensorManager.SENSOR_DELAY_NORMAL);
+                        }
+                    }
+                });
+
+        mProximitySensorDriver = new HcSr04SensorDriver();
+        mProximitySensorDriver.registerSensor();
+
+
+        // mProximitySensor.addListener(mProximitySensorCallback);
+        // mProximitySensor.startup();
     }
 
     @Override
@@ -81,10 +132,12 @@ public class MotionDetector implements EnvDetector {
             mPirSensor.shutdown();
             mPirSensor = null;
         }
-        if (mProximitySensor != null) {
-            mProximitySensor.shutdown();
-            mProximitySensor = null;
-        }
+        mSensorManager.unregisterListener(mSensorListener);
+        mProximitySensorDriver.unregisterSensor();
+        // if (mProximitySensor != null) {
+        //     mProximitySensor.shutdown();
+        //     mProximitySensor = null;
+        // }
     }
 
     public void addListener(MotionDetectorListener listener) {
@@ -95,7 +148,9 @@ public class MotionDetector implements EnvDetector {
         Log.d(TAG, "MotionDetector.notifyListeners: motion detected: "
                 + event.toString());
         for (MotionDetectorListener listener : mListener) {
+            Log.d(TAG, "MotionDetector.notifyListeners: " + listener.getClass());
             listener.onDetected(event);
+            Log.d(TAG, "MotionDetector.notifyListeners: " + listener.getClass());
         }
     }
 }

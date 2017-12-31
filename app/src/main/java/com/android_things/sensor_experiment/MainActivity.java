@@ -54,7 +54,7 @@ public class MainActivity extends Activity {
             d.start();
         }
 
-        mMotionDetector = new MotionDetector();
+        mMotionDetector = new MotionDetector(mSensorManager);
         mMotionDetector.start();
         mMotionDetector.addListener(ui_detection_indicator);
         mMotionDetector.addListener(led_detection_indicator);

@@ -18,9 +18,9 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
  * Driver for the HC-SR04 proximity sensor. The working distance of the sensor
  * is about 2cm - 4m.
  */
-public class HcSr04Sensor implements MotionSensor {
+public class HcSr04Sensor extends GpioCallback implements MotionSensor {
     public class Event {
-        public double distance = 0;  // cm
+        public float distance = -1;  // cm
     }
 
     public interface Listener {
@@ -38,6 +38,8 @@ public class HcSr04Sensor implements MotionSensor {
 
     private List<Listener> mListeners = new ArrayList<>();
 
+    volatile private Event mEvent;
+
     @Override
     public void startup() {
         PeripheralManagerService service = new PeripheralManagerService();
@@ -54,7 +56,7 @@ public class HcSr04Sensor implements MotionSensor {
                     = new HandlerThread("EchoGpioCallbackThread");
             echoGpioCallbackThread.start();
             mEchoGpioCallbackHandler = new Handler(echoGpioCallbackThread.getLooper());
-            mEchoGpio.registerGpioCallback(mEchoGpioCallback, mEchoGpioCallbackHandler);
+            mEchoGpio.registerGpioCallback(this, mEchoGpioCallbackHandler);
 
             mTriggerGpio = service.openGpio(TRIGGER_PIN);
             mTriggerGpio.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
@@ -82,31 +84,61 @@ public class HcSr04Sensor implements MotionSensor {
 
     // TODO: refactor this method to reuse code from the async version.
     // Returned value unit is cm.
-    public double readDistanceSync() throws IOException, InterruptedException {
-        if (mTriggerGpio == null || mEchoGpio == null) {
-            return -1;
-        }
+    float readDistanceSync() throws IOException {
+        return mEvent.distance;
+        // if (mTriggerGpio == null || mEchoGpio == null) {
+        //     return -1;
+        // }
 
-        // Just to be sure, set the trigger first to false
-        mTriggerGpio.setValue(false);
-        Thread.sleep(0, 2000);  // 2000 nano seconds
+        // // Just to be sure, set the trigger first to false
+        // mTriggerGpio.setValue(false);
+        // try {
+        //     Thread.sleep(0, 2000);  // 2000 nano seconds
+        // } catch (InterruptedException e) {
+        //     Log.e(TAG, "HcSr04Sensor.readDistanceSync: ", e);
+        //     return -1;
+        // }
 
-        // Hold the trigger pin HIGH for at least 10 us
-        mTriggerGpio.setValue(true);
-        Thread.sleep(0,10000); //10 microsec
+        // // Hold the trigger pin HIGH for at least 10 us
+        // mTriggerGpio.setValue(true);
+        // try {
+        //     Thread.sleep(0, 10000);  // 10 microsec
+        // } catch (InterruptedException e) {
+        //     Log.e(TAG, "HcSr04Sensor.readDistanceSync: ", e);
+        //     return -1;
+        // }
 
-        mTriggerGpio.setValue(false);  // reset the trigger
+        // mTriggerGpio.setValue(false);  // reset the trigger
 
-        while (mEchoGpio.getValue() == false);
-        long echo_start = System.nanoTime();
+        // float distance;
+        // synchronized (this) {
+        //     while (mEvent == null) {
+        //         try {
+        //             Log.d(TAG, "HcSr04Sensor.readDistanceSync: " + "before wait");
+        //             wait(500, 0);
+        //             // wait();
+        //             Log.d(TAG, "HcSr04Sensor.readDistanceSync: " + "after wait");
+        //         } catch (InterruptedException e) {
+        //             Log.e(TAG, "HcSr04Sensor.readDistanceSync: ", e);
+        //             return -1;
+        //         }
+        //     }
+        //     Log.d(TAG, "HcSr04Sensor.readDistanceSync: " + "out of wait");
+        //     distance = mEvent.distance;
+        //     mEvent = null;
+        // }
+        // return distance;
 
-        while (mEchoGpio.getValue() == true);
-        long echo_stop = System.nanoTime();
+        // while (mEchoGpio.getValue() == false);
+        // long echo_start = System.nanoTime();
 
-        // Calculate distance in centimeters. The constants
-        // are coming from the datasheet, and calculated from the assumed speed
+        // while (mEchoGpio.getValue() == true);
+        // long echo_stop = System.nanoTime();
+
+        // // Calculate distance in centimeters. The constants
+        // // are coming from the datasheet, and calculated from the assumed speed
         // of sound in air at sea level (~340 m/s).
-        return ((echo_stop - echo_start) / 1000.0 ) / 58.23 ; //cm
+        // return ((echo_stop - echo_start) / 1000.0 ) / 58.23 ; //cm
     }
 
     public void readDistanceAsync() throws IOException, InterruptedException {
@@ -135,31 +167,82 @@ public class HcSr04Sensor implements MotionSensor {
     volatile private long mEchoStartMs = 0;
     volatile long mEchoEndMs = 0;
 
-    private GpioCallback mEchoGpioCallback = new GpioCallback() {
-        @Override
-        public boolean onGpioEdge(Gpio gpio) {
-            try {
-                if (gpio.getValue()) {
-                    mEchoStartMs = System.nanoTime();
-                    mIsEchoStart = true;
-                } else if (mIsEchoStart && !gpio.getValue()){
-                    mEchoEndMs = System.nanoTime();
-                    mIsEchoStart = false;
+    @Override
+    public boolean onGpioEdge(Gpio gpio) {
+        try {
+            Log.d(TAG, "HcSr04Sensor.onGpioEdge: gpio = " + gpio.getValue());
+            if (gpio.getValue()) {
+                mEchoStartMs = System.nanoTime();
+                mIsEchoStart = true;
+            // } else if (mIsEchoStart && !gpio.getValue()){
+            } else if (!gpio.getValue()){
+                mEchoEndMs = System.nanoTime();
 
-                    double distance
-                            = ((mEchoEndMs - mEchoStartMs) / 1000.0 ) / 58.23 ; //cm
-                    Event event = new Event();
-                    event.distance = distance;
-                    for (Listener listener : mListeners) {
-                        listener.onEvent(event);
-                    }
+                float distance = 0;
+                Log.d(TAG, "HcSr04Sensor.onGpioEdge: mIsEchoStart = " + mIsEchoStart);
+                if (mIsEchoStart) {
+                    distance
+                            = (float) (((mEchoEndMs - mEchoStartMs) / 1000.0) / 58.23); //cm
+                } else {
+                    distance = -1;
                 }
-            } catch (IOException e) {
-                Log.d(TAG, "HcSr04Sensor.onGpioEdge: cannot read GPIO: ", e);
+                // synchronized (this) {
+                //     mEvent = new Event();
+                //     mEvent.distance = distance;
+                //     // notify();
+                // }
+
+                mIsEchoStart = false;
+                Log.d(TAG, "HcSr04Sensor.onGpioEdge: distance = " + distance);
+                Event event = new Event();
+                event.distance = distance;
+                mEvent = event;
+
+
+
+
+
+                // for (Listener listener : mListeners) {
+                //     listener.onEvent(event);
+                // }
             }
-            return true;
+        } catch (IOException e) {
+            Log.d(TAG, "HcSr04Sensor.onGpioEdge: cannot read GPIO: ", e);
         }
-    };
+        return true;
+    }
+
+    // private GpioCallback mEchoGpioCallback = new GpioCallback() {
+    //     @Override
+    //     public boolean onGpioEdge(Gpio gpio) {
+    //         try {
+    //             if (gpio.getValue()) {
+    //                 mEchoStartMs = System.nanoTime();
+    //                 mIsEchoStart = true;
+    //             } else if (mIsEchoStart && !gpio.getValue()){
+    //                 mEchoEndMs = System.nanoTime();
+    //                 mIsEchoStart = false;
+
+    //                 float distance
+    //                         = (float)(((mEchoEndMs - mEchoStartMs) / 1000.0 ) / 58.23) ; //cm
+    //                 mEvent = new Event();
+    //                 mEvent.distance = distance;
+    //                 notify();
+
+
+
+
+
+    //                 // for (Listener listener : mListeners) {
+    //                 //     listener.onEvent(event);
+    //                 // }
+    //             }
+    //         } catch (IOException e) {
+    //             Log.d(TAG, "HcSr04Sensor.onGpioEdge: cannot read GPIO: ", e);
+    //         }
+    //         return true;
+    //     }
+    // };
 
     private Runnable mSensorSamplerTriggerRunnable = new Runnable() {
         @Override
