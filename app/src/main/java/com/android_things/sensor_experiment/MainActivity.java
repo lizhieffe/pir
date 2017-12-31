@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.android_things.sensor_experiment.detectors.AirQualityDetector;
 import com.android_things.sensor_experiment.detectors.AmbientLightDetector;
 import com.android_things.sensor_experiment.indicator.AmbientLightIlluminanceIdicator;
 import com.android_things.sensor_experiment.indicator.DetectionIndicator;
@@ -15,7 +16,6 @@ import com.android_things.sensor_experiment.indicator.LedDetectorIndicator;
 import com.android_things.sensor_experiment.indicator.UIDetectorIndicator;
 import com.android_things.sensor_experiment.detectors.MotionDetector;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
-import com.android_things.sensor_experiment.sensors.Ccs811Sensor;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,11 +29,12 @@ public class MainActivity extends Activity {
     private List<DetectionIndicator> detection_indicators;
 
     private MotionDetector mMotionDetector;
-    private AmbientLightDetector mAmbientLightDector;
+    private AmbientLightDetector mAmbientLightDetector;
+    private AirQualityDetector mAirQualityDectector;
 
     private SensorManager mSensorManager;
 
-    private Ccs811Sensor mCcs811Sensor;
+    // private Ccs811Sensor mCcs811Sensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,35 +62,47 @@ public class MainActivity extends Activity {
         mMotionDetector.addListener(led_detection_indicator);
         mMotionDetector.addListener(sensorDataRecorder);
 
-        mAmbientLightDector = new AmbientLightDetector(mSensorManager);
-        mAmbientLightDector.addListener(new AmbientLightIlluminanceIdicator(
+        mAmbientLightDetector = new AmbientLightDetector(mSensorManager);
+        mAmbientLightDetector.addListener(new AmbientLightIlluminanceIdicator(
                  (TextView)findViewById(R.id.ambient_light_value_text_view)));
-        mAmbientLightDector.start();
+        mAmbientLightDetector.start();
 
         try {
-            mCcs811Sensor = new Ccs811Sensor();
-            mCcs811Sensor.setMode(Ccs811Sensor.MODE_60S);
+            mAirQualityDectector = new AirQualityDetector(mSensorManager);
+            mAirQualityDectector.start();
         } catch (IOException e) {
-            Log.e(TAG, "MainActivity.onCreate: cs811: ", e);
+            Log.e(TAG, "MainActivity.onCreate: ", e);
         }
 
+        // try {
+        //     mCcs811Sensor = new Ccs811Sensor();
+        //     mCcs811Sensor.setMode(Ccs811Sensor.MODE_1S);
+        // } catch (IOException e) {
+        //     Log.e(TAG, "MainActivity.onCreate: cs811: ", e);
+        // }
 
-        try {
-            int[] values = mCcs811Sensor.readAlgorithmResults();
-            Log.d(TAG, "MainActivity.onCreate: values size = " + values.length);
-            Log.d(TAG, "MainActivity.onCreate: values[0] = " + values[0]);
-            Log.d(TAG, "MainActivity.onCreate: values[1] = " + values[1]);
-            Log.d(TAG, "MainActivity.onCreate: values[2] = " + values[2]);
-            Log.d(TAG, "MainActivity.onCreate: values[3] = " + values[3]);
-        } catch (IOException e) {
-            Log.e(TAG, "MainActivity.onCreate: cs811: ", e);
-        }
 
-        try {
-            mCcs811Sensor.close();
-        } catch (Exception e) {
-            Log.e(TAG, "MainActivity.onCreate: cs811: ", e);
-        }
+        // try {
+        //     for (int i = 0; i < 100; ++i) {
+        //         int[] values = mCcs811Sensor.readAlgorithmResults();
+        //         Log.d(TAG, "MainActivity.onCreate: values size = " + values.length);
+        //         Log.d(TAG, "MainActivity.onCreate: values[0] = " + values[0]);
+        //         Log.d(TAG, "MainActivity.onCreate: values[1] = " + values[1]);
+        //         Log.d(TAG, "MainActivity.onCreate: values[2] = " + values[2]);
+        //         Log.d(TAG, "MainActivity.onCreate: values[3] = " + values[3]);
+        //         Thread.sleep(2000);
+        //     }
+        // } catch (IOException|InterruptedException e) {
+        //     Log.e(TAG, "MainActivity.onCreate: cs811: ", e);
+        // }
+
+        // try {
+        //     mCcs811Sensor.close();
+        // } catch (Exception e) {
+        //     Log.e(TAG, "MainActivity.onCreate: cs811: ", e);
+        // }
+
+
     }
 
     @Override
@@ -98,7 +111,8 @@ public class MainActivity extends Activity {
             d.close();
         }
         mMotionDetector.shutdown();
-        mAmbientLightDector.shutdown();
+        mAmbientLightDetector.shutdown();
+        mAirQualityDectector.shutdown();
         super.onDestroy();
     }
 }

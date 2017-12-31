@@ -63,7 +63,7 @@ public class Apds9301SensorDriver implements AutoCloseable {
 
     public void registerSensor() {
         if (mDevice == null) {
-            throw new IllegalStateException("cannot register closed driver");
+            throw new IllegalStateException("Cannot register closed driver");
         }
 
         Log.d(TAG, "Apds9301SensorDriver.registerSensor: zzzzzzzzzzz");

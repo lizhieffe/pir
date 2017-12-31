@@ -44,14 +44,11 @@ public class AmbientLightDetector implements EnvDetector {
             public void onAccuracyChanged(Sensor sensor, int i) {
             }
         };
-        Log.d(TAG, "MainActivity.onDynamicSensorConnected: 000000000");
         mSensorManager.registerDynamicSensorCallback(
                 new SensorManager.DynamicSensorCallback() {
             @Override
             public void onDynamicSensorConnected(Sensor sensor) {
-                Log.d(TAG, "MainActivity.onDynamicSensorConnected: aaaaaaaa");
                 if (sensor.getType() ==  Sensor.TYPE_LIGHT) {
-                    Log.d(TAG, "MainActivity.onDynamicSensorConnected: bbbbbbbbbbb");
                     mSensorManager.registerListener(mSensorListener, sensor,
                             SensorManager.SENSOR_DELAY_NORMAL);
                 }

@@ -4,9 +4,6 @@ package com.android_things.sensor_experiment.sensors;
  * Created by lizhieffe on 12/29/17.
  */
 
-// import android.support.annotation.IntDef;
-// import android.support.annotation.VisibleForTesting;
-
 import com.google.android.things.pio.I2cDevice;
 import com.google.android.things.pio.PeripheralManagerService;
 
