@@ -73,36 +73,6 @@ public class MainActivity extends Activity {
         } catch (IOException e) {
             Log.e(TAG, "MainActivity.onCreate: ", e);
         }
-
-        // try {
-        //     mCcs811Sensor = new Ccs811Sensor();
-        //     mCcs811Sensor.setMode(Ccs811Sensor.MODE_1S);
-        // } catch (IOException e) {
-        //     Log.e(TAG, "MainActivity.onCreate: cs811: ", e);
-        // }
-
-
-        // try {
-        //     for (int i = 0; i < 100; ++i) {
-        //         int[] values = mCcs811Sensor.readAlgorithmResults();
-        //         Log.d(TAG, "MainActivity.onCreate: values size = " + values.length);
-        //         Log.d(TAG, "MainActivity.onCreate: values[0] = " + values[0]);
-        //         Log.d(TAG, "MainActivity.onCreate: values[1] = " + values[1]);
-        //         Log.d(TAG, "MainActivity.onCreate: values[2] = " + values[2]);
-        //         Log.d(TAG, "MainActivity.onCreate: values[3] = " + values[3]);
-        //         Thread.sleep(2000);
-        //     }
-        // } catch (IOException|InterruptedException e) {
-        //     Log.e(TAG, "MainActivity.onCreate: cs811: ", e);
-        // }
-
-        // try {
-        //     mCcs811Sensor.close();
-        // } catch (Exception e) {
-        //     Log.e(TAG, "MainActivity.onCreate: cs811: ", e);
-        // }
-
-
     }
 
     @Override
