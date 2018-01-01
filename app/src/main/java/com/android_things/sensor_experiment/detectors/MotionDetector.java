@@ -85,7 +85,6 @@ public class MotionDetector implements EnvDetector {
         mSensorListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
-                Log.d(TAG, "MotionDetector.onSensorChanged: on event = " + event.values[0]);
                 mCurrDistance = event.values[0];
                 if (mCurrDistance >= 0) {
                     if (Math.abs(mCurrDistance - mPrevDistance) > 30) {
@@ -117,10 +116,6 @@ public class MotionDetector implements EnvDetector {
 
         mProximitySensorDriver = new HcSr04SensorDriver();
         mProximitySensorDriver.registerSensor();
-
-
-        // mProximitySensor.addListener(mProximitySensorCallback);
-        // mProximitySensor.startup();
     }
 
     @Override
@@ -134,10 +129,6 @@ public class MotionDetector implements EnvDetector {
         }
         mSensorManager.unregisterListener(mSensorListener);
         mProximitySensorDriver.unregisterSensor();
-        // if (mProximitySensor != null) {
-        //     mProximitySensor.shutdown();
-        //     mProximitySensor = null;
-        // }
     }
 
     public void addListener(MotionDetectorListener listener) {
@@ -145,12 +136,9 @@ public class MotionDetector implements EnvDetector {
     }
 
     synchronized void notifyListeners(MotionDetectionEvent event) {
-        Log.d(TAG, "MotionDetector.notifyListeners: motion detected: "
-                + event.toString());
+        Log.d(TAG, "MotionDetector.notifyListeners: notifying listeners with event" + event.toString());
         for (MotionDetectorListener listener : mListener) {
-            Log.d(TAG, "MotionDetector.notifyListeners: " + listener.getClass());
             listener.onDetected(event);
-            Log.d(TAG, "MotionDetector.notifyListeners: " + listener.getClass());
         }
     }
 }

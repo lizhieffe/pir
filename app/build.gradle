@@ -4,7 +4,7 @@ android {
     compileSdkVersion 26
     defaultConfig {
         applicationId "com.android_things.sensor_experiment"
-        minSdkVersion 24
+        minSdkVersion 26
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -25,4 +25,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compileOnly 'com.google.android.things:androidthings:+'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
+    compile 'com.google.android.things.contrib:driver-zxgesturesensor:0.1'
 }
