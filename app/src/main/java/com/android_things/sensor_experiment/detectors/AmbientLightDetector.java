@@ -5,7 +5,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-import com.android_things.sensor_experiment.sensors.Apds9301SensorDriver;
+import com.android_things.sensor_experiment.sensors.apds_9301.Apds9301SensorDriver;
 import com.android_things.sensor_experiment.utils.EnvDetector;
 
 import java.util.ArrayList;

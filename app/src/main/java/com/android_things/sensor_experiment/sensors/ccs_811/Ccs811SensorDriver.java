@@ -1,4 +1,4 @@
-package com.android_things.sensor_experiment.sensors;
+package com.android_things.sensor_experiment.sensors.ccs_811;
 
 import android.hardware.Sensor;
 
@@ -14,27 +14,41 @@ import java.util.UUID;
  * Created by lizhieffe on 12/30/17.
  */
 
-public class HcSr04SensorDriver implements AutoCloseable {
-    private static final String DRIVER_VENDOR = "DiyMall";
-    private static final String DRIVER_NAME = "HC_SR501";
+public class Ccs811SensorDriver implements AutoCloseable {
+    public static final String SENSOR_STRING_TYPE = "air_quality_sensor";
+
+    private static final String DRIVER_VENDOR = "Sparkfun";
+    private static final String DRIVER_NAME = "Ccs811";
     private static final int DRIVER_VERSION = 1;
     private static final String DRIVER_REQUIRED_PERMISSION = "";
 
-    HcSr04Sensor mDevice;
-    HcSr04SensorUserDriver mUserDriver;
+    private Ccs811Sensor mDevice;
+    private Ccs811UserDriver mUserDriver;
 
-    public HcSr04SensorDriver() {
-        mDevice = new HcSr04Sensor();
-        mDevice.startup();
+    public Ccs811SensorDriver() throws IOException {
+        mDevice = new Ccs811Sensor();
+        mDevice.setMode(Ccs811Sensor.MODE_10S);
+    }
+
+    public Ccs811SensorDriver(String bus, int address) throws IOException {
+        mDevice = new Ccs811Sensor(bus, address);
+        mDevice.setMode(Ccs811Sensor.MODE_10S);
+    }
+    @Override
+    public void close() throws IOException {
+        try {
+            mDevice.close();
+        } finally {
+            mDevice = null;
+        }
     }
 
     public void registerSensor() {
         if (mDevice == null) {
             throw new IllegalStateException("Cannot register closed driver");
         }
-
         if (mUserDriver == null) {
-            mUserDriver = new HcSr04SensorUserDriver();
+            mUserDriver = new Ccs811UserDriver();
             UserDriverManager.getManager()
                     .registerSensor(mUserDriver.getUserSensor());
         }
@@ -48,29 +62,22 @@ public class HcSr04SensorDriver implements AutoCloseable {
         }
     }
 
-    @Override
-    public void close() {
-        unregisterSensor();
-        mDevice.shutdown();
-        mDevice = null;
-    }
-
-    private class HcSr04SensorUserDriver extends UserSensorDriver {
+    private class Ccs811UserDriver extends UserSensorDriver {
         private UserSensor mUserSensor;
 
         private UserSensor getUserSensor() {
             if (mUserSensor == null) {
                 mUserSensor = new UserSensor.Builder()
-                        .setType(Sensor.TYPE_PROXIMITY)
+                        .setCustomType(Sensor.TYPE_DEVICE_PRIVATE_BASE,
+                                SENSOR_STRING_TYPE, Sensor.REPORTING_MODE_CONTINUOUS)
                         .setName(DRIVER_NAME)
                         .setVendor(DRIVER_VENDOR)
                         .setVersion(DRIVER_VERSION)
-                        .setMinDelay(HcSr04Sensor.SENSOR_READ_INTERVAL_MS * 1000)
-                        .setMaxDelay(HcSr04Sensor.SENSOR_READ_INTERVAL_MS * 1000 * 2)
                         .setRequiredPermission(DRIVER_REQUIRED_PERMISSION)
-                        .setRequiredPermission(DRIVER_REQUIRED_PERMISSION)
-                        .setUuid(UUID.randomUUID())
+                        .setMinDelay(20000000)  // 20 seconds
+                        .setMaxDelay(30000000)
                         .setDriver(this)
+                        .setUuid(UUID.randomUUID())
                         .build();
             }
             return mUserSensor;
@@ -78,7 +85,12 @@ public class HcSr04SensorDriver implements AutoCloseable {
 
         @Override
         public UserSensorReading read() throws IOException {
-            return new UserSensorReading(new float[]{mDevice.readDistanceSync()});
+            return new UserSensorReading(new float[]{
+                    mDevice.readAlgorithmResults()[0],
+                    mDevice.readAlgorithmResults()[1],
+                    mDevice.readAlgorithmResults()[2],
+                    mDevice.readAlgorithmResults()[3],
+            });
         }
     }
 }

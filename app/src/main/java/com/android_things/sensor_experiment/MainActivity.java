@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
@@ -21,7 +19,6 @@ import com.android_things.sensor_experiment.detectors.MotionDetector;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
 import com.android_things.sensor_experiment.sensors.zx_gesture.ZxGestureSensorI2C;
 import com.android_things.sensor_experiment.sensors.zx_gesture.ZxGestureSensorUart;
-import com.android_things.sensor_experiment.utils.ByteUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,7 +37,6 @@ public class MainActivity extends Activity {
 
     private SensorManager mSensorManager;
 
-    ZxGestureSensorI2C mZxGestureSensorI2C;
     ZxGestureSensorUart mZxGestureSensorUart;
 
     @Override
@@ -125,32 +121,6 @@ public class MainActivity extends Activity {
     private void maybeStartGestureDetection() {
         if (Features.GESTURE_DETECTION_ENABLED) {
             try {
-                // mZxGestureSensorI2C = new ZxGestureSensorI2C();
-                // mZxGestureSensorI2C.startup();
-                // HandlerThread handlerThread
-                //         = new HandlerThread("ZX Gesture Sensor Handler Thread");
-                // handlerThread.start();
-                // Handler handler = new Handler(handlerThread.getLooper());
-                // handler.post(new Runnable() {
-                //     @Override
-                //     public void run() {
-                //         while (true) {
-                //             byte[] position = mZxGestureSensorI2C.readPositions();
-                //             Log.d(TAG, "MainActivity.run: position = ["
-                //                     + ByteUtil.byteToBinaryString(position[0])
-                //                     + ", " + ByteUtil.byteToBinaryString(position[1]) + "]");
-                //             Log.d(TAG, "MainActivity.run: position = ["
-                //                     + ByteUtil.byteToUnsignedInt(position[0])
-                //                     + ", " + ByteUtil.byteToUnsignedInt(position[1]) + "]");
-                //             try {
-                //                 Thread.sleep(25);
-                //             } catch (InterruptedException e) {
-
-                //             }
-                //         }
-                //     }
-                //});
-
                 Log.d(TAG, "MainActivity.maybeStartGestureDetection: 11111");
                 mZxGestureSensorUart = new ZxGestureSensorUart("UART0");
                 Log.d(TAG, "MainActivity.maybeStartGestureDetection: 22222");

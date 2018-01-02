@@ -4,15 +4,11 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.util.Log;
 
-import com.android_things.sensor_experiment.sensors.Ccs811Sensor;
-import com.android_things.sensor_experiment.sensors.Ccs811SensorDriver;
+import com.android_things.sensor_experiment.sensors.ccs_811.Ccs811SensorDriver;
 import com.android_things.sensor_experiment.utils.EnvDetector;
 
 import java.io.IOException;
-
-import static com.android_things.sensor_experiment.base.Constants.TAG;
 
 /**
  * Created by lizhieffe on 12/30/17.

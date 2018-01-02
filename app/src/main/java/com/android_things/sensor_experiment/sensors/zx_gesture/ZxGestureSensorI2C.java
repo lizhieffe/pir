@@ -44,7 +44,7 @@ public class ZxGestureSensorI2C {
         mAddress = address;
         mGpioPin = gpioPin;
         assert(true == false) :
-                "The I2C driver doesn't work for RPI3 with AndroidThings OS. Please use UART version."
+                "The I2C driver doesn't work for RPI3 with AndroidThings OS. Please use UART version.";
     }
 
     public void startup() throws IOException {

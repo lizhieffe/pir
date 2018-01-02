@@ -1,4 +1,4 @@
-package com.android_things.sensor_experiment.sensors;
+package com.android_things.sensor_experiment.sensors.ccs_811;
 
 /**
  * Created by lizhieffe on 12/29/17.

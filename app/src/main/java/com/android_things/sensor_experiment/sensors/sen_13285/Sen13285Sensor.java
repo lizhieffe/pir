@@ -1,7 +1,8 @@
-package com.android_things.sensor_experiment.sensors;
+package com.android_things.sensor_experiment.sensors.sen_13285;
 
 import android.util.Log;
 
+import com.android_things.sensor_experiment.sensors.MotionSensor;
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.GpioCallback;
 import com.google.android.things.pio.PeripheralManagerService;
