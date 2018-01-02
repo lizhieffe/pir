@@ -41,7 +41,7 @@ public class Apds9301Sensor implements MotionSensor {
         PeripheralManagerService pioService
                 = new PeripheralManagerService();
         Log.d(TAG, "Apds9301Sensor.Apds9301Sensor: I2C bus lists: " + pioService.getI2cBusList());
-            I2cDevice device = pioService.openI2cDevice(mBus, mAddress);
+        I2cDevice device = pioService.openI2cDevice(mBus, mAddress);
         connect(device);
     }
 
