@@ -20,6 +20,7 @@ import com.android_things.sensor_experiment.indicator.UIDetectorIndicator;
 import com.android_things.sensor_experiment.detectors.MotionDetector;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
 import com.android_things.sensor_experiment.sensors.zx_gesture.ZxGestureSensorI2C;
+import com.android_things.sensor_experiment.sensors.zx_gesture.ZxGestureSensorUart;
 import com.android_things.sensor_experiment.utils.ByteUtil;
 
 import java.io.IOException;
@@ -40,6 +41,7 @@ public class MainActivity extends Activity {
     private SensorManager mSensorManager;
 
     ZxGestureSensorI2C mZxGestureSensorI2C;
+    ZxGestureSensorUart mZxGestureSensorUart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,38 +52,7 @@ public class MainActivity extends Activity {
         maybeStartMotionDetection();
         maybeStartAmbientLightDetection();
         maybeStartAirQualityDetection();
-
-        if (Features.GESTURE_DETECTION_ENABLED) {
-            try {
-                mZxGestureSensorI2C = new ZxGestureSensorI2C();
-                mZxGestureSensorI2C.startup();
-                HandlerThread handlerThread
-                        = new HandlerThread("ZX Gesture Sensor Handler Thread");
-                handlerThread.start();
-                Handler handler = new Handler(handlerThread.getLooper());
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        while (true) {
-                            byte[] position = mZxGestureSensorI2C.readPositions();
-                            Log.d(TAG, "MainActivity.run: position = ["
-                                    + ByteUtil.byteToBinaryString(position[0])
-                                    + ", " + ByteUtil.byteToBinaryString(position[1]) + "]");
-                            Log.d(TAG, "MainActivity.run: position = ["
-                                    + ByteUtil.byteToUnsignedInt(position[0])
-                                    + ", " + ByteUtil.byteToUnsignedInt(position[1]) + "]");
-                            try {
-                                Thread.sleep(25);
-                            } catch (InterruptedException e) {
-
-                            }
-                        }
-                    }
-                });
-            } catch (IOException e) {
-                Log.e(TAG, "MainActivity.onCreate: ", e);
-            }
-        }
+        maybeStartGestureDetection();
     }
 
     @Override
@@ -99,7 +70,8 @@ public class MainActivity extends Activity {
             mAirQualityDetector.shutdown();
         }
         if (Features.GESTURE_DETECTION_ENABLED) {
-            mZxGestureSensorI2C.shutdown();
+            // mZxGestureSensorI2C.shutdown();
+            mZxGestureSensorUart.shutdown();
         }
 
         super.onDestroy();
@@ -148,5 +120,47 @@ public class MainActivity extends Activity {
             mMotionDetector.addListener(led_detection_indicator);
             mMotionDetector.addListener(sensorDataRecorder);
         }
+    }
+
+    private void maybeStartGestureDetection() {
+        if (Features.GESTURE_DETECTION_ENABLED) {
+            try {
+                // mZxGestureSensorI2C = new ZxGestureSensorI2C();
+                // mZxGestureSensorI2C.startup();
+                // HandlerThread handlerThread
+                //         = new HandlerThread("ZX Gesture Sensor Handler Thread");
+                // handlerThread.start();
+                // Handler handler = new Handler(handlerThread.getLooper());
+                // handler.post(new Runnable() {
+                //     @Override
+                //     public void run() {
+                //         while (true) {
+                //             byte[] position = mZxGestureSensorI2C.readPositions();
+                //             Log.d(TAG, "MainActivity.run: position = ["
+                //                     + ByteUtil.byteToBinaryString(position[0])
+                //                     + ", " + ByteUtil.byteToBinaryString(position[1]) + "]");
+                //             Log.d(TAG, "MainActivity.run: position = ["
+                //                     + ByteUtil.byteToUnsignedInt(position[0])
+                //                     + ", " + ByteUtil.byteToUnsignedInt(position[1]) + "]");
+                //             try {
+                //                 Thread.sleep(25);
+                //             } catch (InterruptedException e) {
+
+                //             }
+                //         }
+                //     }
+                //});
+
+                Log.d(TAG, "MainActivity.maybeStartGestureDetection: 11111");
+                mZxGestureSensorUart = new ZxGestureSensorUart("UART0");
+                Log.d(TAG, "MainActivity.maybeStartGestureDetection: 22222");
+                mZxGestureSensorUart.startup();
+                Log.d(TAG, "MainActivity.maybeStartGestureDetection: 33333");
+
+            } catch (IOException e) {
+                Log.e(TAG, "MainActivity.onCreate: ", e);
+            }
+        }
+
     }
 }
