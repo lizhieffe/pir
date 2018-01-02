@@ -16,7 +16,7 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
  * Created by lizhieffe on 1/1/18.
  */
 
-public class ZxGestureSensor {
+public class ZxGestureSensorI2C {
     public static final String DEFAULT_I2C_BUS = "I2C1";
     public static final int DEFAULT_I2C_ADDRESS = 0x10;
     public static final String DEFAULT_GPIO_PIN = "BCM27";
@@ -29,11 +29,11 @@ public class ZxGestureSensor {
     private I2cDevice mDevice;
     private Gpio mGpio;
 
-    public ZxGestureSensor() {
+    public ZxGestureSensorI2C() {
         this(DEFAULT_I2C_BUS, DEFAULT_I2C_ADDRESS, DEFAULT_GPIO_PIN);
     }
 
-    public ZxGestureSensor(String bus, int address, String gpioPin) {
+    public ZxGestureSensorI2C(String bus, int address, String gpioPin) {
         mBus = bus;
         mAddress = address;
         mGpioPin = gpioPin;
@@ -48,7 +48,7 @@ public class ZxGestureSensor {
             try {
                 mDevice.close();
             } catch (IOException e) {
-                Log.e(TAG, "ZxGestureSensor.shutdown: ", e);
+                Log.e(TAG, "ZxGestureSensorI2C.shutdown: ", e);
             } finally {
                 mDevice = null;
             }
@@ -59,7 +59,7 @@ public class ZxGestureSensor {
                 mGpio.unregisterGpioCallback(onGpioDataReady);
                 mGpio.close();
             } catch (IOException e) {
-                Log.e(TAG, "ZxGestureSensor.shutdown: ", e);
+                Log.e(TAG, "ZxGestureSensorI2C.shutdown: ", e);
             } finally {
                 mGpio = null;
             }
@@ -69,15 +69,15 @@ public class ZxGestureSensor {
     public byte[] readPositions() {
         byte[] result = new byte[2];
         try {
-            Log.d(TAG, "ZxGestureSensor.readPositions: status = " + mDevice.readRegByte(REG_STATUS));
+            Log.d(TAG, "ZxGestureSensorI2C.readPositions: status = " + mDevice.readRegByte(REG_STATUS));
             result[0] = mDevice.readRegByte(REG_XPOS);
             result[1] = mDevice.readRegByte(REG_ZPOS);
-            Log.d(TAG, "ZxGestureSensor.connect: left emitter ranging data = "
+            Log.d(TAG, "ZxGestureSensorI2C.connect: left emitter ranging data = "
                     + ByteUtil.byteToUnsignedInt(mDevice.readRegByte(LEFT_EMITTER_RANGING_DATA)));
-            Log.d(TAG, "ZxGestureSensor.connect: right emitter ranging data = "
+            Log.d(TAG, "ZxGestureSensorI2C.connect: right emitter ranging data = "
                     + ByteUtil.byteToUnsignedInt(mDevice.readRegByte(RIGHT_EMITTER_RANGING_DATA)));
         } catch (IOException e) {
-            Log.e(TAG, "ZxGestureSensor.readPositions: ", e);
+            Log.e(TAG, "ZxGestureSensorI2C.readPositions: ", e);
         }
         return result;
     }
@@ -103,9 +103,9 @@ public class ZxGestureSensor {
     private void connect() throws IOException {
         PeripheralManagerService pioService
                 = new PeripheralManagerService();
-        Log.d(TAG, "ZxGestureSensor.startup: I2C bus list: " + pioService.getI2cBusList());
+        Log.d(TAG, "ZxGestureSensorI2C.startup: I2C bus list: " + pioService.getI2cBusList());
 
-        Log.d(TAG, "ZxGestureSensor.connect: DRCFG MASK = " + (byte)GESTURE_DRCFG_MASK);
+        Log.d(TAG, "ZxGestureSensorI2C.connect: DRCFG MASK = " + (byte)GESTURE_DRCFG_MASK);
 
 
         mDevice = pioService.openI2cDevice(mBus, mAddress);
@@ -115,8 +115,8 @@ public class ZxGestureSensor {
         byte regMapVersion = mDevice.readRegByte(REG_MAP_VERSION);
         assert(regMapVersion == 1);
 
-        Log.d(TAG, "ZxGestureSensor.connect: reg map version = " + mDevice.readRegByte(REG_MAP_VERSION));
-        Log.d(TAG, "ZxGestureSensor.connect: sensor model = " + mDevice.readRegByte(SENSOR_MODEL));
+        Log.d(TAG, "ZxGestureSensorI2C.connect: reg map version = " + mDevice.readRegByte(REG_MAP_VERSION));
+        Log.d(TAG, "ZxGestureSensorI2C.connect: sensor model = " + mDevice.readRegByte(SENSOR_MODEL));
 
         mGpio = pioService.openGpio(mGpioPin);
         mGpio.setDirection(Gpio.DIRECTION_IN);
@@ -129,16 +129,16 @@ public class ZxGestureSensor {
         @Override
         public boolean onGpioEdge(Gpio gpio) {
             try {
-                Log.d(TAG, "ZxGestureSensor.onGpioEdge: data ready: " + gpio.getValue());
+                Log.d(TAG, "ZxGestureSensorI2C.onGpioEdge: data ready: " + gpio.getValue());
             } catch (IOException e) {
-                Log.e(TAG, "ZxGestureSensor.onGpioEdge: ", e);
+                Log.e(TAG, "ZxGestureSensorI2C.onGpioEdge: ", e);
             }
             return true;
         }
 
         @Override
         public void onGpioError(Gpio gpio, int error) {
-            Log.e(TAG, "ZxGestureSensor.onGpioError: gpio error: " + error);
+            Log.e(TAG, "ZxGestureSensorI2C.onGpioError: gpio error: " + error);
         }
     };
 }

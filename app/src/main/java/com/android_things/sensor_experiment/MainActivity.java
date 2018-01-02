@@ -5,6 +5,7 @@ import android.content.Context;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
@@ -18,7 +19,7 @@ import com.android_things.sensor_experiment.indicator.LedDetectorIndicator;
 import com.android_things.sensor_experiment.indicator.UIDetectorIndicator;
 import com.android_things.sensor_experiment.detectors.MotionDetector;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
-import com.android_things.sensor_experiment.sensors.zx_gesture.ZxGestureSensor;
+import com.android_things.sensor_experiment.sensors.zx_gesture.ZxGestureSensorI2C;
 import com.android_things.sensor_experiment.utils.ByteUtil;
 
 import java.io.IOException;
@@ -38,7 +39,7 @@ public class MainActivity extends Activity {
 
     private SensorManager mSensorManager;
 
-    ZxGestureSensor mZxGestureSensor;
+    ZxGestureSensorI2C mZxGestureSensorI2C;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,14 +53,17 @@ public class MainActivity extends Activity {
 
         if (Features.GESTURE_DETECTION_ENABLED) {
             try {
-                mZxGestureSensor = new ZxGestureSensor();
-                mZxGestureSensor.startup();
-                Handler handler = new Handler();
+                mZxGestureSensorI2C = new ZxGestureSensorI2C();
+                mZxGestureSensorI2C.startup();
+                HandlerThread handlerThread
+                        = new HandlerThread("ZX Gesture Sensor Handler Thread");
+                handlerThread.start();
+                Handler handler = new Handler(handlerThread.getLooper());
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
                         while (true) {
-                            byte[] position = mZxGestureSensor.readPositions();
+                            byte[] position = mZxGestureSensorI2C.readPositions();
                             Log.d(TAG, "MainActivity.run: position = ["
                                     + ByteUtil.byteToBinaryString(position[0])
                                     + ", " + ByteUtil.byteToBinaryString(position[1]) + "]");
@@ -95,7 +99,7 @@ public class MainActivity extends Activity {
             mAirQualityDetector.shutdown();
         }
         if (Features.GESTURE_DETECTION_ENABLED) {
-            mZxGestureSensor.shutdown();
+            mZxGestureSensorI2C.shutdown();
         }
 
         super.onDestroy();
