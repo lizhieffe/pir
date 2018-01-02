@@ -13,6 +13,11 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
 
 /**
  * Created by lizhieffe on 1/1/18.
+ *
+ * Driver for ZX gesture sensor using UART bus made by Sparkfun.
+ *
+ * Note: for unknown reason, the TXD pin on sensor should be connect to RXD pin
+ * on RPI, and RXI pin on sensor should be connect to TXD pin on RPI.
  */
 
 public class ZxGestureSensorUart {

@@ -14,6 +14,12 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
 
 /**
  * Created by lizhieffe on 1/1/18.
+ *
+ * Driver for ZX gesture sensor using I2C bus made by Sparkfun.
+ *
+ * This driver doesn't work properly for RPI3 with AndroidThings OS. The position
+ * read and gesture read is incorrect. It is probably an issue with the sensor.
+ * Please use the UART version driver instead.
  */
 
 public class ZxGestureSensorI2C {
@@ -37,6 +43,8 @@ public class ZxGestureSensorI2C {
         mBus = bus;
         mAddress = address;
         mGpioPin = gpioPin;
+        assert(true == false) :
+                "The I2C driver doesn't work for RPI3 with AndroidThings OS. Please use UART version."
     }
 
     public void startup() throws IOException {
