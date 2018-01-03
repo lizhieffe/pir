@@ -9,6 +9,7 @@ public abstract class ZxGestureSensor implements AutoCloseable {
      * Gestures that the sensor supports.
      */
     public enum Gesture {
+        UNKNOWN,
         SWIPE_RIGHT,
         SWIPE_LEFT,
         SWIPE_UP,
@@ -22,9 +23,18 @@ public abstract class ZxGestureSensor implements AutoCloseable {
                 null, SWIPE_RIGHT, SWIPE_LEFT, SWIPE_UP,
                 null, HOVER, HOVER_LEFT, HOVER_RIGHT, HOVER_UP};
 
-        static Gesture getGesture(int code) {
+        public static Gesture getGesture(int code) {
             if (code < 0 || code >= idMap.length) return null;
             return idMap[code];
+        }
+
+        public static int getGestureId(Gesture gesture) {
+            for (int i = 0; i < idMap.length; ++i) {
+                if (gesture.equals(idMap[i])) {
+                    return i;
+                }
+            }
+            return -1;
         }
     }
 }

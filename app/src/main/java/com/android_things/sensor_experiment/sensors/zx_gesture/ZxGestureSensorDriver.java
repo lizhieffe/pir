@@ -1,6 +1,7 @@
-package com.android_things.sensor_experiment.sensors.ccs_811;
+package com.android_things.sensor_experiment.sensors.zx_gesture;
 
 import android.hardware.Sensor;
+import android.util.Log;
 
 import com.google.android.things.userdriver.UserDriverManager;
 import com.google.android.things.userdriver.UserSensor;
@@ -10,38 +11,30 @@ import com.google.android.things.userdriver.UserSensorReading;
 import java.io.IOException;
 import java.util.UUID;
 
+import static com.android_things.sensor_experiment.base.Constants.TAG;
+
 /**
- * Created by lizhieffe on 12/30/17.
+ * Created by lizhieffe on 1/2/18.
  */
 
-public class Ccs811SensorDriver implements AutoCloseable {
-    public static final String SENSOR_STRING_TYPE = "air_quality_sensor";
+public class ZxGestureSensorDriver implements AutoCloseable {
+    public static final String SENSOR_STRING_TYPE = "gesture_sensor";
 
     private static final String DRIVER_VENDOR = "Sparkfun";
-    private static final String DRIVER_NAME = "Ccs811";
+    private static final String DRIVER_NAME = "ZX Gesture Sensor";
     private static final int DRIVER_VERSION = 1;
     private static final String DRIVER_REQUIRED_PERMISSION = "";
 
-    private Ccs811Sensor mDevice;
-    private Ccs811UserDriver mUserDriver;
+    private ZxGestureSensorUart mDevice;
+    private ZxGestureSensorUserDriver mUserDriver;
 
-    public Ccs811SensorDriver() throws IOException {
-        mDevice = new Ccs811Sensor();
-        mDevice.setMode(Ccs811Sensor.MODE_10S);
+    public ZxGestureSensorDriver() {
+        mDevice = new ZxGestureSensorUart();
     }
 
-    public Ccs811SensorDriver(String bus, int address) throws IOException {
-        mDevice = new Ccs811Sensor(bus, address);
-        mDevice.setMode(Ccs811Sensor.MODE_10S);
-    }
-
-    @Override
-    public void close() throws IOException {
-        try {
-            mDevice.close();
-        } finally {
-            mDevice = null;
-        }
+    public void close() {
+        unregisterSensor();
+        mDevice.shutdown();
     }
 
     public void registerSensor() {
@@ -49,7 +42,12 @@ public class Ccs811SensorDriver implements AutoCloseable {
             throw new IllegalStateException("Cannot register closed driver");
         }
         if (mUserDriver == null) {
-            mUserDriver = new Ccs811UserDriver();
+            try {
+                mDevice.startup();
+            } catch (IOException e) {
+                Log.e(TAG, "ZxGestureSensorDriver.registerSensor: ", e);
+            }
+            mUserDriver = new ZxGestureSensorUserDriver();
             UserDriverManager.getManager()
                     .registerSensor(mUserDriver.getUserSensor());
         }
@@ -63,7 +61,7 @@ public class Ccs811SensorDriver implements AutoCloseable {
         }
     }
 
-    private class Ccs811UserDriver extends UserSensorDriver {
+    private class ZxGestureSensorUserDriver extends UserSensorDriver {
         private UserSensor mUserSensor;
 
         private UserSensor getUserSensor() {
@@ -74,11 +72,11 @@ public class Ccs811SensorDriver implements AutoCloseable {
                         .setName(DRIVER_NAME)
                         .setVendor(DRIVER_VENDOR)
                         .setVersion(DRIVER_VERSION)
+                        .setMinDelay(200 * 1000)  // 200 ms
+                        .setMaxDelay(250 * 1000)  // 250 ms
                         .setRequiredPermission(DRIVER_REQUIRED_PERMISSION)
-                        .setMinDelay(20000000)  // 20 seconds
-                        .setMaxDelay(30000000)
-                        .setDriver(this)
                         .setUuid(UUID.randomUUID())
+                        .setDriver(this)
                         .build();
             }
             return mUserSensor;
@@ -87,11 +85,8 @@ public class Ccs811SensorDriver implements AutoCloseable {
         @Override
         public UserSensorReading read() throws IOException {
             return new UserSensorReading(new float[]{
-                    mDevice.readAlgorithmResults()[0],
-                    mDevice.readAlgorithmResults()[1],
-                    mDevice.readAlgorithmResults()[2],
-                    mDevice.readAlgorithmResults()[3],
-            });
+                    ZxGestureSensor.Gesture.getGestureId(mDevice.readGesture())});
         }
+
     }
 }

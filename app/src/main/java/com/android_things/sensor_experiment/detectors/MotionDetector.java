@@ -30,6 +30,7 @@ public class MotionDetector implements EnvDetector {
     private List<MotionDetectorListener> mListener;
 
     private Sen13285Sensor mPirSensor;
+
     private final MotionSensor.Listener mPirSensorCallback
             = new MotionSensor.Listener() {
         @Override

@@ -11,12 +11,14 @@ import android.widget.TextView;
 import com.android_things.sensor_experiment.base.Features;
 import com.android_things.sensor_experiment.detectors.AirQualityDetector;
 import com.android_things.sensor_experiment.detectors.AmbientLightDetector;
+import com.android_things.sensor_experiment.detectors.GestureDetector;
 import com.android_things.sensor_experiment.indicator.AmbientLightIlluminanceIdicator;
 import com.android_things.sensor_experiment.indicator.DetectionIndicator;
 import com.android_things.sensor_experiment.indicator.LedDetectorIndicator;
 import com.android_things.sensor_experiment.indicator.UIDetectorIndicator;
 import com.android_things.sensor_experiment.detectors.MotionDetector;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
+import com.android_things.sensor_experiment.sensors.zx_gesture.ZxGestureSensor;
 import com.android_things.sensor_experiment.sensors.zx_gesture.ZxGestureSensorI2C;
 import com.android_things.sensor_experiment.sensors.zx_gesture.ZxGestureSensorUart;
 
@@ -34,6 +36,7 @@ public class MainActivity extends Activity {
     private MotionDetector mMotionDetector;
     private AmbientLightDetector mAmbientLightDetector;
     private AirQualityDetector mAirQualityDetector;
+    private GestureDetector mGestureDetector;
 
     private SensorManager mSensorManager;
 
@@ -66,8 +69,8 @@ public class MainActivity extends Activity {
             mAirQualityDetector.shutdown();
         }
         if (Features.GESTURE_DETECTION_ENABLED) {
-            // mZxGestureSensorI2C.shutdown();
-            mZxGestureSensorUart.shutdown();
+            // mZxGestureSensorUart.shutdown();
+            mGestureDetector.shutdown();
         }
 
         super.onDestroy();
@@ -120,17 +123,18 @@ public class MainActivity extends Activity {
 
     private void maybeStartGestureDetection() {
         if (Features.GESTURE_DETECTION_ENABLED) {
-            try {
-                Log.d(TAG, "MainActivity.maybeStartGestureDetection: 11111");
-                mZxGestureSensorUart = new ZxGestureSensorUart("UART0");
-                Log.d(TAG, "MainActivity.maybeStartGestureDetection: 22222");
-                mZxGestureSensorUart.startup();
-                Log.d(TAG, "MainActivity.maybeStartGestureDetection: 33333");
+            // try {
+            //     Log.d(TAG, "MainActivity.maybeStartGestureDetection: 11111");
+            //     mZxGestureSensorUart = new ZxGestureSensorUart("UART0");
+            //     Log.d(TAG, "MainActivity.maybeStartGestureDetection: 22222");
+            //     mZxGestureSensorUart.startup();
+            //     Log.d(TAG, "MainActivity.maybeStartGestureDetection: 33333");
 
-            } catch (IOException e) {
-                Log.e(TAG, "MainActivity.onCreate: ", e);
-            }
+            // } catch (IOException e) {
+            //     Log.e(TAG, "MainActivity.onCreate: ", e);
+            // }
+            mGestureDetector = new GestureDetector(mSensorManager);
+            mGestureDetector.start();
         }
-
     }
 }

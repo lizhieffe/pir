@@ -2,7 +2,6 @@ package com.android_things.sensor_experiment.sensors.zx_gesture;
 
 import android.util.Log;
 
-import com.android_things.sensor_experiment.utils.ByteUtil;
 import com.google.android.things.pio.PeripheralManagerService;
 import com.google.android.things.pio.UartDevice;
 import com.google.android.things.pio.UartDeviceCallback;
@@ -21,11 +20,17 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
  */
 
 public class ZxGestureSensorUart {
+    private final static String DEFAULT_UART_PORT = "UART0";
+
     private UartDevice mDevice;
     private String mPort;
 
     private UartParser mParser;
     private PeripheralManagerService mPioService;
+
+    public ZxGestureSensorUart() {
+        this(DEFAULT_UART_PORT);
+    }
 
     public ZxGestureSensorUart(String port) {
         mPort = port;
@@ -51,6 +56,13 @@ public class ZxGestureSensorUart {
        }
     }
 
+    volatile private ZxGestureSensor.Gesture mLatestGesture
+            = ZxGestureSensor.Gesture.UNKNOWN;
+
+    public ZxGestureSensor.Gesture readGesture() {
+        return mLatestGesture;
+    }
+
     private void connect() throws IOException {
         mDevice = mPioService.openUartDevice(mPort);
 
@@ -62,14 +74,12 @@ public class ZxGestureSensorUart {
         mDevice.registerUartDeviceCallback(onUart);
     }
 
-
     /**
      * Callback invoked when there is data on the UART connection.
      */
     private final UartDeviceCallback onUart = new UartDeviceCallback() {
         @Override
         public boolean onUartDeviceDataAvailable(UartDevice uart) {
-            // Log.d(TAG, "ZxGestureSensorUart.onUartDeviceDataAvailable: data available");
             try {
                 readUartBuffer(uart);
             } catch (IOException e) {
@@ -93,8 +103,6 @@ public class ZxGestureSensorUart {
         while ((count = uart.read(buffer, buffer.length)) > 0) {
             // Log.d(TAG, "ZxGestureSensorUart.readUartBuffer: count = " + count);
             for (int i = 0; i < count; i++) {
-                // Log.d(TAG, "ZxGestureSensorUart.readUartBuffer: buffer_"
-                //         + i + " = " + ByteUtil.byteToBinaryString(buffer[i]));
                 try {
                     result = mParser.parse(buffer[i]);
                 } catch (InvalidByteException e) {
@@ -108,20 +116,16 @@ public class ZxGestureSensorUart {
                             break;
                         case X_POS:
                             // mGestureDetector.setXpos(result.xPosition);
-                            Log.d(TAG, "ZxGestureSensorUart.readUartBuffer: x_pos = " + result.xPosition);
                             break;
                         case Z_POS:
-                            Log.d(TAG, "ZxGestureSensorUart.readUartBuffer: z_pos = " + result.zPosition);
                             // mGestureDetector.setZpos(result.zPosition);
                             break;
                         case GESTURE:
-                            Log.d(TAG, "ZxGestureSensorUart.readUartBuffer: gesture = " + result.gesture);
+                            mLatestGesture = result.gesture;
                             // mGestureDetector.setGesture(result.gesture,
                             //        result.gestureParams);
                             break;
                         case RANGE:
-                            Log.d(TAG, "ZxGestureSensorUart.readUartBuffer: range = ["
-                                    + result.rangeL + ", " + result.rangeR + "].");
                             // mGestureDetector.setRanges(result.rangeL, result.rangeR);
                             break;
                         case ID:
