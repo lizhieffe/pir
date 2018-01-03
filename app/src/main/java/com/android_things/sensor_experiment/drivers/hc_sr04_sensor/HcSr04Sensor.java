@@ -1,4 +1,4 @@
-package com.android_things.sensor_experiment.drivers.hc_sr_04_sensor;
+package com.android_things.sensor_experiment.drivers.hc_sr04_sensor;
 
 import android.os.Handler;
 import android.os.HandlerThread;
