@@ -12,7 +12,6 @@ import com.android_things.sensor_experiment.base.Features;
 import com.android_things.sensor_experiment.detectors.AirQualityDetector;
 import com.android_things.sensor_experiment.detectors.AmbientLightDetector;
 import com.android_things.sensor_experiment.detectors.GestureDetector;
-import com.android_things.sensor_experiment.detectors.GestureListener;
 import com.android_things.sensor_experiment.indicator.AmbientLightIlluminanceIdicator;
 import com.android_things.sensor_experiment.indicator.DetectionIndicator;
 import com.android_things.sensor_experiment.indicator.GestureIndicator;
@@ -20,9 +19,7 @@ import com.android_things.sensor_experiment.indicator.LedDetectorIndicator;
 import com.android_things.sensor_experiment.indicator.UIDetectorIndicator;
 import com.android_things.sensor_experiment.detectors.MotionDetector;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
-import com.android_things.sensor_experiment.sensors.zx_gesture.ZxGestureSensor;
-import com.android_things.sensor_experiment.sensors.zx_gesture.ZxGestureSensorI2C;
-import com.android_things.sensor_experiment.sensors.zx_gesture.ZxGestureSensorUart;
+import com.android_things.sensor_experiment.drivers.zx_gesture_sensor.ZxGestureSensorUart;
 
 import java.io.IOException;
 import java.util.ArrayList;

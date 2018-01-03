@@ -1,4 +1,4 @@
-package com.android_things.sensor_experiment.sensors;
+package com.android_things.sensor_experiment.drivers;
 
 import com.google.android.things.pio.Gpio;
 

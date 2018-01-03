@@ -1,4 +1,4 @@
-package com.android_things.sensor_experiment.sensors.zx_gesture;
+package com.android_things.sensor_experiment.drivers.zx_gesture_sensor;
 
 import android.util.Log;
 

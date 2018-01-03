@@ -6,8 +6,8 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
 
-import com.android_things.sensor_experiment.sensors.zx_gesture.ZxGestureSensor;
-import com.android_things.sensor_experiment.sensors.zx_gesture.ZxGestureSensorDriver;
+import com.android_things.sensor_experiment.drivers.zx_gesture_sensor.ZxGestureSensor;
+import com.android_things.sensor_experiment.drivers.zx_gesture_sensor.ZxGestureSensorDriver;
 import com.android_things.sensor_experiment.utils.EnvDetector;
 
 import java.util.ArrayList;
@@ -37,8 +37,6 @@ public class GestureDetector implements EnvDetector {
         mSensorListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
-                Log.d(TAG, "GestureDetector.onSensorChanged: value = "
-                        + ZxGestureSensor.Gesture.getGesture((int)event.values[0]));
                 for (GestureListener l : mListeners) {
                     l.onGesture(
                             ZxGestureSensor.Gesture.getGesture((int)event.values[0]));

@@ -1,4 +1,4 @@
-package com.android_things.sensor_experiment.sensors.hc_sr_04;
+package com.android_things.sensor_experiment.drivers.hc_sr_04_sensor;
 
 import android.hardware.Sensor;
 

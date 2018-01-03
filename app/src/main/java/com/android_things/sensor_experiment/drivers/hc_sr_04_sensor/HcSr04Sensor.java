@@ -1,10 +1,10 @@
-package com.android_things.sensor_experiment.sensors.hc_sr_04;
+package com.android_things.sensor_experiment.drivers.hc_sr_04_sensor;
 
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
 
-import com.android_things.sensor_experiment.sensors.MotionSensor;
+import com.android_things.sensor_experiment.drivers.MotionSensor;
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.GpioCallback;
 import com.google.android.things.pio.PeripheralManagerService;

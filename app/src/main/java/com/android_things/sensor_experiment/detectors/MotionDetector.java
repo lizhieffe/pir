@@ -6,10 +6,10 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
 
-import com.android_things.sensor_experiment.sensors.hc_sr_04.HcSr04Sensor;
-import com.android_things.sensor_experiment.sensors.hc_sr_04.HcSr04SensorDriver;
-import com.android_things.sensor_experiment.sensors.MotionSensor;
-import com.android_things.sensor_experiment.sensors.sen_13285.Sen13285Sensor;
+import com.android_things.sensor_experiment.drivers.hc_sr_04_sensor.HcSr04Sensor;
+import com.android_things.sensor_experiment.drivers.hc_sr_04_sensor.HcSr04SensorDriver;
+import com.android_things.sensor_experiment.drivers.MotionSensor;
+import com.android_things.sensor_experiment.drivers.sen_13285_sensor.Sen13285Sensor;
 import com.android_things.sensor_experiment.utils.EnvDetector;
 import com.google.android.things.pio.Gpio;
 

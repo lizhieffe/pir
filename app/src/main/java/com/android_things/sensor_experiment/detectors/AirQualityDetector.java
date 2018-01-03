@@ -5,7 +5,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-import com.android_things.sensor_experiment.sensors.ccs_811.Ccs811SensorDriver;
+import com.android_things.sensor_experiment.drivers.ccs_811_sensor.Ccs811SensorDriver;
 import com.android_things.sensor_experiment.utils.EnvDetector;
 
 import java.io.IOException;

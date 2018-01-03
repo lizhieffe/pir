@@ -1,4 +1,4 @@
-package com.android_things.sensor_experiment.sensors.apds_9301;
+package com.android_things.sensor_experiment.drivers.apds_9301_sensor;
 
 import android.hardware.Sensor;
 import android.util.Log;

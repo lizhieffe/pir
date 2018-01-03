@@ -1,8 +1,8 @@
-package com.android_things.sensor_experiment.sensors.sen_13285;
+package com.android_things.sensor_experiment.drivers.sen_13285_sensor;
 
 import android.util.Log;
 
-import com.android_things.sensor_experiment.sensors.MotionSensor;
+import com.android_things.sensor_experiment.drivers.MotionSensor;
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.GpioCallback;
 import com.google.android.things.pio.PeripheralManagerService;
@@ -10,7 +10,6 @@ import com.google.android.things.pio.PeripheralManagerService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 
 import static com.android_things.sensor_experiment.base.Constants.TAG;
 

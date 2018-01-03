@@ -1,8 +1,8 @@
-package com.android_things.sensor_experiment.sensors.apds_9301;
+package com.android_things.sensor_experiment.drivers.apds_9301_sensor;
 
 import android.util.Log;
 
-import com.android_things.sensor_experiment.sensors.MotionSensor;
+import com.android_things.sensor_experiment.drivers.MotionSensor;
 import com.google.android.things.pio.I2cDevice;
 import com.google.android.things.pio.PeripheralManagerService;
 
