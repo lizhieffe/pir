@@ -1,6 +1,7 @@
-package com.android_things.sensor_experiment.drivers.hc_sr04_sensor;
+package com.android_things.sensor_experiment.drivers.hc_sr501_sensor;
 
 import android.hardware.Sensor;
+import android.util.Log;
 
 import com.google.android.things.userdriver.UserDriverManager;
 import com.google.android.things.userdriver.UserSensor;
@@ -10,21 +11,23 @@ import com.google.android.things.userdriver.UserSensorReading;
 import java.io.IOException;
 import java.util.UUID;
 
+import static com.android_things.sensor_experiment.base.Constants.TAG;
+
 /**
- * Created by lizhieffe on 12/30/17.
+ * Created by lizhieffe on 1/2/18.
  */
 
-public class HcSr04SensorDriver implements AutoCloseable {
+public class HcSr501SensorDriver implements AutoCloseable {
     private static final String DRIVER_VENDOR = "DiyMall";
-    private static final String DRIVER_NAME = "HC_SR04";
+    private static final String DRIVER_NAME = "HC_SR501";
     private static final int DRIVER_VERSION = 1;
     private static final String DRIVER_REQUIRED_PERMISSION = "";
 
-    HcSr04Sensor mDevice;
-    HcSr04SensorUserDriver mUserDriver;
+    private HcSr501Sensor mDevice;
+    HcSr501SensorUserDriver mUserDriver;
 
-    public HcSr04SensorDriver() {
-        mDevice = new HcSr04Sensor();
+    public HcSr501SensorDriver() {
+        mDevice = new HcSr501Sensor();
         mDevice.startup();
     }
 
@@ -34,7 +37,7 @@ public class HcSr04SensorDriver implements AutoCloseable {
         }
 
         if (mUserDriver == null) {
-            mUserDriver = new HcSr04SensorUserDriver();
+            mUserDriver = new HcSr501SensorUserDriver();
             UserDriverManager.getManager()
                     .registerSensor(mUserDriver.getUserSensor());
         }
@@ -55,18 +58,18 @@ public class HcSr04SensorDriver implements AutoCloseable {
         mDevice = null;
     }
 
-    private class HcSr04SensorUserDriver extends UserSensorDriver {
+    private class HcSr501SensorUserDriver extends UserSensorDriver {
         private UserSensor mUserSensor;
 
         private UserSensor getUserSensor() {
             if (mUserSensor == null) {
                 mUserSensor = new UserSensor.Builder()
-                        .setType(Sensor.TYPE_PROXIMITY)
+                        .setType(Sensor.TYPE_MOTION_DETECT)
                         .setName(DRIVER_NAME)
                         .setVendor(DRIVER_VENDOR)
                         .setVersion(DRIVER_VERSION)
-                        .setMinDelay(HcSr04Sensor.SENSOR_READ_INTERVAL_MS * 1000)
-                        .setMaxDelay(HcSr04Sensor.SENSOR_READ_INTERVAL_MS * 1000 * 2)
+                        .setMinDelay(100 * 1000)  // 100ms
+                        .setMaxDelay(150 * 1000)  // 150 ms
                         .setRequiredPermission(DRIVER_REQUIRED_PERMISSION)
                         .setRequiredPermission(DRIVER_REQUIRED_PERMISSION)
                         .setUuid(UUID.randomUUID())
@@ -78,7 +81,8 @@ public class HcSr04SensorDriver implements AutoCloseable {
 
         @Override
         public UserSensorReading read() throws IOException {
-            return new UserSensorReading(new float[]{mDevice.readDistanceSync()});
+            boolean detected  = mDevice.readData();
+            return new UserSensorReading(new float[]{detected ? 1 : 0});
         }
     }
 }

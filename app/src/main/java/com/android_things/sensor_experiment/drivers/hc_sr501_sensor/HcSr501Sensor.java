@@ -22,7 +22,7 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
 public class HcSr501Sensor implements MotionSensor {
     private Gpio mBus;
 
-    private List<MotionSensor.Listener> mListeners = new ArrayList<>();
+    private volatile boolean mIsMotionDetected;
 
     @Override
     public void startup() {
@@ -53,8 +53,10 @@ public class HcSr501Sensor implements MotionSensor {
     private final GpioCallback callback = new GpioCallback() {
         @Override
         public boolean onGpioEdge(Gpio gpio) {
-            for (MotionSensor.Listener listener : mListeners) {
-                listener.onMovement(gpio);
+            try {
+                mIsMotionDetected = gpio.getValue();
+            } catch (IOException e) {
+                Log.e(TAG, "HcSr501Sensor.onGpioEdge: ", e);
             }
             return true; // True to continue listening
         }
@@ -70,9 +72,8 @@ public class HcSr501Sensor implements MotionSensor {
         }
     }
 
-    public void addListener(MotionSensor.Listener listener) {
-        if (mListeners != null) {
-            mListeners.add(listener);
-        }
+    public boolean readData() {
+        return mIsMotionDetected;
     }
+
 }

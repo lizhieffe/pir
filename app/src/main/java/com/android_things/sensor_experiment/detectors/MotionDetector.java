@@ -4,16 +4,14 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.hardware.TriggerEvent;
+import android.hardware.TriggerEventListener;
 import android.util.Log;
 
-import com.android_things.sensor_experiment.drivers.hc_sr04_sensor.HcSr04Sensor;
 import com.android_things.sensor_experiment.drivers.hc_sr04_sensor.HcSr04SensorDriver;
-import com.android_things.sensor_experiment.drivers.MotionSensor;
-import com.android_things.sensor_experiment.drivers.sen_13285_sensor.Sen13285Sensor;
+import com.android_things.sensor_experiment.drivers.hc_sr501_sensor.HcSr501SensorDriver;
 import com.android_things.sensor_experiment.utils.EnvDetector;
-import com.google.android.things.pio.Gpio;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,64 +23,57 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
 
 public class MotionDetector implements EnvDetector {
     private SensorManager mSensorManager;
-    private SensorEventListener mSensorListener;
+
+    private Sensor mPirSensor;
+    private HcSr501SensorDriver mPirSensorDriver;
+    private TriggerEventListener mPirSensorListener;
+
+    private HcSr04SensorDriver mProximitySensorDriver;
+    private SensorEventListener mProximitySensorListener;
 
     private List<MotionDetectorListener> mListener;
 
-    private Sen13285Sensor mPirSensor;
-
-    private final MotionSensor.Listener mPirSensorCallback
-            = new MotionSensor.Listener() {
-        @Override
-        public void onMovement(Gpio gpio) {
-            try {
-                if (gpio.getValue()) {
-                    MotionDetectionEvent event = new MotionDetectionEvent();
-                    event.mSource = MotionDetectionEvent.Source.PIR;
-                    notifyListeners(event);
-                }
-            } catch (IOException e) {
-                Log.e(TAG, "Cannot get GPIO value: ", e);
-            }
-
-        }
-    };
-
-    private HcSr04Sensor mProximitySensor;
     private float mPrevDistance = 0;
     private float mCurrDistance = 0;
-    private final HcSr04Sensor.Listener mProximitySensorCallback
-            = new HcSr04Sensor.Listener() {
-        @Override
-        public void onEvent(HcSr04Sensor.Event event) {
-            mCurrDistance = event.distance;
-            if (mCurrDistance >= 0) {
-                if (Math.abs(mCurrDistance - mPrevDistance) > 30) {
-                    MotionDetectionEvent motionDetectionEvent = new MotionDetectionEvent();
-                    motionDetectionEvent.mSource = MotionDetectionEvent.Source.PROXIMITY;
-                    motionDetectionEvent.mProxmityParam = mCurrDistance;
-                    notifyListeners(motionDetectionEvent);
-                }
-                mPrevDistance = mCurrDistance;
-            }
-        }
-    };
-
-    private HcSr04SensorDriver mProximitySensorDriver;
 
     public MotionDetector(SensorManager sensorManager) {
         mSensorManager = sensorManager;
         mListener = new ArrayList<>();
-        mPirSensor = new Sen13285Sensor();
-        mProximitySensor = new HcSr04Sensor();
     }
 
     @Override
     public void start() {
-        mPirSensor.addListener(mPirSensorCallback);
-        mPirSensor.startup();
+        mPirSensorListener = new TriggerEventListener() {
+            @Override
+            public void onTrigger(TriggerEvent event) {
+                if (event.values[0] > 0) {
+                    MotionDetectionEvent motionDetectionEvent
+                            = new MotionDetectionEvent();
+                    motionDetectionEvent.mSource
+                            = MotionDetectionEvent.Source.PIR;
+                    notifyListeners(motionDetectionEvent);
+                }
+                mSensorManager.requestTriggerSensor(mPirSensorListener, mPirSensor);
 
-        mSensorListener = new SensorEventListener() {
+            }
+        };
+        mSensorManager.registerDynamicSensorCallback(
+                new SensorManager.DynamicSensorCallback() {
+                    @Override
+                    public void onDynamicSensorConnected(Sensor sensor) {
+                        if (sensor.getType() == sensor.TYPE_MOTION_DETECT) {
+                            mSensorManager.requestTriggerSensor(mPirSensorListener, sensor);
+                            mPirSensor = sensor;
+                        }
+                    }
+                });
+        mPirSensorDriver = new HcSr501SensorDriver();
+        mPirSensorDriver.registerSensor();
+
+
+
+
+        mProximitySensorListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
                 mCurrDistance = event.values[0];
@@ -108,7 +99,7 @@ public class MotionDetector implements EnvDetector {
                     @Override
                     public void onDynamicSensorConnected(Sensor sensor) {
                         if (sensor.getType() == sensor.TYPE_PROXIMITY) {
-                            mSensorManager.registerListener(mSensorListener, sensor,
+                            mSensorManager.registerListener(mProximitySensorListener, sensor,
                                     SensorManager.SENSOR_DELAY_NORMAL);
                         }
                     }
@@ -123,11 +114,11 @@ public class MotionDetector implements EnvDetector {
         if (mListener != null) {
             mListener.clear();
         }
-        if (mPirSensor != null) {
-            mPirSensor.shutdown();
-            mPirSensor = null;
-        }
-        mSensorManager.unregisterListener(mSensorListener);
+
+        mSensorManager.cancelTriggerSensor(mPirSensorListener, mPirSensor);
+        mPirSensorDriver.unregisterSensor();
+
+        mSensorManager.unregisterListener(mProximitySensorListener);
         mProximitySensorDriver.unregisterSensor();
     }
 
@@ -136,7 +127,6 @@ public class MotionDetector implements EnvDetector {
     }
 
     synchronized void notifyListeners(MotionDetectionEvent event) {
-        Log.d(TAG, "MotionDetector.notifyListeners: notifying listeners with event" + event.toString());
         for (MotionDetectorListener listener : mListener) {
             listener.onDetected(event);
         }
