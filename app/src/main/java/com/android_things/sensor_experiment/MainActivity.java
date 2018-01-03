@@ -12,8 +12,10 @@ import com.android_things.sensor_experiment.base.Features;
 import com.android_things.sensor_experiment.detectors.AirQualityDetector;
 import com.android_things.sensor_experiment.detectors.AmbientLightDetector;
 import com.android_things.sensor_experiment.detectors.GestureDetector;
+import com.android_things.sensor_experiment.detectors.GestureListener;
 import com.android_things.sensor_experiment.indicator.AmbientLightIlluminanceIdicator;
 import com.android_things.sensor_experiment.indicator.DetectionIndicator;
+import com.android_things.sensor_experiment.indicator.GestureIndicator;
 import com.android_things.sensor_experiment.indicator.LedDetectorIndicator;
 import com.android_things.sensor_experiment.indicator.UIDetectorIndicator;
 import com.android_things.sensor_experiment.detectors.MotionDetector;
@@ -134,6 +136,9 @@ public class MainActivity extends Activity {
             //     Log.e(TAG, "MainActivity.onCreate: ", e);
             // }
             mGestureDetector = new GestureDetector(mSensorManager);
+            GestureIndicator gestureIndicator = new GestureIndicator(
+                    (TextView)findViewById(R.id.gesture_text_view));
+            mGestureDetector.addListener(gestureIndicator);
             mGestureDetector.start();
         }
     }

@@ -10,6 +10,9 @@ import com.android_things.sensor_experiment.sensors.zx_gesture.ZxGestureSensor;
 import com.android_things.sensor_experiment.sensors.zx_gesture.ZxGestureSensorDriver;
 import com.android_things.sensor_experiment.utils.EnvDetector;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.android_things.sensor_experiment.base.Constants.TAG;
 
 /**
@@ -22,8 +25,11 @@ public class GestureDetector implements EnvDetector {
 
     private ZxGestureSensorDriver mZxGestureSensorDriver;
 
+    private List<GestureListener> mListeners;
+
     public GestureDetector(SensorManager sensorManager) {
         mSensorManager = sensorManager;
+        mListeners = new ArrayList<>();
     }
 
     @Override
@@ -33,6 +39,10 @@ public class GestureDetector implements EnvDetector {
             public void onSensorChanged(SensorEvent event) {
                 Log.d(TAG, "GestureDetector.onSensorChanged: value = "
                         + ZxGestureSensor.Gesture.getGesture((int)event.values[0]));
+                for (GestureListener l : mListeners) {
+                    l.onGesture(
+                            ZxGestureSensor.Gesture.getGesture((int)event.values[0]));
+                }
             }
 
             @Override
@@ -60,5 +70,12 @@ public class GestureDetector implements EnvDetector {
     public void shutdown() {
         mSensorManager.unregisterListener(mSensorListener);
         mZxGestureSensorDriver.unregisterSensor();
+
+        mListeners.clear();
+        mListeners = null;
+    }
+
+    public void addListener(GestureListener listener) {
+        mListeners.add(listener);
     }
 }
