@@ -118,23 +118,34 @@ public class HcSr04Sensor extends GpioCallback implements MotionSensor {
     volatile long mEchoEndMs = 0;
 
     @Override
-    public boolean onGpioEdge(Gpio gpio) {
+    synchronized public boolean onGpioEdge(Gpio gpio) {
         try {
             if (gpio.getValue()) {
-                mEchoStartMs = System.nanoTime();
-                mIsEchoStart = true;
+                synchronized (this) {
+                    mEchoStartMs = System.nanoTime();
+                    mIsEchoStart = true;
+                }
             } else if (!gpio.getValue()){
-                mEchoEndMs = System.nanoTime();
+                long echoEndsMs = System.nanoTime();
+                boolean isEchoStart;
+                long echoStartMs;
+                synchronized (this) {
+                    isEchoStart = mIsEchoStart;
+                    echoStartMs = mEchoStartMs;
+                    mIsEchoStart = false;
+                }
 
                 float distance = 0;
-                if (mIsEchoStart) {
+                if (isEchoStart) {
                     distance
-                            = (float) (((mEchoEndMs - mEchoStartMs) / 1000.0) / 58.23); //cm
+                            = (float) (((echoEndsMs - echoStartMs) / 1000.0) / 58.23); //cm
                 } else {
                     distance = -1;
                 }
 
-                mIsEchoStart = false;
+                if (distance > 2500) {
+                    distance = -1;
+                }
                 Event event = new Event();
                 event.distance = distance;
                 mEvent = event;

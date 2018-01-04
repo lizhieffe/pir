@@ -11,8 +11,6 @@ import com.google.android.things.userdriver.UserSensorReading;
 import java.io.IOException;
 import java.util.UUID;
 
-import static com.android_things.sensor_experiment.base.Constants.TAG;
-
 /**
  * Created by lizhieffe on 1/2/18.
  */

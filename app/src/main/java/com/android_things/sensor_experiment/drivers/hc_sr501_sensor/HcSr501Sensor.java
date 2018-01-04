@@ -20,6 +20,12 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
  */
 
 public class HcSr501Sensor implements MotionSensor {
+    // The delay time starts to count once motion is detected. Within the delay
+    // time, sensor always reports TRUE for detection. After delay time, sensor
+    // reports FALSE. If another motion is detected within the delay time, the
+    // delay time is reset.
+    public final static long DELAY_TIME_MS = 5000;
+
     private Gpio mBus;
 
     private volatile boolean mIsMotionDetected;
