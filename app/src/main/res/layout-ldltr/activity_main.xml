@@ -9,11 +9,11 @@
         android:layout_height="wrap_content"
         android:text="No Movement " />
 
-    <Button
-        android:id="@+id/measure_distance_btn"
+    <TextView
+        android:id="@+id/distance_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Measure DIstance" />
+        android:text="Distance Placeholder" />
 
     <TextView
         android:id="@+id/ambient_light_value_text_view"

@@ -10,7 +10,12 @@ public class Features {
     public final static boolean GESTURE_DETECTION_ENABLED = true;
 
     public final static boolean MOTION_DETECTION_ENABLED = true;
-    // These two fields are effective only when MOTION_DETECTION_ENABLED is true.
+
+    /*
+     * These two fields are effective only when MOTION_DETECTION_ENABLED is true.
+     */
+    // Whether to enabled PIR based motion detection.
     public final static boolean MOTION_DETECTION_PIR_ENABLED = true;
-    public final static boolean MOTION_DETECTION_PROXIMITY_ENABLED = false;
+    // Whether to enable proximity based motion detection.
+    public final static boolean MOTION_DETECTION_PROXIMITY_ENABLED = true;
 }

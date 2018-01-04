@@ -5,7 +5,7 @@ package com.android_things.sensor_experiment.detectors;
  */
 
 public class MotionDetectionEvent {
-    enum Source {
+    public enum Source {
         PIR,
         PROXIMITY
     }

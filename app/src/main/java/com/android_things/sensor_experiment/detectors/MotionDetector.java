@@ -34,13 +34,15 @@ public class MotionDetector implements EnvDetector {
     private HcSr04SensorDriver mProximitySensorDriver;
     private SensorEventListener mProximitySensorListener;
 
-    private List<MotionDetectorListener> mListener;
+    private List<MotionDetectorListener> mPirListener;
+    private List<MotionDetectorListener> mProxomityListener;
 
     private float mPrevDistance = 0;
 
     public MotionDetector(SensorManager sensorManager) {
         mSensorManager = sensorManager;
-        mListener = new ArrayList<>();
+        mPirListener = new ArrayList<>();
+        mProxomityListener = new ArrayList<>();
     }
 
     @Override
@@ -124,8 +126,11 @@ public class MotionDetector implements EnvDetector {
 
     @Override
     public void shutdown() {
-        if (mListener != null) {
-            mListener.clear();
+        if (mPirListener != null) {
+            mPirListener.clear();
+        }
+        if (mProxomityListener != null) {
+            mProxomityListener.clear();
         }
 
         if (Features.MOTION_DETECTION_PIR_ENABLED) {
@@ -139,14 +144,27 @@ public class MotionDetector implements EnvDetector {
         }
     }
 
-    public void addListener(MotionDetectorListener listener) {
-        mListener.add(listener);
+    public void addListenerForPir(MotionDetectorListener listener) {
+        mPirListener.add(listener);
+    }
+
+    // TODO: if we decide not to use proximity sensor as a source of the
+    // motion detection, remove this. We can also use it for distance
+    // measurement only.
+    public void addListenerForProximity(MotionDetectorListener listener) {
+        mProxomityListener.add(listener);
     }
 
     synchronized void notifyListeners(MotionDetectionEvent event) {
         Log.d(TAG, "MotionDetector.notifyListeners: event = " + event.toString());
-        for (MotionDetectorListener listener : mListener) {
-            listener.onDetected(event);
+        if (event.mSource == MotionDetectionEvent.Source.PIR) {
+            for (MotionDetectorListener listener : mPirListener) {
+                listener.onDetected(event);
+            }
+        } else {
+            for (MotionDetectorListener listener : mProxomityListener) {
+                listener.onDetected(event);
+            }
         }
     }
 }

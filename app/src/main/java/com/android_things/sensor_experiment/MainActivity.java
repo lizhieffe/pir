@@ -14,12 +14,15 @@ import com.android_things.sensor_experiment.detectors.AmbientLightDetector;
 import com.android_things.sensor_experiment.detectors.GestureDetector;
 import com.android_things.sensor_experiment.indicator.AmbientLightIlluminanceIdicator;
 import com.android_things.sensor_experiment.indicator.DetectionIndicator;
+import com.android_things.sensor_experiment.indicator.DistanceIndicator;
 import com.android_things.sensor_experiment.indicator.GestureIndicator;
 import com.android_things.sensor_experiment.indicator.LedDetectorIndicator;
 import com.android_things.sensor_experiment.indicator.UIDetectorIndicator;
 import com.android_things.sensor_experiment.detectors.MotionDetector;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
 import com.android_things.sensor_experiment.drivers.zx_gesture_sensor.ZxGestureSensorUart;
+
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -102,7 +105,12 @@ public class MainActivity extends Activity {
             Button movement_indicator = findViewById(R.id.movement_indicator);
             UIDetectorIndicator ui_detection_indicator = new UIDetectorIndicator(
                     getApplicationContext(), movement_indicator);
+
+            TextView distanceTextView = findViewById(R.id.distance_text_view);
+            DistanceIndicator distanceIndicator = new DistanceIndicator(distanceTextView);
+
             LedDetectorIndicator led_detection_indicator = new LedDetectorIndicator();
+
             SensorDataRecorder sensorDataRecorder = new SensorDataRecorder(getApplicationContext());
 
             DetectionIndicator[] di_array = {ui_detection_indicator, led_detection_indicator};
@@ -114,9 +122,10 @@ public class MainActivity extends Activity {
 
             mMotionDetector = new MotionDetector(mSensorManager);
             mMotionDetector.start();
-            mMotionDetector.addListener(ui_detection_indicator);
-            mMotionDetector.addListener(led_detection_indicator);
-            mMotionDetector.addListener(sensorDataRecorder);
+            mMotionDetector.addListenerForPir(ui_detection_indicator);
+            mMotionDetector.addListenerForPir(led_detection_indicator);
+            mMotionDetector.addListenerForPir(sensorDataRecorder);
+            mMotionDetector.addListenerForProximity(distanceIndicator);
         }
     }
 

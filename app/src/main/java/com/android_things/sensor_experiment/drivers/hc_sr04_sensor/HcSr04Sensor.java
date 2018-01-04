@@ -135,7 +135,7 @@ public class HcSr04Sensor extends GpioCallback implements MotionSensor {
                     mIsEchoStart = false;
                 }
 
-                float distance = 0;
+                float distance;
                 if (isEchoStart) {
                     distance
                             = (float) (((echoEndsMs - echoStartMs) / 1000.0) / 58.23); //cm
@@ -143,7 +143,8 @@ public class HcSr04Sensor extends GpioCallback implements MotionSensor {
                     distance = -1;
                 }
 
-                if (distance > 2500) {
+                // Max distance measurement is about 300 cm.
+                if (distance > 300) {
                     distance = -1;
                 }
                 Event event = new Event();
