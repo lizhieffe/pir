@@ -94,7 +94,7 @@ public class MotionDetector implements EnvDetector {
                         prevDistance = mPrevDistance;
                         mPrevDistance = currDistance;
                     }
-                    if (Math.abs(currDistance - prevDistance) > 30) {
+                    if (Math.abs(currDistance - prevDistance) > 3) {
                         MotionDetectionEvent motionDetectionEvent = new MotionDetectionEvent();
                         motionDetectionEvent.mSource = MotionDetectionEvent.Source.PROXIMITY;
                         motionDetectionEvent.mProxmityParam = currDistance;
