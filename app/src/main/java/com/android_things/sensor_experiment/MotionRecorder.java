@@ -20,14 +20,14 @@ import static java.lang.System.currentTimeMillis;
  * Created by lizhieffe on 12/24/17.
  */
 
-class SensorDataRecorder implements MotionDetectorListener {
-    private static int WRITE_EVERY_N_ITEM = 100;
+class MotionRecorder implements MotionDetectorListener {
+    private final static int WRITE_EVERY_N_ITEM = 100;
 
     private Context mContext;
-    private List<PirData> mPirData;
+    private List<MotionData> mPirData;
 
-    private class PirData {
-        PirData(long unixTimeMs, boolean state) {
+    private class MotionData {
+        MotionData(long unixTimeMs, boolean state) {
             mUnixTimeMs = unixTimeMs;
             mState = state;
         }
@@ -45,14 +45,14 @@ class SensorDataRecorder implements MotionDetectorListener {
         }
     }
 
-    public SensorDataRecorder(Context context) {
+    public MotionRecorder(Context context) {
         mContext = context;
         mPirData = new ArrayList<>(WRITE_EVERY_N_ITEM);
     }
 
     @Override
     synchronized public void onDetected(MotionDetectionEvent event) {
-        mPirData.add(new PirData(currentTimeMillis(), true));
+        mPirData.add(new MotionData(currentTimeMillis(), true));
 
         if (mPirData.size() == WRITE_EVERY_N_ITEM) {
             try {
@@ -62,7 +62,7 @@ class SensorDataRecorder implements MotionDetectorListener {
                 FileOutputStream fos = new FileOutputStream(data_file);
                 BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
 
-                for (PirData d : mPirData) {
+                for (MotionData d : mPirData) {
                     bw.write(d.toString());
                     bw.newLine();
                 }

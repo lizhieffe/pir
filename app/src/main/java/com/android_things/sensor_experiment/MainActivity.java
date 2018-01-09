@@ -22,8 +22,6 @@ import com.android_things.sensor_experiment.detectors.MotionDetector;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
 import com.android_things.sensor_experiment.drivers.zx_gesture_sensor.ZxGestureSensorUart;
 
-import org.w3c.dom.Text;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -111,7 +109,7 @@ public class MainActivity extends Activity {
 
             LedDetectorIndicator led_detection_indicator = new LedDetectorIndicator();
 
-            SensorDataRecorder sensorDataRecorder = new SensorDataRecorder(getApplicationContext());
+            MotionRecorder sensorDataRecorder = new MotionRecorder(getApplicationContext());
 
             DetectionIndicator[] di_array = {ui_detection_indicator, led_detection_indicator};
             detection_indicators = new ArrayList<>(Arrays.asList(di_array));
