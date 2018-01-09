@@ -35,14 +35,14 @@ public class MotionDetector implements EnvDetector {
     private SensorEventListener mProximitySensorListener;
 
     private List<MotionDetectorListener> mPirListener;
-    private List<MotionDetectorListener> mProxomityListener;
+    private List<MotionDetectorListener> mProximityListener;
 
     private float mPrevDistance = 0;
 
     public MotionDetector(SensorManager sensorManager) {
         mSensorManager = sensorManager;
         mPirListener = new ArrayList<>();
-        mProxomityListener = new ArrayList<>();
+        mProximityListener = new ArrayList<>();
     }
 
     @Override
@@ -129,8 +129,8 @@ public class MotionDetector implements EnvDetector {
         if (mPirListener != null) {
             mPirListener.clear();
         }
-        if (mProxomityListener != null) {
-            mProxomityListener.clear();
+        if (mProximityListener != null) {
+            mProximityListener.clear();
         }
 
         if (Features.MOTION_DETECTION_PIR_ENABLED) {
@@ -152,7 +152,7 @@ public class MotionDetector implements EnvDetector {
     // motion detection, remove this. We can also use it for distance
     // measurement only.
     public void addListenerForProximity(MotionDetectorListener listener) {
-        mProxomityListener.add(listener);
+        mProximityListener.add(listener);
     }
 
     synchronized void notifyListeners(MotionDetectionEvent event) {
@@ -162,7 +162,7 @@ public class MotionDetector implements EnvDetector {
                 listener.onDetected(event);
             }
         } else {
-            for (MotionDetectorListener listener : mProxomityListener) {
+            for (MotionDetectorListener listener : mProximityListener) {
                 listener.onDetected(event);
             }
         }
