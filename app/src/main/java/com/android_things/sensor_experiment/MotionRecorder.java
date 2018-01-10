@@ -11,55 +11,65 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-
-import static java.lang.System.currentTimeMillis;
+import java.util.TimeZone;
 
 /**
  * Created by lizhieffe on 12/24/17.
  */
 
 class MotionRecorder implements MotionDetectorListener {
-    private final static int WRITE_EVERY_N_ITEM = 100;
+    private final static int WRITE_EVERY_N_SECONDS = 20;
 
     private Context mContext;
     private List<MotionData> mPirData;
+    private long lastFileSaveTimeMs;
 
     private class MotionData {
-        MotionData(long unixTimeMs, boolean state) {
+        MotionData(long unixTimeMs) {
             mUnixTimeMs = unixTimeMs;
-            mState = state;
         }
 
+        // Timestamp when the motion is detected.
         long mUnixTimeMs;
-        boolean mState;
 
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
             sb.append(mUnixTimeMs);
-            sb.append(" ");
-            sb.append(mState ? 1 : 0);
             return sb.toString();
         }
     }
 
     public MotionRecorder(Context context) {
         mContext = context;
-        mPirData = new ArrayList<>(WRITE_EVERY_N_ITEM);
+        mPirData = new ArrayList<>();
     }
 
     @Override
     synchronized public void onDetected(MotionDetectionEvent event) {
-        mPirData.add(new MotionData(currentTimeMillis(), true));
+        long currTimeMs = System.currentTimeMillis();
 
-        if (mPirData.size() == WRITE_EVERY_N_ITEM) {
+        // Initialization for the first time.
+        if (lastFileSaveTimeMs == 0) {
+            lastFileSaveTimeMs = currTimeMs;
+        }
+
+        mPirData.add(new MotionData(currTimeMs));
+
+        if (currTimeMs - lastFileSaveTimeMs > WRITE_EVERY_N_SECONDS * 1000) {
+            lastFileSaveTimeMs = currTimeMs;
             try {
-                File data_file = FileSystemUtil.getOrCreatePirSensorDataFile(mContext);
-                data_file.delete();
-                data_file = FileSystemUtil.getOrCreatePirSensorDataFile(mContext);
-                FileOutputStream fos = new FileOutputStream(data_file);
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                sdf.setTimeZone(TimeZone.getTimeZone("GMT-8"));
+                String dataFileName = sdf.format(new Date(currTimeMs));
+                // Although the data files are named by date, it may contains data on the near
+                // boundary of the nearby date.
+                File dataFile = FileSystemUtil.getOrCreatePirSensorDataFile(mContext, dataFileName);
+                FileOutputStream fos = new FileOutputStream(dataFile, true);
                 BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
 
                 for (MotionData d : mPirData) {
@@ -68,7 +78,7 @@ class MotionRecorder implements MotionDetectorListener {
                 }
 
                 bw.close();
-                Log.i("===lizhi", "recorded data to disk: " + data_file.toPath());
+                Log.i("===lizhi", "recorded data to disk: " + dataFile.toPath());
             } catch (Exception e) {
                 Log.e("===lizhi", "Cannot write pir data: " + e);
             } finally {

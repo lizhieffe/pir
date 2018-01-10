@@ -41,6 +41,15 @@ public class FileSystemUtil {
         return file;
     }
 
+    public static File getOrCreatePirSensorDataFile(Context context, String name)
+            throws IOException {
+        File file = new File(FileSystemUtil.getOrCreateSensorDataStorageDir(context), name);
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        return file;
+    }
+
     public static File getOrCreatePirSensorDataFile(Context context) throws IOException {
         File file = new File(FileSystemUtil.getOrCreateSensorDataStorageDir(context),
                 "pir_sensor_data.txt");
