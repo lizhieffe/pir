@@ -10,5 +10,4 @@
 # done
 
 FILE=/storage/emulated/0/Android/data/com.android_things.sensor_experiment/files/Documents/sensor_data/
-# connect_pi_2.sh
 adb pull "$FILE" /tmp/
