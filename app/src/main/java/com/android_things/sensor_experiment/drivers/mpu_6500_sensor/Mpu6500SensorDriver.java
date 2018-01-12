@@ -1,4 +1,4 @@
-package com.android_things.sensor_experiment.drivers.mpu_6500;
+package com.android_things.sensor_experiment.drivers.mpu_6500_sensor;
 
 import android.hardware.Sensor;
 import android.util.Log;

@@ -4,7 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.TextView;
 
-import com.android_things.sensor_experiment.drivers.mpu_6500.Mpu6500SensorListener;
+import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500SensorListener;
 
 /**
  * Created by lizhi on 1/12/18.
@@ -29,11 +29,11 @@ public class AccelerometerUiController implements Mpu6500SensorListener {
                 final long currTimeMs = System.currentTimeMillis();
                 if (currTimeMs - mLastDisplayUpldate > DISPLAY_DELAY_MS) {
                     StringBuilder sb = new StringBuilder();
-                    sb.append("accel read [x, y, z]: ");
+                    sb.append("Accel read [x, y, z]: ");
                     sb.append(String.format("%.4f", finalData[0]));
-                    sb.append(" ");
+                    sb.append(", ");
                     sb.append(String.format("%.4f", finalData[1]));
-                    sb.append(" ");
+                    sb.append(", ");
                     sb.append(String.format("%.4f", finalData[2]));
                     mAccelerometerView.setText(sb.toString());
 

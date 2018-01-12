@@ -7,7 +7,7 @@ import android.hardware.SensorManager;
 import android.util.Log;
 import android.widget.TextView;
 
-import com.android_things.sensor_experiment.drivers.mpu_6500.Mpu6500SensorDriver;
+import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500SensorDriver;
 import com.android_things.sensor_experiment.indicator.AccelerometerUiController;
 
 import static com.android_things.sensor_experiment.base.Constants.TAG;

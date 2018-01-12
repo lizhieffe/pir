@@ -17,7 +17,6 @@ import com.android_things.sensor_experiment.base.Features;
 import com.android_things.sensor_experiment.detectors.AirQualityDetector;
 import com.android_things.sensor_experiment.detectors.AmbientLightDetector;
 import com.android_things.sensor_experiment.detectors.GestureDetector;
-import com.android_things.sensor_experiment.drivers.mpu_6500.Mpu6500Sensor;
 import com.android_things.sensor_experiment.indicator.AmbientLightIlluminanceIdicator;
 import com.android_things.sensor_experiment.indicator.DetectionIndicator;
 import com.android_things.sensor_experiment.indicator.DistanceIndicator;
@@ -26,15 +25,12 @@ import com.android_things.sensor_experiment.indicator.LedDetectorIndicator;
 import com.android_things.sensor_experiment.indicator.UIDetectorIndicator;
 import com.android_things.sensor_experiment.detectors.MotionDetector;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
-import com.android_things.sensor_experiment.drivers.zx_gesture_sensor.ZxGestureSensorUart;
 import com.android_things.sensor_experiment.sensors.SensorRegistry;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.security.auth.login.LoginException;
 
 import static com.android_things.sensor_experiment.base.Constants.TAG;
 
