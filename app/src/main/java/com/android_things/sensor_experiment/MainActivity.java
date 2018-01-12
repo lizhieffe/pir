@@ -77,36 +77,15 @@ public class MainActivity extends Activity {
         maybeStartAmbientLightDetection();
         maybeStartAirQualityDetection();
         maybeStartGestureDetection();
+        maybeStartAudioRecord();
 
 
-        try {
-            mAudioRecord = new AudioRecord.Builder()
-                    .setAudioSource(MediaRecorder.AudioSource.MIC)
-                    .setAudioFormat(new AudioFormat.Builder()
-                            .setEncoding(ENCODING_FORMAT)
-                            .setSampleRate(SAMPLE_RATE)
-                            .setChannelMask(CHANNEL_FORMAT)
-                            .build())
-                    .setBufferSizeInBytes(2*mBufferSize)
-                    .build();
-            Log.d(TAG, "MainActivity.onCreate: starting audio record ...");
-            mAudioRecord.startRecording();
-            Log.d(TAG, "MainActivity.onCreate: audio record started ...");
-        } catch (UnsupportedOperationException e) {
-            Log.e(TAG, "MainActivity.onCreate: Did you add \"android.permission.RECORD_AUDIO\" permission to Manifest file?");
-            Log.e(TAG, "MainActivity.onCreate: ", e);
-        }
-
-        mAudioRecordHandlerThread = new HandlerThread("Audio Record Handler Thread");
-        mAudioRecordHandlerThread.start();
-        mAudioRecordHandler = new Handler(mAudioRecordHandlerThread.getLooper());
-        mAudioRecordHandler.post(mAudioRunnable);
 
 
         Mpu6500Sensor s = new Mpu6500Sensor();
         try {
             s.startup();
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 1; i++) {
                 int[] accelData = s.readAccelData();
                 if (accelData == null) {
                     Log.e(TAG, "MainActivity.onCreate: read accel is null");
@@ -205,6 +184,33 @@ public class MainActivity extends Activity {
                     (TextView)findViewById(R.id.gesture_text_view));
             mGestureDetector.addListener(gestureIndicator);
             mGestureDetector.start();
+        }
+    }
+
+    private void maybeStartAudioRecord() {
+        if (Features.AUDIO_RECORD_ENABLED) {
+            try {
+                mAudioRecord = new AudioRecord.Builder()
+                        .setAudioSource(MediaRecorder.AudioSource.MIC)
+                        .setAudioFormat(new AudioFormat.Builder()
+                                .setEncoding(ENCODING_FORMAT)
+                                .setSampleRate(SAMPLE_RATE)
+                                .setChannelMask(CHANNEL_FORMAT)
+                                .build())
+                        .setBufferSizeInBytes(2 * mBufferSize)
+                        .build();
+                Log.d(TAG, "MainActivity.onCreate: starting audio record ...");
+                mAudioRecord.startRecording();
+                Log.d(TAG, "MainActivity.onCreate: audio record started ...");
+            } catch (UnsupportedOperationException e) {
+                Log.e(TAG, "MainActivity.onCreate: Did you add \"android.permission.RECORD_AUDIO\" permission to Manifest file?");
+                Log.e(TAG, "MainActivity.onCreate: ", e);
+            }
+
+            mAudioRecordHandlerThread = new HandlerThread("Audio Record Handler Thread");
+            mAudioRecordHandlerThread.start();
+            mAudioRecordHandler = new Handler(mAudioRecordHandlerThread.getLooper());
+            mAudioRecordHandler.post(mAudioRunnable);
         }
     }
 }

@@ -21,9 +21,9 @@ public class ByteUtil {
         return b & 0xff;
     }
 
-    static public int twoBytesToUnsignedShort(byte high, byte low) {
-        Log.d(TAG, "ByteUtil.twoBytesToUnsignedShort: high = " + byteToUnsignedShort(high));
-        Log.d(TAG, "ByteUtil.twoBytesToUnsignedShort: low = " + byteToUnsignedShort(low));
+    static public int twoBytesToUnsignedInt(byte high, byte low) {
+        // Log.d(TAG, "ByteUtil.twoBytesToUnsignedInt: high = " + byteToUnsignedShort(high));
+        // Log.d(TAG, "ByteUtil.twoBytesToUnsignedInt: low = " + byteToUnsignedShort(low));
         short fistPart = (short)((byteToUnsignedShort(high)<<8)&0xffff);
         short secondPart = (short)((byteToUnsignedShort(low))&0xffff);
         return ((fistPart + secondPart) & 0xffff);
