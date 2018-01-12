@@ -12,7 +12,7 @@ import java.io.IOException;
 import static com.android_things.sensor_experiment.base.Constants.TAG;
 
 /**
- * For MPU-6500 6-axis MotionTracking device with I2C interface.
+ * For InvenSense MPU-6500 6-axis MotionTracking device with I2C interface.
  *
  * A well written c driver is: https://github.com/NordicPlayground/nrf52-quadcopter/blob/master/Firmware/drivers/mpu6500.h
  */
@@ -59,9 +59,13 @@ public class Mpu6500Sensor implements MotionSensor {
         }
     }
 
+    private static final int SELF_TEST_X_GYRO = 0;
+    private static final int SELF_TEST_Y_GYRO = 1;
+    private static final int SELF_TEST_Z_GYRO = 2;
     private static final int SELF_TEST_X_ACCEL = 13;
     private static final int SELF_TEST_Y_ACCEL = 14;
     private static final int SELF_TEST_Z_ACCEL = 15;
+    private static final int GYRO_CONFIG_REG = 27;
     private static final int ACCEL_CONFIG_REG = 28;
     private static final int ACCEL_CONFIG_REG_2 = 29;
     private static final int FIFO_ENABLE_REG = 35;
@@ -74,6 +78,12 @@ public class Mpu6500Sensor implements MotionSensor {
     private static final int ACCEL_YOUT_L = 62;
     private static final int ACCEL_ZOUT_H = 63;
     private static final int ACCEL_ZOUT_L = 64;
+    private static final int GYRO_XOUT_H = 67;
+    private static final int GYRO_XOUT_L = 68;
+    private static final int GYRO_YOUT_H = 69;
+    private static final int GYRO_YOUT_L = 70;
+    private static final int GYRO_ZOUT_H = 71;
+    private static final int GYRO_ZOUT_L = 72;
     private static final int SIGNAL_PATH_RESET = 104;
     private static final int ACCEL_INTEL_CTRL = 105;
     private static final int PWR_MGMT_1 = 107;
@@ -118,6 +128,24 @@ public class Mpu6500Sensor implements MotionSensor {
         }
     }
 
+    public int[] readGyroRawData() {
+        try {
+            int x = ByteUtil.twoBytesToSignedInt(
+                    mDevice.readRegByte(GYRO_XOUT_H),
+                    mDevice.readRegByte(GYRO_XOUT_L));
+            int y = ByteUtil.twoBytesToSignedInt(
+                    mDevice.readRegByte(GYRO_YOUT_H),
+                    mDevice.readRegByte(GYRO_YOUT_L));
+            int z = ByteUtil.twoBytesToSignedInt(
+                    mDevice.readRegByte(GYRO_ZOUT_H),
+                    mDevice.readRegByte(GYRO_ZOUT_L));
+            return new int[]{x, y, z};
+        } catch (IOException e) {
+            Log.e(TAG, "Mpu6500Sensor.readGyroData: ", e);
+            return null;
+        }
+    }
+
     public int[] readExpectedAccelSelfTestData() {
         try {
             int x = ByteUtil.byteToUnsignedInt(mDevice.readRegByte(SELF_TEST_X_ACCEL));
@@ -125,7 +153,19 @@ public class Mpu6500Sensor implements MotionSensor {
             int z = ByteUtil.byteToUnsignedInt(mDevice.readRegByte(SELF_TEST_Z_ACCEL));
             return new int[]{x, y, z};
         } catch (IOException e) {
-            Log.e(TAG, "Mpu6500Sensor.readAccelData: ", e);
+            Log.e(TAG, "Mpu6500Sensor.readExpectedAccelSelfTestData: ", e);
+            return null;
+        }
+    }
+
+    public int[] readExpectedGyroSelfTestData() {
+        try {
+            int x = ByteUtil.byteToUnsignedInt(mDevice.readRegByte(SELF_TEST_X_GYRO));
+            int y = ByteUtil.byteToUnsignedInt(mDevice.readRegByte(SELF_TEST_Y_GYRO));
+            int z = ByteUtil.byteToUnsignedInt(mDevice.readRegByte(SELF_TEST_Z_GYRO));
+            return new int[]{x, y, z};
+        } catch (IOException e) {
+            Log.e(TAG, "Mpu6500Sensor.readExpectedGyroSelfTestData: ", e);
             return null;
         }
     }
@@ -209,6 +249,8 @@ public class Mpu6500Sensor implements MotionSensor {
 
     private final static float SELF_TEST_ACCEL_LOW = -14;
     private final static float SELF_TEST_ACCEL_HIGH = 14;
+    private final static float SELF_TEST_GYRO_LOW = -14;
+    private final static float SELF_TEST_GYRO_HIGH = 14;
 
     // TODO: read register map doc and add more self test.
     private void selfTest() throws IOException, InterruptedException {
@@ -217,17 +259,22 @@ public class Mpu6500Sensor implements MotionSensor {
 
         // Get average current value of accelrometer.
         int[] accelAvg = readAvgAccelData(SELF_TEST_READ_COUNT);
+        int[] gyroAvg = readAvgGyroData(SELF_TEST_READ_COUNT);
 
         // Config the accelerometer for self-test.
         mDevice.writeRegByte(ACCEL_CONFIG_REG, (byte)0xE0);  // Enable self test on all three axes and set accelerometer range to +/- 2 g
+        mDevice.writeRegByte(GYRO_CONFIG_REG, (byte)0xE0);  // Enable self test on all three axes and set gyro range to +/- 250 degrees/s
         Thread.sleep(25);  // Delay to let the device stabilize.
         int[] accelSelfTestAvg = readAvgAccelData(SELF_TEST_READ_COUNT);
+        int[] gyroSelfTestAvg = readAvgGyroData(SELF_TEST_READ_COUNT);
 
         // Config the accelerometer for normal operation.
         mDevice.writeRegByte(ACCEL_CONFIG_REG, (byte)0x00);
+        mDevice.writeRegByte(GYRO_CONFIG_REG, (byte)0x00);
         Thread.sleep(25);  // Delay to let the device stabilize.
 
         int[] expectedAccelSelfTest = readExpectedAccelSelfTestData();
+        int[] expectedGyroSelfTest = readExpectedGyroSelfTestData();
 
         int[] factoryTrim = new int[6];
         for (int i = 0; i < 6; i++) {
@@ -238,12 +285,20 @@ public class Mpu6500Sensor implements MotionSensor {
                 } else {
                     factoryTrim[i] = 0;
                 }
+            } else {
+                if (expectedGyroSelfTest[i - 3] != 0) {
+                    factoryTrim[i] = mpu6500StTb[expectedGyroSelfTest[i - 3] - 1];
+                } else {
+                    factoryTrim[i] = 0;
+                }
             }
         }
 
         float[] accelDiff = new float[3];
+        float[] gyroDiff = new float[3];
         for (int i = 0; i < 3; i++) {
             accelDiff[i] = 100.0f * ((float)((accelSelfTestAvg[i] - accelAvg[i]) - factoryTrim[i]))/factoryTrim[i];
+            gyroDiff[i] = 100.0f * ((float)((gyroSelfTestAvg[i] - gyroAvg[i]) - factoryTrim[i + 3]))/factoryTrim[i + 3];
         }
 
         if (evaluateSelfTest(SELF_TEST_ACCEL_LOW, SELF_TEST_ACCEL_HIGH,
@@ -251,7 +306,13 @@ public class Mpu6500Sensor implements MotionSensor {
             evaluateSelfTest(SELF_TEST_ACCEL_LOW, SELF_TEST_ACCEL_HIGH,
                     accelDiff[1], "accel Y") &&
             evaluateSelfTest(SELF_TEST_ACCEL_LOW, SELF_TEST_ACCEL_HIGH,
-                    accelDiff[2], "accel Z")) {
+                    accelDiff[2], "accel Z") &&
+            evaluateSelfTest(SELF_TEST_GYRO_LOW, SELF_TEST_GYRO_HIGH,
+                    gyroDiff[0], "gyro X") &&
+            evaluateSelfTest(SELF_TEST_GYRO_LOW, SELF_TEST_GYRO_HIGH,
+                    gyroDiff[1], "gyro Y") &&
+            evaluateSelfTest(SELF_TEST_GYRO_LOW, SELF_TEST_GYRO_HIGH,
+                    gyroDiff[2], "gyro Z")) {
             Log.d(TAG, "Mpu6500Sensor.selfTest: sensor self test passed.");
         } else {
             Log.e(TAG, "selfTest: sensor self test failed!!!");
@@ -262,6 +323,20 @@ public class Mpu6500Sensor implements MotionSensor {
         int[] avg = new int[3];
         for (int i = 0; i < count; i++) {
             int[] data = readAccelRawData();
+            for (int j = 0; j < avg.length; j++) {
+                avg[j] += data[j];
+            }
+        }
+        for (int j = 0; j < avg.length; j++) {
+            avg[j] /= count;
+        }
+        return avg;
+    }
+
+    private int[] readAvgGyroData(int count) {
+        int[] avg = new int[3];
+        for (int i = 0; i < count; i++) {
+            int[] data = readGyroRawData();
             for (int j = 0; j < avg.length; j++) {
                 avg[j] += data[j];
             }

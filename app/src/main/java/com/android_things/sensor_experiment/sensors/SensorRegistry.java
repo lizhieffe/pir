@@ -13,7 +13,7 @@ import com.android_things.sensor_experiment.indicator.AccelerometerUiController;
 import static com.android_things.sensor_experiment.base.Constants.TAG;
 
 /**
- * Created by lizhi on 1/12/18.
+ * Registry for sensors which manages the sensor resource and listeners.
  */
 
 public class SensorRegistry {
