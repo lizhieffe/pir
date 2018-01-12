@@ -21,11 +21,15 @@ public class ByteUtil {
         return b & 0xff;
     }
 
+    static public int twoBytesToSignedInt(byte high, byte low) {
+        short fistPart = (short)((byteToUnsignedShort(high)<<8));
+        short secondPart = (short)((byteToUnsignedShort(low))&0xffff);
+        return (fistPart | secondPart);
+    }
+
     static public int twoBytesToUnsignedInt(byte high, byte low) {
-        // Log.d(TAG, "ByteUtil.twoBytesToUnsignedInt: high = " + byteToUnsignedShort(high));
-        // Log.d(TAG, "ByteUtil.twoBytesToUnsignedInt: low = " + byteToUnsignedShort(low));
         short fistPart = (short)((byteToUnsignedShort(high)<<8)&0xffff);
         short secondPart = (short)((byteToUnsignedShort(low))&0xffff);
-        return ((fistPart + secondPart) & 0xffff);
+        return ((fistPart | secondPart) & 0xffff);
     }
 }

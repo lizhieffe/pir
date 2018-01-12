@@ -19,8 +19,11 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
 
 public class Mpu6500Sensor implements MotionSensor {
     public static final String DEFAULT_I2C_BUS = "I2C1";
+
     // 0x68 when AD0 pin is low (GND), 0x69 when AD0 is high (3.3V)
-    public static final int DEFAULT_I2C_ADDRESS = 0x68;
+    private static final int I2C_ADDRESS_LOW = 0x68;
+    private static final int I2C_ADDRESS_HIGH = 0x69;
+    public static final int DEFAULT_I2C_ADDRESS = I2C_ADDRESS_LOW;
 
     // I2C bus and address for the device.
     private String mBus;
@@ -77,16 +80,35 @@ public class Mpu6500Sensor implements MotionSensor {
     private static final int PWR_MGMT_2 = 108;
     private static final int WHOAMI_REG = 117;
 
+    // Response is in unit of g.
+    public double[] readAccelData() {
+        int[] rawData = readAccelRawData();
+        double[] data = new double[3];
+        for (int i = 0; i < data.length; i++) {
+            data[i] = (double)rawData[i] / (65536.0 / 2.0 / 2.0);
+        }
+        return data;
+    }
+
+    // TODO: use burst read as mentioned in L1953 to make sure the read numbers are for the same sampling instance.
+    //
+    // TODO: change the raw data mapping based on measuring setting.
+    //
     // Return value is an int array with size 3. If read fails, return null.
-    public int[] readAccelData() {
+    // The raw data read value is within range [-2^15, 2^15], that is [-32768, 32767].
+    // The default measuring range setting for accelerometer is +/-2g. That means +/-2g is mapped
+    // to +/-2^15 linearly. If the measuring range is changed, the mapping also changes.
+    //
+    // Here has some explanation for the data: https://www.i2cdevlib.com/forums/topic/4-understanding-raw-values-of-accelerometer-and-gyrometer/
+    public int[] readAccelRawData() {
         try {
-            int x = ByteUtil.twoBytesToUnsignedInt(
+            int x = ByteUtil.twoBytesToSignedInt(
                         mDevice.readRegByte(ACCEL_XOUT_H),
                         mDevice.readRegByte(ACCEL_XOUT_L));
-            int y = ByteUtil.twoBytesToUnsignedInt(
+            int y = ByteUtil.twoBytesToSignedInt(
                     mDevice.readRegByte(ACCEL_YOUT_H),
                     mDevice.readRegByte(ACCEL_YOUT_L));
-            int z = ByteUtil.twoBytesToUnsignedInt(
+            int z = ByteUtil.twoBytesToSignedInt(
                     mDevice.readRegByte(ACCEL_ZOUT_H),
                     mDevice.readRegByte(ACCEL_ZOUT_L));
             return new int[]{x, y, z};
@@ -239,7 +261,7 @@ public class Mpu6500Sensor implements MotionSensor {
     private int[] readAvgAccelData(int count) {
         int[] avg = new int[3];
         for (int i = 0; i < count; i++) {
-            int[] data = readAccelData();
+            int[] data = readAccelRawData();
             for (int j = 0; j < avg.length; j++) {
                 avg[j] += data[j];
             }
@@ -252,17 +274,19 @@ public class Mpu6500Sensor implements MotionSensor {
 
     private void config() throws IOException {
         // Enable temp/gyro/accel output in FIFO.
-        mDevice.writeRegByte(FIFO_ENABLE_REG, (byte)0b11111000);
+        // mDevice.writeRegByte(FIFO_ENABLE_REG, (byte)0b11111000);
 
-        mDevice.writeRegByte(INT_CONFIG_REG, (byte)0b00000000);
-        // Enable interrupt only for wake on motion.
-        mDevice.writeRegByte(INT_ENABLE_REG, (byte)0b01000000);
-        // Enable Wake-on-Motion detection logic.
-        mDevice.writeRegByte(ACCEL_INTEL_CTRL, (byte)0b10000000);
+        // mDevice.writeRegByte(INT_CONFIG_REG, (byte)0b00000000);
+        // // Enable interrupt only for wake on motion.
+        // mDevice.writeRegByte(INT_ENABLE_REG, (byte)0b01000000);
+        // // Enable Wake-on-Motion detection logic.
+        // mDevice.writeRegByte(ACCEL_INTEL_CTRL, (byte)0b10000000);
 
         // Disable temperature sensor.
         mDevice.writeRegByte(PWR_MGMT_1, (byte)0b00001000);
         // Enable accelerometer and gyro.
         mDevice.writeRegByte(PWR_MGMT_2, (byte)0b00000000);
+
+        Log.d(TAG, "config: the MPU 6500 sensor is configured.");
     }
 }

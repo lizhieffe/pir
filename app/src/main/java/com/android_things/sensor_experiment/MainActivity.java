@@ -80,29 +80,9 @@ public class MainActivity extends Activity {
         maybeStartAudioRecord();
 
 
+        maybeStartAccelerometer();
 
 
-        Mpu6500Sensor s = new Mpu6500Sensor();
-        try {
-            s.startup();
-            for (int i = 0; i < 1; i++) {
-                int[] accelData = s.readAccelData();
-                if (accelData == null) {
-                    Log.e(TAG, "MainActivity.onCreate: read accel is null");
-                } else {
-                    Log.d(TAG, "MainActivity.onCreate: read accel = "
-                            + accelData[0] + " " + accelData[1] + " " + accelData[2]);
-                }
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    Log.e(TAG, "MainActivity.onCreate: ", e);
-                }
-            }
-        } catch (IOException e) {
-            Log.e(TAG, "MainActivity.onCreate: ", e);
-        }
-        s.shutdown();
     }
 
     @Override
@@ -211,6 +191,41 @@ public class MainActivity extends Activity {
             mAudioRecordHandlerThread.start();
             mAudioRecordHandler = new Handler(mAudioRecordHandlerThread.getLooper());
             mAudioRecordHandler.post(mAudioRunnable);
+        }
+    }
+
+    private void maybeStartAccelerometer() {
+        if (Features.ACCELEROMETER_ENABLED) {
+            Mpu6500Sensor s = new Mpu6500Sensor();
+            HandlerThread handlerThread = new HandlerThread("Accel thread");
+            handlerThread.start();
+            Handler handler = new Handler(handlerThread.getLooper());
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Mpu6500Sensor s = new Mpu6500Sensor();
+                    try {
+                        s.startup();
+                        for (int i = 0; i < 1000; i++) {
+                            double[] accelData = s.readAccelData();
+                            if (accelData == null) {
+                                Log.e(TAG, "MainActivity.onCreate: read accel is null");
+                            } else {
+                                Log.d(TAG, "MainActivity.onCreate: read accel = "
+                                        + accelData[0] + " " + accelData[1] + " " + accelData[2]);
+                            }
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e) {
+                                Log.e(TAG, "MainActivity.onCreate: ", e);
+                            }
+                        }
+                    } catch (IOException e) {
+                        Log.e(TAG, "MainActivity.onCreate: ", e);
+                    }
+                    s.shutdown();
+                }
+            });
         }
     }
 }
