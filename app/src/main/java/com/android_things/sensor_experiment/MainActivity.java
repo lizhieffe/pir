@@ -40,8 +40,6 @@ public class MainActivity extends Activity {
 
     private SensorManager mSensorManager;
 
-    ZxGestureSensorUart mZxGestureSensorUart;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,7 +67,6 @@ public class MainActivity extends Activity {
             mAirQualityDetector.shutdown();
         }
         if (Features.GESTURE_DETECTION_ENABLED) {
-            // mZxGestureSensorUart.shutdown();
             mGestureDetector.shutdown();
         }
 
@@ -129,16 +126,6 @@ public class MainActivity extends Activity {
 
     private void maybeStartGestureDetection() {
         if (Features.GESTURE_DETECTION_ENABLED) {
-            // try {
-            //     Log.d(TAG, "MainActivity.maybeStartGestureDetection: 11111");
-            //     mZxGestureSensorUart = new ZxGestureSensorUart("UART0");
-            //     Log.d(TAG, "MainActivity.maybeStartGestureDetection: 22222");
-            //     mZxGestureSensorUart.startup();
-            //     Log.d(TAG, "MainActivity.maybeStartGestureDetection: 33333");
-
-            // } catch (IOException e) {
-            //     Log.e(TAG, "MainActivity.onCreate: ", e);
-            // }
             mGestureDetector = new GestureDetector(mSensorManager);
             GestureIndicator gestureIndicator = new GestureIndicator(
                     (TextView)findViewById(R.id.gesture_text_view));
