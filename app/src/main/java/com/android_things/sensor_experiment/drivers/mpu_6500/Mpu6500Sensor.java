@@ -80,12 +80,12 @@ public class Mpu6500Sensor implements MotionSensor {
     private static final int PWR_MGMT_2 = 108;
     private static final int WHOAMI_REG = 117;
 
-    // Response is in unit of g.
-    public double[] readAccelData() {
+    // Response is in unit of acceleration g.
+    public float[] readAccelData() {
         int[] rawData = readAccelRawData();
-        double[] data = new double[3];
+        float[] data = new float[3];
         for (int i = 0; i < data.length; i++) {
-            data[i] = (double)rawData[i] / (65536.0 / 2.0 / 2.0);
+            data[i] = (float)rawData[i] / (float)(65536.0 / 2.0 / 2.0);
         }
         return data;
     }
@@ -194,14 +194,14 @@ public class Mpu6500Sensor implements MotionSensor {
      * @param string A pointer to a string describing the value.
      * @return True if self test within low - high limit, false otherwise
      */
-    boolean mpu6500EvaluateSelfTest(float low, float high, float value, String str)
+    boolean evaluateSelfTest(float low, float high, float value, String str)
     {
         if (value < low || value > high) {
-            Log.e(TAG, "mpu6500EvaluateSelfTest: self test " + str
+            Log.e(TAG, "evaluateSelfTest: self test " + str
             + "[FAIL]. low: " + low + ", high: " + high + ", measured: " + value);
             return false;
         } else {
-            Log.d(TAG, "mpu6500EvaluateSelfTest: self test " + str
+            Log.d(TAG, "evaluateSelfTest: self test " + str
                     + "[SUCCEED]. low: " + low + ", high: " + high + ", measured: " + value);
             return true;
         }
@@ -246,11 +246,11 @@ public class Mpu6500Sensor implements MotionSensor {
             accelDiff[i] = 100.0f * ((float)((accelSelfTestAvg[i] - accelAvg[i]) - factoryTrim[i]))/factoryTrim[i];
         }
 
-        if (mpu6500EvaluateSelfTest(SELF_TEST_ACCEL_LOW, SELF_TEST_ACCEL_HIGH,
+        if (evaluateSelfTest(SELF_TEST_ACCEL_LOW, SELF_TEST_ACCEL_HIGH,
                     accelDiff[0], "accel X") &&
-            mpu6500EvaluateSelfTest(SELF_TEST_ACCEL_LOW, SELF_TEST_ACCEL_HIGH,
+            evaluateSelfTest(SELF_TEST_ACCEL_LOW, SELF_TEST_ACCEL_HIGH,
                     accelDiff[1], "accel Y") &&
-            mpu6500EvaluateSelfTest(SELF_TEST_ACCEL_LOW, SELF_TEST_ACCEL_HIGH,
+            evaluateSelfTest(SELF_TEST_ACCEL_LOW, SELF_TEST_ACCEL_HIGH,
                     accelDiff[2], "accel Z")) {
             Log.d(TAG, "Mpu6500Sensor.selfTest: sensor self test passed.");
         } else {
@@ -273,7 +273,7 @@ public class Mpu6500Sensor implements MotionSensor {
     }
 
     private void config() throws IOException {
-        // Enable temp/gyro/accel output in FIFO.
+        // // Enable temp/gyro/accel output in FIFO.
         // mDevice.writeRegByte(FIFO_ENABLE_REG, (byte)0b11111000);
 
         // mDevice.writeRegByte(INT_CONFIG_REG, (byte)0b00000000);

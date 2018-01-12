@@ -207,7 +207,7 @@ public class MainActivity extends Activity {
                     try {
                         s.startup();
                         for (int i = 0; i < 1000; i++) {
-                            double[] accelData = s.readAccelData();
+                            float[] accelData = s.readAccelData();
                             if (accelData == null) {
                                 Log.e(TAG, "MainActivity.onCreate: read accel is null");
                             } else {
