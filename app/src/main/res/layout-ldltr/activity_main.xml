@@ -8,26 +8,33 @@
         android:layout_width="match_parent"
         android:layout_height="89dp"
         android:text="No Movement "
-        android:textSize="36sp" />
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/distance_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Distance Placeholder"
-        android:textSize="36sp" />
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/ambient_light_value_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Luminance Placeholder"
-        android:textSize="36sp" />
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/gesture_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Gesture Placeholder"
-        android:textSize="36sp" />
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/accelerometer_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Accelerometer Placeholder"
+        android:textSize="20sp" />
 </LinearLayout>
