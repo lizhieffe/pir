@@ -27,6 +27,7 @@ import com.android_things.sensor_experiment.indicator.UIDetectorIndicator;
 import com.android_things.sensor_experiment.detectors.MotionDetector;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
 import com.android_things.sensor_experiment.drivers.zx_gesture_sensor.ZxGestureSensorUart;
+import com.android_things.sensor_experiment.sensors.SensorRegistry;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -67,6 +68,10 @@ public class MainActivity extends Activity {
         }
     };
 
+
+
+    SensorRegistry mSensorRegistry;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,6 +107,8 @@ public class MainActivity extends Activity {
         if (Features.GESTURE_DETECTION_ENABLED) {
             mGestureDetector.shutdown();
         }
+
+        mSensorRegistry.shutdown();
 
         super.onDestroy();
     }
@@ -195,37 +202,8 @@ public class MainActivity extends Activity {
     }
 
     private void maybeStartAccelerometer() {
-        if (Features.ACCELEROMETER_ENABLED) {
-            Mpu6500Sensor s = new Mpu6500Sensor();
-            HandlerThread handlerThread = new HandlerThread("Accel thread");
-            handlerThread.start();
-            Handler handler = new Handler(handlerThread.getLooper());
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    Mpu6500Sensor s = new Mpu6500Sensor();
-                    try {
-                        s.startup();
-                        for (int i = 0; i < 1000; i++) {
-                            float[] accelData = s.readAccelData();
-                            if (accelData == null) {
-                                Log.e(TAG, "MainActivity.onCreate: read accel is null");
-                            } else {
-                                Log.d(TAG, "MainActivity.onCreate: read accel = "
-                                        + accelData[0] + " " + accelData[1] + " " + accelData[2]);
-                            }
-                            try {
-                                Thread.sleep(500);
-                            } catch (InterruptedException e) {
-                                Log.e(TAG, "MainActivity.onCreate: ", e);
-                            }
-                        }
-                    } catch (IOException e) {
-                        Log.e(TAG, "MainActivity.onCreate: ", e);
-                    }
-                    s.shutdown();
-                }
-            });
-        }
+        mSensorRegistry = new SensorRegistry(mSensorManager,
+                (TextView)findViewById(R.id.accelerometer_text_view));
+        mSensorRegistry.start();
     }
 }

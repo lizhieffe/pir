@@ -13,6 +13,10 @@ import com.android_things.sensor_experiment.drivers.mpu_6500.Mpu6500SensorListen
 public class AccelerometerUiController implements Mpu6500SensorListener {
     private TextView mAccelerometerView;
 
+    // Reading inside the deplay will not be shown on the screen.
+    private final static long DISPLAY_DELAY_MS = 500;
+    private long mLastDisplayUpldate;
+
     public AccelerometerUiController(TextView accelerometerView) {
         mAccelerometerView = accelerometerView;
     }
@@ -22,14 +26,19 @@ public class AccelerometerUiController implements Mpu6500SensorListener {
         final float[] finalData = data;
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             public void run() {
-                StringBuilder sb = new StringBuilder();
-                sb.append("accel read [x, y, z]: ");
-                sb.append(finalData[0]);
-                sb.append(" ");
-                sb.append(finalData[1]);
-                sb.append(" ");
-                sb.append(finalData[2]);
-                mAccelerometerView.setText(sb.toString());
+                final long currTimeMs = System.currentTimeMillis();
+                if (currTimeMs - mLastDisplayUpldate > DISPLAY_DELAY_MS) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("accel read [x, y, z]: ");
+                    sb.append(String.format("%.4f", finalData[0]));
+                    sb.append(" ");
+                    sb.append(String.format("%.4f", finalData[1]));
+                    sb.append(" ");
+                    sb.append(String.format("%.4f", finalData[2]));
+                    mAccelerometerView.setText(sb.toString());
+
+                    mLastDisplayUpldate = currTimeMs;
+                }
             }
         });
     }
