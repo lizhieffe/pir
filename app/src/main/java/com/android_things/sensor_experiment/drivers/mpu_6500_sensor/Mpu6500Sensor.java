@@ -92,12 +92,23 @@ public class Mpu6500Sensor implements MotionSensor {
 
     // Response is in unit of acceleration g.
     public float[] readAccelData() {
-        int[] rawData = readAccelRawData();
-        float[] data = new float[3];
-        for (int i = 0; i < data.length; i++) {
-            data[i] = (float)rawData[i] / (float)(65536.0 / 2.0 / 2.0);
+        int[] rawAccelData = readAccelRawData();
+        float[] result = new float[3];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = (float) rawAccelData[i] / (float)(65536.0 / 2.0 / 2.0);
         }
-        return data;
+        Log.d(TAG, "readAccelData: 3333333333");
+        return result;
+    }
+
+    public float[] readGyroData() {
+        int[] rawGyroData = readGyroRawData();
+        float[] result = new float[3];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = rawGyroData[i];
+        }
+        Log.d(TAG, "readGyroData: 44444444444");
+        return result;
     }
 
     // TODO: use burst read as mentioned in L1953 to make sure the read numbers are for the same sampling instance.
@@ -130,6 +141,7 @@ public class Mpu6500Sensor implements MotionSensor {
 
     public int[] readGyroRawData() {
         try {
+            Log.d(TAG, "readGyroRawData: 1111111");
             int x = ByteUtil.twoBytesToSignedInt(
                     mDevice.readRegByte(GYRO_XOUT_H),
                     mDevice.readRegByte(GYRO_XOUT_L));
@@ -139,6 +151,7 @@ public class Mpu6500Sensor implements MotionSensor {
             int z = ByteUtil.twoBytesToSignedInt(
                     mDevice.readRegByte(GYRO_ZOUT_H),
                     mDevice.readRegByte(GYRO_ZOUT_L));
+            Log.d(TAG, "readGyroRawData: 2222222");
             return new int[]{x, y, z};
         } catch (IOException e) {
             Log.e(TAG, "Mpu6500Sensor.readGyroData: ", e);

@@ -43,11 +43,11 @@ public class SensorRegistry {
             public void onSensorChanged(SensorEvent event) {
                 Log.d(TAG, "onSensorChanged: " + event.values[0]
                         + " " + event.values[1] + " " + event.values[2]);
-                float[] accelData = new float[3];
-                for (int i = 0; i < accelData.length; i++) {
-                    accelData[i] = event.values[i];
+                float[] data = new float[3];
+                for (int i = 0; i < data.length; i++) {
+                    data[i] = event.values[i];
                 }
-                mAccelUiController.onAccelData(accelData);
+                mAccelUiController.onAccelData(data);
             }
 
             @Override

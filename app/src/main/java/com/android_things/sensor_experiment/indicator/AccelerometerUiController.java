@@ -29,14 +29,22 @@ public class AccelerometerUiController implements Mpu6500SensorListener {
                 final long currTimeMs = System.currentTimeMillis();
                 if (currTimeMs - mLastDisplayUpldate > DISPLAY_DELAY_MS) {
                     StringBuilder sb = new StringBuilder();
+
                     sb.append("Accel read [x, y, z]: ");
                     sb.append(String.format("%.4f", finalData[0]));
                     sb.append(", ");
                     sb.append(String.format("%.4f", finalData[1]));
                     sb.append(", ");
-                    sb.append(String.format("%.4f", finalData[2]));
-                    mAccelerometerView.setText(sb.toString());
+                    sb.append(String.format("%.4f\n", finalData[2]));
 
+                    // sb.append("Gyro read [x, y, z]: ");
+                    // sb.append(String.format("%.4f", finalData[3]));
+                    // sb.append(", ");
+                    // sb.append(String.format("%.4f", finalData[4]));
+                    // sb.append(", ");
+                    // sb.append(String.format("%.4f\n", finalData[5]));
+
+                    mAccelerometerView.setText(sb.toString());
                     mLastDisplayUpldate = currTimeMs;
                 }
             }
