@@ -3,7 +3,12 @@ package com.android_things.sensor_experiment;
 import android.app.Activity;
 import android.content.Context;
 import android.hardware.SensorManager;
+import android.media.AudioFormat;
+import android.media.AudioRecord;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
@@ -12,6 +17,7 @@ import com.android_things.sensor_experiment.base.Features;
 import com.android_things.sensor_experiment.detectors.AirQualityDetector;
 import com.android_things.sensor_experiment.detectors.AmbientLightDetector;
 import com.android_things.sensor_experiment.detectors.GestureDetector;
+import com.android_things.sensor_experiment.drivers.mpu_6500.Mpu6500Sensor;
 import com.android_things.sensor_experiment.indicator.AmbientLightIlluminanceIdicator;
 import com.android_things.sensor_experiment.indicator.DetectionIndicator;
 import com.android_things.sensor_experiment.indicator.DistanceIndicator;
@@ -27,6 +33,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.security.auth.login.LoginException;
+
 import static com.android_things.sensor_experiment.base.Constants.TAG;
 
 public class MainActivity extends Activity {
@@ -40,6 +48,25 @@ public class MainActivity extends Activity {
 
     private SensorManager mSensorManager;
 
+
+    private AudioRecord mAudioRecord;
+    private static final int SAMPLE_RATE = 44100;
+    private static final int ENCODING_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
+    private static final int CHANNEL_FORMAT = AudioFormat.CHANNEL_IN_MONO;
+    private final int mBufferSize = AudioRecord
+            .getMinBufferSize(SAMPLE_RATE, CHANNEL_FORMAT, ENCODING_FORMAT);
+    private Handler mAudioRecordHandler = null;
+    private HandlerThread mAudioRecordHandlerThread = null;
+    private Runnable mAudioRunnable = new Runnable() {
+        @Override
+        public void run() {
+            byte[] buffer = new byte[10];
+            mAudioRecord.read(buffer, 0, 10, AudioRecord.READ_BLOCKING);
+            // Log.d(TAG, "MainActivity.run: read 10 bytes");
+            mAudioRecordHandler.post(mAudioRunnable);
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +77,53 @@ public class MainActivity extends Activity {
         maybeStartAmbientLightDetection();
         maybeStartAirQualityDetection();
         maybeStartGestureDetection();
+
+
+        try {
+            mAudioRecord = new AudioRecord.Builder()
+                    .setAudioSource(MediaRecorder.AudioSource.MIC)
+                    .setAudioFormat(new AudioFormat.Builder()
+                            .setEncoding(ENCODING_FORMAT)
+                            .setSampleRate(SAMPLE_RATE)
+                            .setChannelMask(CHANNEL_FORMAT)
+                            .build())
+                    .setBufferSizeInBytes(2*mBufferSize)
+                    .build();
+            Log.d(TAG, "MainActivity.onCreate: starting audio record ...");
+            mAudioRecord.startRecording();
+            Log.d(TAG, "MainActivity.onCreate: audio record started ...");
+        } catch (UnsupportedOperationException e) {
+            Log.e(TAG, "MainActivity.onCreate: Did you add \"android.permission.RECORD_AUDIO\" permission to Manifest file?");
+            Log.e(TAG, "MainActivity.onCreate: ", e);
+        }
+
+        mAudioRecordHandlerThread = new HandlerThread("Audio Record Handler Thread");
+        mAudioRecordHandlerThread.start();
+        mAudioRecordHandler = new Handler(mAudioRecordHandlerThread.getLooper());
+        mAudioRecordHandler.post(mAudioRunnable);
+
+
+        Mpu6500Sensor s = new Mpu6500Sensor();
+        try {
+            s.startup();
+            for (int i = 0; i < 100; i++) {
+                int[] accelData = s.readAccelData();
+                if (accelData == null) {
+                    Log.e(TAG, "MainActivity.onCreate: read accel is null");
+                } else {
+                    Log.d(TAG, "MainActivity.onCreate: read accel = "
+                            + accelData[0] + " " + accelData[1] + " " + accelData[2]);
+                }
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    Log.e(TAG, "MainActivity.onCreate: ", e);
+                }
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "MainActivity.onCreate: ", e);
+        }
+        s.shutdown();
     }
 
     @Override
