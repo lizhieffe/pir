@@ -32,9 +32,16 @@
         android:textSize="20sp" />
 
     <TextView
-        android:id="@+id/accelerometer_text_view"
+        android:id="@+id/accel_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Accelerometer Placeholder"
+        android:text="Accel Placeholder"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/gyro_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Gyro Placeholder"
         android:textSize="20sp" />
 </LinearLayout>

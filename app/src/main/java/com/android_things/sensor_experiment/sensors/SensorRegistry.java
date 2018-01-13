@@ -7,7 +7,9 @@ import android.hardware.SensorManager;
 import android.util.Log;
 import android.widget.TextView;
 
-import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500SensorDriver;
+import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500SensorAccelDriver;
+import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500SensorDriverFactory;
+import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500SensorGyroDriver;
 import com.android_things.sensor_experiment.indicator.AccelerometerUiController;
 
 import static com.android_things.sensor_experiment.base.Constants.TAG;
@@ -19,13 +21,18 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
 public class SensorRegistry {
     private SensorManager mSensorManager;
 
-    private Mpu6500SensorDriver mMpu6500SensorDriver;
-    private SensorEventListener mMpu6500SensorListener;
+    private Mpu6500SensorAccelDriver mMpu6500SensorAccelDriver;
+    private SensorEventListener mMpu6500SensorAccelListener;
+    private Mpu6500SensorGyroDriver mMpu6500SensorGyroDriver;
+    private SensorEventListener mMpu6500SensorGyroListener;
     private AccelerometerUiController mAccelUiController;
 
-    public SensorRegistry(SensorManager sensorManager, TextView accelView) {
+    private Mpu6500SensorDriverFactory mMpu6500SensorDriverFactory;
+
+    public SensorRegistry(SensorManager sensorManager, TextView accelView, TextView gyroView) {
         mSensorManager = sensorManager;
-        mAccelUiController = new AccelerometerUiController(accelView);
+        mAccelUiController = new AccelerometerUiController(accelView, gyroView);
+        mMpu6500SensorDriverFactory = new Mpu6500SensorDriverFactory();
     }
 
     public void start() {
@@ -33,15 +40,17 @@ public class SensorRegistry {
     }
 
     public void shutdown() {
-        mSensorManager.unregisterListener(mMpu6500SensorListener);
-        mMpu6500SensorDriver.unregisterSensor();
+        mSensorManager.unregisterListener(mMpu6500SensorAccelListener);
+        mMpu6500SensorAccelDriver.unregisterSensor();
+        mSensorManager.unregisterListener(mMpu6500SensorGyroListener);
+        mMpu6500SensorGyroDriver.unregisterSensor();
     }
 
     private void maybeStartMpu6500Sensor() {
-        mMpu6500SensorListener = new SensorEventListener() {
+        mMpu6500SensorAccelListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
-                Log.d(TAG, "onSensorChanged: " + event.values[0]
+                Log.d(TAG, "onSensorChanged: accel " + event.values[0]
                         + " " + event.values[1] + " " + event.values[2]);
                 float[] data = new float[3];
                 for (int i = 0; i < data.length; i++) {
@@ -60,13 +69,44 @@ public class SensorRegistry {
                     @Override
                     public void onDynamicSensorConnected(Sensor sensor) {
                         if (sensor.getType() == sensor.TYPE_ACCELEROMETER) {
-                            mSensorManager.registerListener(mMpu6500SensorListener, sensor,
+                            mSensorManager.registerListener(mMpu6500SensorAccelListener, sensor,
                                     SensorManager.SENSOR_DELAY_NORMAL);
                         }
                     }
                 }
         );
-        mMpu6500SensorDriver = new Mpu6500SensorDriver();
-        mMpu6500SensorDriver.registerSensor();
+        mMpu6500SensorAccelDriver = mMpu6500SensorDriverFactory.createAccelDriver();
+        mMpu6500SensorAccelDriver.registerSensor();
+
+        mMpu6500SensorGyroListener = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                Log.d(TAG, "onSensorChanged: gyro " + event.values[0]
+                        + " " + event.values[1] + " " + event.values[2]);
+                float[] data = new float[3];
+                for (int i = 0; i < data.length; i++) {
+                    data[i] = event.values[i];
+                }
+                mAccelUiController.onGyroData(data);
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+                // Do nothing for now.
+            }
+        };
+        mSensorManager.registerDynamicSensorCallback(
+                new SensorManager.DynamicSensorCallback() {
+                    @Override
+                    public void onDynamicSensorConnected(Sensor sensor) {
+                        if (sensor.getType() == sensor.TYPE_GYROSCOPE) {
+                            mSensorManager.registerListener(mMpu6500SensorGyroListener, sensor,
+                                    SensorManager.SENSOR_DELAY_NORMAL);
+                        }
+                    }
+                }
+        );
+        mMpu6500SensorGyroDriver = mMpu6500SensorDriverFactory.createGyroDriver();
+        mMpu6500SensorGyroDriver.registerSensor();
     }
 }

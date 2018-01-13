@@ -31,11 +31,11 @@ public class Mpu6500Sensor implements MotionSensor {
 
     private I2cDevice mDevice;
 
-    public Mpu6500Sensor() {
+    Mpu6500Sensor() {
         this(DEFAULT_I2C_BUS, DEFAULT_I2C_ADDRESS);
     }
 
-    public Mpu6500Sensor(String bus, int address) {
+    Mpu6500Sensor(String bus, int address) {
         mBus = bus;
         mAddress = address;
     }
@@ -92,22 +92,21 @@ public class Mpu6500Sensor implements MotionSensor {
 
     // Response is in unit of acceleration g.
     public float[] readAccelData() {
-        int[] rawAccelData = readAccelRawData();
+        int[] rawData = readAccelRawData();
         float[] result = new float[3];
         for (int i = 0; i < result.length; i++) {
-            result[i] = (float) rawAccelData[i] / (float)(65536.0 / 2.0 / 2.0);
+            result[i] = (float) rawData[i] / (float)(65536.0 / 2.0 / 2.0);
         }
-        Log.d(TAG, "readAccelData: 3333333333");
         return result;
     }
 
+    // Response is in unit of deg/sec.
     public float[] readGyroData() {
-        int[] rawGyroData = readGyroRawData();
+        int[] rawData = readGyroRawData();
         float[] result = new float[3];
         for (int i = 0; i < result.length; i++) {
-            result[i] = rawGyroData[i];
+            result[i] = (float) rawData[i] / (float)(65536.0 / 2.0 / 250.0);
         }
-        Log.d(TAG, "readGyroData: 44444444444");
         return result;
     }
 
@@ -119,6 +118,7 @@ public class Mpu6500Sensor implements MotionSensor {
     // The raw data read value is within range [-2^15, 2^15], that is [-32768, 32767].
     // The default measuring range setting for accelerometer is +/-2g. That means +/-2g is mapped
     // to +/-2^15 linearly. If the measuring range is changed, the mapping also changes.
+    // Similar for gyro: the default measuring range setting is +/-250 deg/sec.
     //
     // Here has some explanation for the data: https://www.i2cdevlib.com/forums/topic/4-understanding-raw-values-of-accelerometer-and-gyrometer/
     public int[] readAccelRawData() {
@@ -141,7 +141,6 @@ public class Mpu6500Sensor implements MotionSensor {
 
     public int[] readGyroRawData() {
         try {
-            Log.d(TAG, "readGyroRawData: 1111111");
             int x = ByteUtil.twoBytesToSignedInt(
                     mDevice.readRegByte(GYRO_XOUT_H),
                     mDevice.readRegByte(GYRO_XOUT_L));
@@ -151,7 +150,6 @@ public class Mpu6500Sensor implements MotionSensor {
             int z = ByteUtil.twoBytesToSignedInt(
                     mDevice.readRegByte(GYRO_ZOUT_H),
                     mDevice.readRegByte(GYRO_ZOUT_L));
-            Log.d(TAG, "readGyroRawData: 2222222");
             return new int[]{x, y, z};
         } catch (IOException e) {
             Log.e(TAG, "Mpu6500Sensor.readGyroData: ", e);

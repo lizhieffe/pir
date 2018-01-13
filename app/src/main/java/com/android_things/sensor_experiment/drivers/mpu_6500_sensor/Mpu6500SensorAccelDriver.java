@@ -17,22 +17,19 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
  * Created by lizhi on 1/12/18.
  */
 
-public class Mpu6500SensorDriver implements AutoCloseable {
+public class Mpu6500SensorAccelDriver implements AutoCloseable {
     private static final String DRIVER_VENDOR = "InvenSense";
-    private static final String DRIVER_NAME = "MPU_6500";
+    private static final String DRIVER_NAME = "MPU-6500 Accel";
     private static final int DRIVER_VERSION = 1;
     private static final String DRIVER_REQUIRED_PERMISSION = "";
 
     private Mpu6500Sensor mDevice;
     Mpu6500SensorUserDriver mUserDriver;
+    Mpu6500SensorDriverFactory mFactory;
 
-    public Mpu6500SensorDriver() {
-        mDevice = new Mpu6500Sensor();
-        try {
-            mDevice.startup();
-        } catch (IOException e) {
-            Log.e(TAG, "Mpu6500SensorDriver: ", e);
-        }
+    Mpu6500SensorAccelDriver(Mpu6500Sensor sensor, Mpu6500SensorDriverFactory factory) {
+        mDevice = sensor;
+        mFactory = factory;
     }
 
     public void registerSensor() {
@@ -58,8 +55,7 @@ public class Mpu6500SensorDriver implements AutoCloseable {
     @Override
     public void close() {
         unregisterSensor();
-        mDevice.shutdown();
-        mDevice = null;
+        mFactory.shutdownDriver();
     }
 
     private class Mpu6500SensorUserDriver extends UserSensorDriver {

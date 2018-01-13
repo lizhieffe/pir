@@ -199,7 +199,8 @@ public class MainActivity extends Activity {
 
     private void maybeStartAccelerometer() {
         mSensorRegistry = new SensorRegistry(mSensorManager,
-                (TextView)findViewById(R.id.accelerometer_text_view));
+                (TextView)findViewById(R.id.accel_text_view),
+                (TextView)findViewById(R.id.gyro_text_view));
         mSensorRegistry.start();
     }
 }
