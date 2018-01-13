@@ -1,7 +1,6 @@
 package com.android_things.sensor_experiment.drivers.mpu_6500_sensor;
 
 import android.hardware.Sensor;
-import android.util.Log;
 
 import com.google.android.things.userdriver.UserDriverManager;
 import com.google.android.things.userdriver.UserSensor;
@@ -10,8 +9,6 @@ import com.google.android.things.userdriver.UserSensorReading;
 
 import java.io.IOException;
 import java.util.UUID;
-
-import static com.android_things.sensor_experiment.base.Constants.TAG;
 
 /**
  * Created by lizhi on 1/12/18.
