@@ -1,5 +1,6 @@
 package com.android_things.sensor_experiment.sensors;
 
+import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -11,6 +12,7 @@ import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500Senso
 import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500SensorDriverFactory;
 import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500SensorGyroDriver;
 import com.android_things.sensor_experiment.indicator.AccelerometerUiController;
+import com.android_things.sensor_experiment.logger.Mpu6500SensorLogger;
 
 import static com.android_things.sensor_experiment.base.Constants.TAG;
 
@@ -19,20 +21,28 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
  */
 
 public class SensorRegistry {
+    private Context mContext;
     private SensorManager mSensorManager;
 
     private Mpu6500SensorAccelDriver mMpu6500SensorAccelDriver;
     private SensorEventListener mMpu6500SensorAccelListener;
     private Mpu6500SensorGyroDriver mMpu6500SensorGyroDriver;
     private SensorEventListener mMpu6500SensorGyroListener;
+
     private AccelerometerUiController mAccelUiController;
+    private Mpu6500SensorLogger mMpu6500SensorLogger;
 
     private Mpu6500SensorDriverFactory mMpu6500SensorDriverFactory;
 
-    public SensorRegistry(SensorManager sensorManager, TextView accelView, TextView gyroView) {
+    public SensorRegistry(Context context, SensorManager sensorManager,
+                          TextView accelView, TextView gyroView) {
+        mContext = context;
         mSensorManager = sensorManager;
-        mAccelUiController = new AccelerometerUiController(accelView, gyroView);
+
         mMpu6500SensorDriverFactory = new Mpu6500SensorDriverFactory();
+
+        mAccelUiController = new AccelerometerUiController(accelView, gyroView);
+        mMpu6500SensorLogger = new Mpu6500SensorLogger(mContext);
     }
 
     public void start() {
@@ -57,6 +67,7 @@ public class SensorRegistry {
                     data[i] = event.values[i];
                 }
                 mAccelUiController.onAccelData(data);
+                mMpu6500SensorLogger.onAccelData(data);
             }
 
             @Override
@@ -88,6 +99,7 @@ public class SensorRegistry {
                     data[i] = event.values[i];
                 }
                 mAccelUiController.onGyroData(data);
+                mMpu6500SensorLogger.onGyroData(data);
             }
 
             @Override

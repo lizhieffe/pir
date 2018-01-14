@@ -37,6 +37,8 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
 
 public class MainActivity extends Activity {
 
+    private Context mContext;
+
     private List<DetectionIndicator> detection_indicators;
 
     private MotionDetector mMotionDetector;
@@ -72,6 +74,9 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mContext = getApplicationContext();
+
         setContentView(R.layout.activity_main);
         mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
 
@@ -199,7 +204,7 @@ public class MainActivity extends Activity {
     }
 
     private void maybeStartAccelerometer() {
-        mSensorRegistry = new SensorRegistry(mSensorManager,
+        mSensorRegistry = new SensorRegistry(mContext, mSensorManager,
                 (TextView)findViewById(R.id.accel_text_view),
                 (TextView)findViewById(R.id.gyro_text_view));
         mSensorRegistry.start();

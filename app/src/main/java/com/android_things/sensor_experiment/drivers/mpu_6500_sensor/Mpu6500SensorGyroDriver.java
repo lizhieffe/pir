@@ -66,8 +66,8 @@ public class Mpu6500SensorGyroDriver implements AutoCloseable {
                         .setVendor(DRIVER_VENDOR)
                         .setVersion(DRIVER_VERSION)
                         // TODO: change the value dynamically based on sample rate
-                        .setMinDelay(1 * 1000)  // 1ms. The default sample rate for MPU6500 gyro and gyro sensors are 1kHz.
-                        .setMaxDelay(10 * 1000)  // 10 ms
+                        .setMinDelay(30 * 1000)  // 30 ms. Note that the default sample rate for MPU6500 accel and gyro sensors are 1kHz.
+                        .setMaxDelay(150 * 1000)  // 150 ms
                         .setRequiredPermission(DRIVER_REQUIRED_PERMISSION)
                         .setUuid(UUID.randomUUID())
                         .setDriver(this)
