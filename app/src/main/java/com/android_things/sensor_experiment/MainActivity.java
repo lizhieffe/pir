@@ -25,6 +25,7 @@ import com.android_things.sensor_experiment.indicator.LedDetectorIndicator;
 import com.android_things.sensor_experiment.indicator.UIDetectorIndicator;
 import com.android_things.sensor_experiment.detectors.MotionDetector;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
+import com.android_things.sensor_experiment.logger.MotionLogger;
 import com.android_things.sensor_experiment.sensors.SensorRegistry;
 
 import java.io.IOException;
@@ -142,7 +143,7 @@ public class MainActivity extends Activity {
 
             LedDetectorIndicator led_detection_indicator = new LedDetectorIndicator();
 
-            MotionRecorder sensorDataRecorder = new MotionRecorder(getApplicationContext());
+            MotionLogger sensorDataRecorder = new MotionLogger(getApplicationContext());
 
             DetectionIndicator[] di_array = {ui_detection_indicator, led_detection_indicator};
             detection_indicators = new ArrayList<>(Arrays.asList(di_array));

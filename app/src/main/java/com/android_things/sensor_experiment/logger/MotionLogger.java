@@ -1,4 +1,4 @@
-package com.android_things.sensor_experiment;
+package com.android_things.sensor_experiment.logger;
 
 import android.content.Context;
 import android.util.Log;
@@ -21,7 +21,7 @@ import java.util.TimeZone;
  * Created by lizhieffe on 12/24/17.
  */
 
-class MotionRecorder implements MotionDetectorListener {
+public class MotionLogger implements MotionDetectorListener {
     private final static int WRITE_EVERY_N_SECONDS = 20;
 
     private Context mContext;
@@ -44,7 +44,7 @@ class MotionRecorder implements MotionDetectorListener {
         }
     }
 
-    public MotionRecorder(Context context) {
+    public MotionLogger(Context context) {
         mContext = context;
         mPirData = new ArrayList<>();
     }
