@@ -10,7 +10,8 @@ import matplotlib.dates as mdates
 matplotlib.rcParams['timezone'] = 'US/Pacific'
 
 dataDir = "/tmp/sensor_data"
-dataFileList = glob.glob(dataDir + '/*')
+dataDir = "./sensor_data"
+dataFileList = glob.glob(dataDir + '/hc_sr_501_*')
 data = []  # list of ndarray
 print type(data)
 for filePath in dataFileList:
