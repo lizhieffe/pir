@@ -23,6 +23,7 @@ import java.util.TimeZone;
 
 public class MotionLogger implements MotionDetectorListener {
     private final static int WRITE_EVERY_N_SECONDS = 20;
+    private final static String DATA_FILE_NAME_PREFIX = "hc_sr_501_";
 
     private Context mContext;
     private List<MotionData> mPirData;
@@ -65,7 +66,8 @@ public class MotionLogger implements MotionDetectorListener {
             try {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 sdf.setTimeZone(TimeZone.getTimeZone("GMT-8"));
-                String dataFileName = sdf.format(new Date(currTimeMs));
+                String dataFileName = DATA_FILE_NAME_PREFIX
+                        +sdf.format(new Date(currTimeMs));
                 // Although the data files are named by date, it may contains data on the near
                 // boundary of the nearby date.
                 File dataFile = FileSystemUtil.getOrCreatePirSensorDataFile(mContext, dataFileName);
