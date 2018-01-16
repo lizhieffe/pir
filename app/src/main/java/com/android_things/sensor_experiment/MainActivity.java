@@ -24,6 +24,7 @@ import com.android_things.sensor_experiment.indicator.GestureIndicator;
 import com.android_things.sensor_experiment.indicator.LedDetectorIndicator;
 import com.android_things.sensor_experiment.indicator.UIDetectorIndicator;
 import com.android_things.sensor_experiment.detectors.MotionDetector;
+import com.android_things.sensor_experiment.logger.MicAmplitudeLogger;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
 import com.android_things.sensor_experiment.logger.MotionLogger;
 import com.android_things.sensor_experiment.sensors.SensorRegistry;
@@ -67,12 +68,24 @@ public class MainActivity extends Activity {
         }
     };
 
+    private MediaRecorder mMediaRecorder;
+    private Runnable mMediaRunnable = new Runnable() {
+        @Override
+        public void run() {
+            int maxAmplitude = mMediaRecorder.getMaxAmplitude();
+            mMicAmplitudeLogger.onData(maxAmplitude);
+            mAudioRecordHandler.postDelayed(mMediaRunnable, 1000);
+        }
+    };
+    private MicAmplitudeLogger mMicAmplitudeLogger;
+
 
 
     SensorRegistry mSensorRegistry;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "MainActivity.onCreate: 00000000");
         super.onCreate(savedInstanceState);
 
         mContext = getApplicationContext();
@@ -88,8 +101,6 @@ public class MainActivity extends Activity {
 
 
         maybeStartAccelerometer();
-
-
     }
 
     @Override
@@ -109,8 +120,18 @@ public class MainActivity extends Activity {
         if (Features.GESTURE_DETECTION_ENABLED) {
             mGestureDetector.shutdown();
         }
+        if (Features.ACCELEROMETER_ENABLED) {
+            mSensorRegistry.shutdown();
+        }
 
-        mSensorRegistry.shutdown();
+
+        if (Features.AUDIO_RECORD_ENABLED) {
+            if (mMediaRecorder != null) {
+                mMediaRecorder.stop();
+                mMediaRecorder.release();
+                mMediaRecorder = null;
+            }
+        }
 
         super.onDestroy();
     }
@@ -177,36 +198,59 @@ public class MainActivity extends Activity {
     }
 
     private void maybeStartAudioRecord() {
+        Log.d(TAG, "MainActivity.maybeStartAudioRecord: 111111");
         if (Features.AUDIO_RECORD_ENABLED) {
-            try {
-                mAudioRecord = new AudioRecord.Builder()
-                        .setAudioSource(MediaRecorder.AudioSource.MIC)
-                        .setAudioFormat(new AudioFormat.Builder()
-                                .setEncoding(ENCODING_FORMAT)
-                                .setSampleRate(SAMPLE_RATE)
-                                .setChannelMask(CHANNEL_FORMAT)
-                                .build())
-                        .setBufferSizeInBytes(2 * mBufferSize)
-                        .build();
-                Log.d(TAG, "MainActivity.onCreate: starting audio record ...");
-                mAudioRecord.startRecording();
-                Log.d(TAG, "MainActivity.onCreate: audio record started ...");
-            } catch (UnsupportedOperationException e) {
-                Log.e(TAG, "MainActivity.onCreate: Did you add \"android.permission.RECORD_AUDIO\" permission to Manifest file?");
-                Log.e(TAG, "MainActivity.onCreate: ", e);
-            }
+            // try {
+            //     mAudioRecord = new AudioRecord.Builder()
+            //             .setAudioSource(MediaRecorder.AudioSource.MIC)
+            //             .setAudioFormat(new AudioFormat.Builder()
+            //                     .setEncoding(ENCODING_FORMAT)
+            //                     .setSampleRate(SAMPLE_RATE)
+            //                     .setChannelMask(CHANNEL_FORMAT)
+            //                     .build())
+            //             .setBufferSizeInBytes(2 * mBufferSize)
+            //             .build();
+            //     Log.d(TAG, "MainActivity.onCreate: starting audio record ...");
+            //     mAudioRecord.startRecording();
+            //     Log.d(TAG, "MainActivity.onCreate: audio record started ...");
+            // } catch (UnsupportedOperationException e) {
+            //     Log.e(TAG, "MainActivity.onCreate: Did you add \"android.permission.RECORD_AUDIO\" permission to Manifest file?");
+            //     Log.e(TAG, "MainActivity.onCreate: ", e);
+            // }
 
             mAudioRecordHandlerThread = new HandlerThread("Audio Record Handler Thread");
             mAudioRecordHandlerThread.start();
             mAudioRecordHandler = new Handler(mAudioRecordHandlerThread.getLooper());
-            mAudioRecordHandler.post(mAudioRunnable);
+            // mAudioRecordHandler.post(mAudioRunnable);
+
+            try {
+                Log.e(TAG, "MainActivity.maybeStartAudioRecord: 222222");
+                if (mMediaRecorder == null) {
+                    mMediaRecorder = new MediaRecorder();
+                    mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                    mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+                    mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+                    mMediaRecorder.setOutputFile("/dev/null");
+                    mMediaRecorder.prepare();
+                    mMediaRecorder.start();
+                    Log.e(TAG, "MainActivity.maybeStartAudioRecord: 333333");
+
+                    mMicAmplitudeLogger = new MicAmplitudeLogger(mContext);
+                    mAudioRecordHandler.post(mMediaRunnable);
+                }
+            } catch (IOException e) {
+                Log.e(TAG, "MainActivity.maybeStartAudioRecord: ", e);
+            }
         }
+
     }
 
     private void maybeStartAccelerometer() {
-        mSensorRegistry = new SensorRegistry(mContext, mSensorManager,
-                (TextView)findViewById(R.id.accel_text_view),
-                (TextView)findViewById(R.id.gyro_text_view));
-        mSensorRegistry.start();
+        if (Features.ACCELEROMETER_ENABLED) {
+            mSensorRegistry = new SensorRegistry(mContext, mSensorManager,
+                    (TextView) findViewById(R.id.accel_text_view),
+                    (TextView) findViewById(R.id.gyro_text_view));
+            mSensorRegistry.start();
+        }
     }
 }
