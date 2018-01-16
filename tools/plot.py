@@ -13,7 +13,7 @@ matplotlib.rcParams['timezone'] = 'US/Pacific'
 dayFmt=mdates.DateFormatter('%a-%b-%d')
 hrFmt=mdates.DateFormatter('%H:00')
 
-gs = gridspec.GridSpec(2,1)
+gs = gridspec.GridSpec(7,1)
 
 dataDir = "/tmp/sensor_data"
 dataDir = "./sensor_data"
@@ -51,83 +51,58 @@ for filePath in dataFileList:
 
 x = map(lambda x: mdates.epoch2num(int(x[0] / 1000)), accel_data)
 y = map(lambda x: x[1], accel_data)
-# ax1 = plt.subplot(gs[1])
 ax1 = plt.subplot(gs[1], sharex = ax0)
-# ax1.xaxis.set_major_locator(mdates.DayLocator())
-# ax1.xaxis.set_major_formatter(dayFmt)
-# ax1.xaxis.set_minor_locator(mdates.HourLocator(byhour=[2,4,6,8,10,12,14,16,18,20,22,24]))
-# ax1.xaxis.set_minor_formatter(hrFmt)
 ax1.plot(x, y)
-# # remove last tick label for the second subplot
-# yticks = ax1.yaxis.get_major_ticks()
-# yticks[-1].label1.set_visible(False)
-# 
-# y = map(lambda x: x[2], accel_data)
-# ax2 = plt.subplot(7, 1, 3, sharex = ax0)
-# ax2.plot(x, y)
-# # ax1.xaxis.set_major_locator(mdates.DayLocator())
-# # ax1.xaxis.set_major_formatter(dayFmt)
-# # ax1.xaxis.set_minor_locator(mdates.HourLocator(byhour=[2,4,6,8,10,12,14,16,18,20,22,24]))
-# # ax1.xaxis.set_minor_formatter(hrFmt)
-# # remove last tick label for the second subplot
-# yticks = ax2.yaxis.get_major_ticks()
-# yticks[-1].label1.set_visible(False)
-# 
-# y = map(lambda x: x[3], accel_data)
-# ax3 = plt.subplot(7, 1, 4, sharex = ax0)
-# ax3.plot(x, y)
-# # ax1.xaxis.set_major_locator(mdates.DayLocator())
-# # ax1.xaxis.set_major_formatter(dayFmt)
-# # ax1.xaxis.set_minor_locator(mdates.HourLocator(byhour=[2,4,6,8,10,12,14,16,18,20,22,24]))
-# # ax1.xaxis.set_minor_formatter(hrFmt)
-# # remove last tick label for the second subplot
-# yticks = ax3.yaxis.get_major_ticks()
-# yticks[-1].label1.set_visible(False)
-# 
-# 
-# 
-# dataFileList = glob.glob(dataDir + '/mpu_6500_gyro_*')
-# gyro_data = []  # list of ndarray
-# for filePath in dataFileList:
-#   print filePath
-#   with open(filePath) as f:
-#       for line in f:
-#           nums = [float(x) for x in line.split(" ")]
-#           gyro_data.append(nums)
-# 
-# x = map(lambda x: int(x[0] / 1000), gyro_data)
-# y = map(lambda x: x[1], gyro_data)
-# ax4 = plt.subplot(7, 1, 5, sharex = ax0)
-# ax4.plot(x, y)
-# # ax1.xaxis.set_major_locator(mdates.DayLocator())
-# # ax1.xaxis.set_major_formatter(dayFmt)
-# # ax1.xaxis.set_minor_locator(mdates.HourLocator(byhour=[2,4,6,8,10,12,14,16,18,20,22,24]))
-# # ax1.xaxis.set_minor_formatter(hrFmt)
-# # remove last tick label for the second subplot
-# yticks = ax4.yaxis.get_major_ticks()
-# yticks[-1].label1.set_visible(False)
-# 
-# y = map(lambda x: x[2], gyro_data)
-# ax5 = plt.subplot(7, 1, 6, sharex = ax0)
-# ax5.plot(x, y)
-# # ax1.xaxis.set_major_locator(mdates.DayLocator())
-# # ax1.xaxis.set_major_formatter(dayFmt)
-# # ax1.xaxis.set_minor_locator(mdates.HourLocator(byhour=[2,4,6,8,10,12,14,16,18,20,22,24]))
-# # ax1.xaxis.set_minor_formatter(hrFmt)
-# # remove last tick label for the second subplot
-# yticks = ax5.yaxis.get_major_ticks()
-# yticks[-1].label1.set_visible(False)
-# 
-# y = map(lambda x: x[3], gyro_data)
-# ax6 = plt.subplot(7, 1, 7, sharex = ax0)
-# ax6.plot(x, y)
-# # ax1.xaxis.set_major_locator(mdates.DayLocator())
-# # ax1.xaxis.set_major_formatter(dayFmt)
-# # ax1.xaxis.set_minor_locator(mdates.HourLocator(byhour=[2,4,6,8,10,12,14,16,18,20,22,24]))
-# # ax1.xaxis.set_minor_formatter(hrFmt)
-# # remove last tick label for the second subplot
-# yticks = ax6.yaxis.get_major_ticks()
-# yticks[-1].label1.set_visible(False)
+# remove last tick label for the second subplot
+yticks = ax1.yaxis.get_major_ticks()
+yticks[-1].label1.set_visible(False)
+
+y = map(lambda x: x[2], accel_data)
+ax2 = plt.subplot(7, 1, 3, sharex = ax0)
+ax2.plot(x, y)
+# remove last tick label for the second subplot
+yticks = ax2.yaxis.get_major_ticks()
+yticks[-1].label1.set_visible(False)
+
+y = map(lambda x: x[3], accel_data)
+ax3 = plt.subplot(7, 1, 4, sharex = ax0)
+ax3.plot(x, y)
+# remove last tick label for the second subplot
+yticks = ax3.yaxis.get_major_ticks()
+yticks[-1].label1.set_visible(False)
+
+
+
+dataFileList = glob.glob(dataDir + '/mpu_6500_gyro_*')
+gyro_data = []  # list of ndarray
+for filePath in dataFileList:
+  print filePath
+  with open(filePath) as f:
+      for line in f:
+          nums = [float(x) for x in line.split(" ")]
+          gyro_data.append(nums)
+
+x = map(lambda x: mdates.epoch2num(int(x[0] / 1000)), gyro_data)
+y = map(lambda x: x[1], gyro_data)
+ax4 = plt.subplot(7, 1, 5, sharex = ax0)
+ax4.plot(x, y)
+# remove last tick label for the second subplot
+yticks = ax4.yaxis.get_major_ticks()
+yticks[-1].label1.set_visible(False)
+
+y = map(lambda x: x[2], gyro_data)
+ax5 = plt.subplot(7, 1, 6, sharex = ax0)
+ax5.plot(x, y)
+# remove last tick label for the second subplot
+yticks = ax5.yaxis.get_major_ticks()
+yticks[-1].label1.set_visible(False)
+
+y = map(lambda x: x[3], gyro_data)
+ax6 = plt.subplot(7, 1, 7, sharex = ax0)
+ax6.plot(x, y)
+# remove last tick label for the second subplot
+yticks = ax6.yaxis.get_major_ticks()
+yticks[-1].label1.set_visible(False)
 
 
 
