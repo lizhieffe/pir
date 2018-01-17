@@ -27,7 +27,12 @@ def getPlotRow(dataSource):
     else:
         assert False, "ERROR: Plot row is not defined"
 
-enabledPlotDataSource = [DataSource.PIR, DataSource.MIC_AMPLITUDE, DataSource.ACCEL, DataSource.GYRO]
+enabledPlotDataSource = [
+                         DataSource.PIR,
+                         DataSource.MIC_AMPLITUDE,
+                         DataSource.ACCEL,
+                         DataSource.GYRO,
+                        ]
 
 def getGridSpec():
     rows = 0
@@ -36,6 +41,8 @@ def getGridSpec():
     return rows
 
 def addPirPlot(dataDir, gridSpec, currGridRow, sharedXAxis):
+    print "Start ploting PIR data"
+
     dataFileList = glob.glob(dataDir + '/hc_sr_501_*')
     data = []  # list of ndarray
     for filePath in dataFileList:
@@ -49,10 +56,12 @@ def addPirPlot(dataDir, gridSpec, currGridRow, sharedXAxis):
     ax = plt.subplot(gridSpec[currGridRow], sharex = sharedXAxis)
     ax.hist(data, bins=1400, color='lightblue')
     
-
+    print "PIR plot is done."
     return [ax]
 
 def addMicAmplitudePlot(dataDir, gridSpec, currGridRow, sharedXAxis):
+    print "Start ploting MIC amplitude data"
+    
     dataFileList = glob.glob(dataDir + '/mic_amplitude_*')
     amplitude_data = []  # list of ndarray
     for filePath in dataFileList:
@@ -70,9 +79,12 @@ def addMicAmplitudePlot(dataDir, gridSpec, currGridRow, sharedXAxis):
     yticks = ax.yaxis.get_major_ticks()
     yticks[-1].label1.set_visible(False)
 
+    print "MIC Amplitude plot is done."
     return [ax]
 
 def addAccelPlot(dataDir, gridSpec, currGridRow, sharedXAxis):
+    print "Start ploting ACCEL data"
+
     dataFileList = glob.glob(dataDir + '/mpu_6500_accel_*')
     accel_data = []  # list of ndarray
     for filePath in dataFileList:
@@ -104,11 +116,12 @@ def addAccelPlot(dataDir, gridSpec, currGridRow, sharedXAxis):
     yticks = ax3.yaxis.get_major_ticks()
     yticks[-1].label1.set_visible(False)
 
+    print "ACCEL plot is done."
     return [ax1, ax2, ax3]
 
-
-
 def addGyroPlot(dataDir, gridSpec, currGridRow, sharedXAxis):
+    print "Start ploting GYRO data"
+
     dataFileList = glob.glob(dataDir + '/mpu_6500_gyro_*')
     gyro_data = []  # list of ndarray
     for filePath in dataFileList:
@@ -140,6 +153,7 @@ def addGyroPlot(dataDir, gridSpec, currGridRow, sharedXAxis):
     yticks = ax6.yaxis.get_major_ticks()
     yticks[-1].label1.set_visible(False)
 
+    print "GYRO plot is done."
     return [ax4, ax5, ax6]
 
 def main(argv):
@@ -190,7 +204,7 @@ def main(argv):
                 yticks[-1].label1.set_visible(False)
     
                 # TODO: remove the redundant x ticks.
-                #plt.setp(lax.get_xticklabels(), visible=False)
+                # plt.setp(lax.get_xticklabels(), visible=False)
     
     # remove vertical gap between subplots
     plt.subplots_adjust(hspace=.0)
