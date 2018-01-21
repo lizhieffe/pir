@@ -9,6 +9,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.android_things.sensor_experiment.base.Constants;
+import com.android_things.sensor_experiment.base.Features;
 import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500SensorAccelDriver;
 import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500SensorDriverFactory;
 import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500SensorGyroDriver;
@@ -35,9 +36,11 @@ public class SensorRegistry {
     private AccelerometerUiController mAccelUiController;
     private Mpu6500SensorLogger mMpu6500SensorLogger;
     private Mpu6500SensorDriverFactory mMpu6500SensorDriverFactory;
+    private TextView mAccelView;
+    private TextView mGyroView;
 
-   private SensorEventListener mBme280SensorListener;
-   private Bmx280SensorDriver mBme280SensorDriver;
+    private SensorEventListener mBme280SensorListener;
+    private Bmx280SensorDriver mBme280SensorDriver;
 
 
     public SensorRegistry(Context context, SensorManager sensorManager,
@@ -45,10 +48,8 @@ public class SensorRegistry {
         mContext = context;
         mSensorManager = sensorManager;
 
-        mMpu6500SensorDriverFactory = new Mpu6500SensorDriverFactory();
-
-        mAccelUiController = new AccelerometerUiController(accelView, gyroView);
-        mMpu6500SensorLogger = new Mpu6500SensorLogger(mContext);
+        mAccelView = accelView;
+        mGyroView = gyroView;
     }
 
     public void start() {
@@ -57,120 +58,133 @@ public class SensorRegistry {
     }
 
     public void shutdown() {
-        mSensorManager.unregisterListener(mMpu6500SensorAccelListener);
-        mMpu6500SensorAccelDriver.unregisterSensor();
-        mSensorManager.unregisterListener(mMpu6500SensorGyroListener);
-        mMpu6500SensorGyroDriver.unregisterSensor();
+        if (Features.ACCELEROMETER_ENABLED) {
+            mSensorManager.unregisterListener(mMpu6500SensorAccelListener);
+            mMpu6500SensorAccelDriver.unregisterSensor();
+            mSensorManager.unregisterListener(mMpu6500SensorGyroListener);
+            mMpu6500SensorGyroDriver.unregisterSensor();
+        }
 
-        mSensorManager.unregisterListener(mBme280SensorListener);
-        mBme280SensorDriver.unregisterTemperatureSensor();
+        if (Features.BME_280_SENSOR_ENABLED) {
+            mSensorManager.unregisterListener(mBme280SensorListener);
+            mBme280SensorDriver.unregisterTemperatureSensor();
 
-        try {
-            mBme280SensorDriver.close();
-        } catch (IOException e) {
-            Log.e(TAG, "SensorRegistry.shutdown: ", e);
+            try {
+                mBme280SensorDriver.close();
+            } catch (IOException e) {
+                Log.e(TAG, "SensorRegistry.shutdown: ", e);
+            }
         }
     }
 
     private void maybeStartMpu6500Sensor() {
-        mMpu6500SensorAccelListener = new SensorEventListener() {
-            @Override
-            public void onSensorChanged(SensorEvent event) {
-                Log.d(TAG, "onSensorChanged: accel " + event.values[0]
-                        + " " + event.values[1] + " " + event.values[2]);
-                float[] data = new float[3];
-                for (int i = 0; i < data.length; i++) {
-                    data[i] = event.values[i];
-                }
-                mAccelUiController.onAccelData(data);
-                mMpu6500SensorLogger.onAccelData(data);
-            }
+        if (Features.ACCELEROMETER_ENABLED) {
+            mMpu6500SensorDriverFactory = new Mpu6500SensorDriverFactory();
+            mAccelUiController = new AccelerometerUiController(
+                    mAccelView, mGyroView);
+            mMpu6500SensorLogger = new Mpu6500SensorLogger(mContext);
 
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int accuracy) {
-                // Do nothing for now.
-            }
-        };
-        mSensorManager.registerDynamicSensorCallback(
-                new SensorManager.DynamicSensorCallback() {
-                    @Override
-                    public void onDynamicSensorConnected(Sensor sensor) {
-                        if (sensor.getType() == sensor.TYPE_ACCELEROMETER) {
-                            mSensorManager.registerListener(mMpu6500SensorAccelListener, sensor,
-                                    SensorManager.SENSOR_DELAY_NORMAL);
+            mMpu6500SensorAccelListener = new SensorEventListener() {
+                @Override
+                public void onSensorChanged(SensorEvent event) {
+                    Log.d(TAG, "onSensorChanged: accel " + event.values[0]
+                            + " " + event.values[1] + " " + event.values[2]);
+                    float[] data = new float[3];
+                    for (int i = 0; i < data.length; i++) {
+                        data[i] = event.values[i];
+                    }
+                    mAccelUiController.onAccelData(data);
+                    mMpu6500SensorLogger.onAccelData(data);
+                }
+
+                @Override
+                public void onAccuracyChanged(Sensor sensor, int accuracy) {
+                    // Do nothing for now.
+                }
+            };
+            mSensorManager.registerDynamicSensorCallback(
+                    new SensorManager.DynamicSensorCallback() {
+                        @Override
+                        public void onDynamicSensorConnected(Sensor sensor) {
+                            if (sensor.getType() == sensor.TYPE_ACCELEROMETER) {
+                                mSensorManager.registerListener(mMpu6500SensorAccelListener, sensor,
+                                        SensorManager.SENSOR_DELAY_NORMAL);
+                            }
                         }
                     }
-                }
-        );
-        mMpu6500SensorAccelDriver = mMpu6500SensorDriverFactory.createAccelDriver();
-        mMpu6500SensorAccelDriver.registerSensor();
+            );
+            mMpu6500SensorAccelDriver = mMpu6500SensorDriverFactory.createAccelDriver();
+            mMpu6500SensorAccelDriver.registerSensor();
 
-        mMpu6500SensorGyroListener = new SensorEventListener() {
-            @Override
-            public void onSensorChanged(SensorEvent event) {
-                Log.d(TAG, "onSensorChanged: gyro " + event.values[0]
-                        + " " + event.values[1] + " " + event.values[2]);
-                float[] data = new float[3];
-                for (int i = 0; i < data.length; i++) {
-                    data[i] = event.values[i];
+            mMpu6500SensorGyroListener = new SensorEventListener() {
+                @Override
+                public void onSensorChanged(SensorEvent event) {
+                    Log.d(TAG, "onSensorChanged: gyro " + event.values[0]
+                            + " " + event.values[1] + " " + event.values[2]);
+                    float[] data = new float[3];
+                    for (int i = 0; i < data.length; i++) {
+                        data[i] = event.values[i];
+                    }
+                    mAccelUiController.onGyroData(data);
+                    mMpu6500SensorLogger.onGyroData(data);
                 }
-                mAccelUiController.onGyroData(data);
-                mMpu6500SensorLogger.onGyroData(data);
-            }
 
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int accuracy) {
-                // Do nothing for now.
-            }
-        };
-        mSensorManager.registerDynamicSensorCallback(
-                new SensorManager.DynamicSensorCallback() {
-                    @Override
-                    public void onDynamicSensorConnected(Sensor sensor) {
-                        if (sensor.getType() == sensor.TYPE_GYROSCOPE) {
-                            mSensorManager.registerListener(mMpu6500SensorGyroListener, sensor,
-                                    SensorManager.SENSOR_DELAY_NORMAL);
+                @Override
+                public void onAccuracyChanged(Sensor sensor, int accuracy) {
+                    // Do nothing for now.
+                }
+            };
+            mSensorManager.registerDynamicSensorCallback(
+                    new SensorManager.DynamicSensorCallback() {
+                        @Override
+                        public void onDynamicSensorConnected(Sensor sensor) {
+                            if (sensor.getType() == sensor.TYPE_GYROSCOPE) {
+                                mSensorManager.registerListener(mMpu6500SensorGyroListener, sensor,
+                                        SensorManager.SENSOR_DELAY_NORMAL);
+                            }
                         }
                     }
-                }
-        );
-        mMpu6500SensorGyroDriver = mMpu6500SensorDriverFactory.createGyroDriver();
-        mMpu6500SensorGyroDriver.registerSensor();
+            );
+            mMpu6500SensorGyroDriver = mMpu6500SensorDriverFactory.createGyroDriver();
+            mMpu6500SensorGyroDriver.registerSensor();
+        }
     }
 
     private void maybeStartBme280Sensor() {
-        mBme280SensorListener = new SensorEventListener() {
-            @Override
-            public void onSensorChanged(SensorEvent event) {
-                Log.d(TAG, "SensorRegistry.onSensorChanged: on bme280 sensor data. length = "
-                        + event.values.length);
-                Log.d(TAG, "SensorRegistry.onSensorChanged: bme280 data = " + event.values[0]);
-            }
-
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int accuracy) {
-                // Do nothing for now.
-            }
-        };
-
-        mSensorManager.registerDynamicSensorCallback(
-                new SensorManager.DynamicSensorCallback() {
-            @Override
-            public void onDynamicSensorConnected(Sensor sensor) {
-                if (sensor.getType() == Sensor.TYPE_AMBIENT_TEMPERATURE) {
-                    mSensorManager.registerListener(
-                            mBme280SensorListener, sensor,
-                            SensorManager.SENSOR_DELAY_NORMAL);
+        if (Features.BME_280_SENSOR_ENABLED) {
+            mBme280SensorListener = new SensorEventListener() {
+                @Override
+                public void onSensorChanged(SensorEvent event) {
+                    Log.d(TAG, "SensorRegistry.onSensorChanged: on bme280 sensor data. length = "
+                            + event.values.length);
+                    Log.d(TAG, "SensorRegistry.onSensorChanged: bme280 data = " + event.values[0]);
                 }
-            }
-        });
 
-        try {
-            mBme280SensorDriver = new Bmx280SensorDriver(
-                    Constants.RPI_3_I2C_BUS);
-            mBme280SensorDriver.registerTemperatureSensor();
-        } catch (IOException e) {
-            Log.e(TAG, "SensorRegistry.maybeStartBme280Sensor: ", e);
+                @Override
+                public void onAccuracyChanged(Sensor sensor, int accuracy) {
+                    // Do nothing for now.
+                }
+            };
+
+            mSensorManager.registerDynamicSensorCallback(
+                    new SensorManager.DynamicSensorCallback() {
+                        @Override
+                        public void onDynamicSensorConnected(Sensor sensor) {
+                            if (sensor.getType() == Sensor.TYPE_AMBIENT_TEMPERATURE) {
+                                mSensorManager.registerListener(
+                                        mBme280SensorListener, sensor,
+                                        SensorManager.SENSOR_DELAY_NORMAL);
+                            }
+                        }
+                    });
+
+            try {
+                mBme280SensorDriver = new Bmx280SensorDriver(
+                        Constants.RPI_3_I2C_BUS);
+                mBme280SensorDriver.registerTemperatureSensor();
+            } catch (IOException e) {
+                Log.e(TAG, "SensorRegistry.maybeStartBme280Sensor: ", e);
+            }
         }
     }
 }

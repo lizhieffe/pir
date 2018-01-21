@@ -93,14 +93,13 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
 
+        startSensorRegistry();
+
         maybeStartMotionDetection();
         maybeStartAmbientLightDetection();
         maybeStartAirQualityDetection();
         maybeStartGestureDetection();
         maybeStartAudioRecord();
-
-
-        maybeStartAccelerometer();
     }
 
     @Override
@@ -120,9 +119,7 @@ public class MainActivity extends Activity {
         if (Features.GESTURE_DETECTION_ENABLED) {
             mGestureDetector.shutdown();
         }
-        if (Features.ACCELEROMETER_ENABLED) {
-            mSensorRegistry.shutdown();
-        }
+        mSensorRegistry.shutdown();
 
 
         if (Features.AUDIO_RECORD_ENABLED) {
@@ -245,12 +242,10 @@ public class MainActivity extends Activity {
 
     }
 
-    private void maybeStartAccelerometer() {
-        if (Features.ACCELEROMETER_ENABLED) {
-            mSensorRegistry = new SensorRegistry(mContext, mSensorManager,
-                    (TextView) findViewById(R.id.accel_text_view),
-                    (TextView) findViewById(R.id.gyro_text_view));
-            mSensorRegistry.start();
-        }
+    private void startSensorRegistry() {
+        mSensorRegistry = new SensorRegistry(mContext, mSensorManager,
+                (TextView) findViewById(R.id.accel_text_view),
+                (TextView) findViewById(R.id.gyro_text_view));
+        mSensorRegistry.start();
     }
 }
