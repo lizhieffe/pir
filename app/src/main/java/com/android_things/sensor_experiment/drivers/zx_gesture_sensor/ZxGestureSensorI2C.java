@@ -2,6 +2,8 @@ package com.android_things.sensor_experiment.drivers.zx_gesture_sensor;
 
 import android.util.Log;
 
+import com.android_things.sensor_experiment.base.Constants;
+import com.android_things.sensor_experiment.base.Features;
 import com.android_things.sensor_experiment.utils.ByteUtil;
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.GpioCallback;
@@ -23,7 +25,6 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
  */
 
 public class ZxGestureSensorI2C {
-    public static final String DEFAULT_I2C_BUS = "I2C1";
     public static final int DEFAULT_I2C_ADDRESS = 0x10;
     public static final String DEFAULT_GPIO_PIN = "BCM27";
 
@@ -36,7 +37,7 @@ public class ZxGestureSensorI2C {
     private Gpio mGpio;
 
     public ZxGestureSensorI2C() {
-        this(DEFAULT_I2C_BUS, DEFAULT_I2C_ADDRESS, DEFAULT_GPIO_PIN);
+        this(Constants.RPI_3_I2C_BUS, DEFAULT_I2C_ADDRESS, DEFAULT_GPIO_PIN);
     }
 
     public ZxGestureSensorI2C(String bus, int address, String gpioPin) {

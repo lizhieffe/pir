@@ -4,6 +4,7 @@ package com.android_things.sensor_experiment.drivers.ccs_811_sensor;
  * Created by lizhieffe on 12/29/17.
  */
 
+import com.android_things.sensor_experiment.base.Constants;
 import com.google.android.things.pio.I2cDevice;
 import com.google.android.things.pio.PeripheralManagerService;
 
@@ -28,7 +29,6 @@ public class Ccs811Sensor implements AutoCloseable {
     /**
      * Default I2C address for the sensor.
      */
-    public static final String DEFAULT_I2C_BUS = "I2C1";
     public static final int DEFAULT_I2C_ADDRESS = 0x5B;
 
     /**
@@ -72,7 +72,7 @@ public class Ccs811Sensor implements AutoCloseable {
      * @throws IOException if device cannot be opened
      */
     public Ccs811Sensor() throws IOException {
-        this(DEFAULT_I2C_BUS, DEFAULT_I2C_ADDRESS);
+        this(Constants.RPI_3_I2C_BUS, DEFAULT_I2C_ADDRESS);
     }
 
     /**

@@ -6,4 +6,6 @@ package com.android_things.sensor_experiment.base;
 
 public class Constants {
     public final static String TAG = "===lizhi";
+
+    public final static String RPI_3_I2C_BUS = "I2C1";
 }

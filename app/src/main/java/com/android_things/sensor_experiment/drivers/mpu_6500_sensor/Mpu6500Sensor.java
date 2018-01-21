@@ -2,6 +2,7 @@ package com.android_things.sensor_experiment.drivers.mpu_6500_sensor;
 
 import android.util.Log;
 
+import com.android_things.sensor_experiment.base.Constants;
 import com.android_things.sensor_experiment.drivers.MotionSensor;
 import com.android_things.sensor_experiment.utils.ByteUtil;
 import com.google.android.things.pio.I2cDevice;
@@ -18,8 +19,6 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
  */
 
 public class Mpu6500Sensor implements MotionSensor {
-    public static final String DEFAULT_I2C_BUS = "I2C1";
-
     // 0x68 when AD0 pin is low (GND), 0x69 when AD0 is high (3.3V)
     private static final int I2C_ADDRESS_LOW = 0x68;
     private static final int I2C_ADDRESS_HIGH = 0x69;
@@ -32,7 +31,7 @@ public class Mpu6500Sensor implements MotionSensor {
     private I2cDevice mDevice;
 
     Mpu6500Sensor() {
-        this(DEFAULT_I2C_BUS, DEFAULT_I2C_ADDRESS);
+        this(Constants.RPI_3_I2C_BUS, DEFAULT_I2C_ADDRESS);
     }
 
     Mpu6500Sensor(String bus, int address) {

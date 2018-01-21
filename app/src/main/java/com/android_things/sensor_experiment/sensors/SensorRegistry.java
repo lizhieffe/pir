@@ -8,11 +8,15 @@ import android.hardware.SensorManager;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.android_things.sensor_experiment.base.Constants;
 import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500SensorAccelDriver;
 import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500SensorDriverFactory;
 import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500SensorGyroDriver;
 import com.android_things.sensor_experiment.indicator.AccelerometerUiController;
 import com.android_things.sensor_experiment.logger.Mpu6500SensorLogger;
+import com.google.android.things.contrib.driver.bmx280.Bmx280SensorDriver;
+
+import java.io.IOException;
 
 import static com.android_things.sensor_experiment.base.Constants.TAG;
 
@@ -28,11 +32,13 @@ public class SensorRegistry {
     private SensorEventListener mMpu6500SensorAccelListener;
     private Mpu6500SensorGyroDriver mMpu6500SensorGyroDriver;
     private SensorEventListener mMpu6500SensorGyroListener;
-
     private AccelerometerUiController mAccelUiController;
     private Mpu6500SensorLogger mMpu6500SensorLogger;
-
     private Mpu6500SensorDriverFactory mMpu6500SensorDriverFactory;
+
+   private SensorEventListener mBme280SensorListener;
+   private Bmx280SensorDriver mBme280SensorDriver;
+
 
     public SensorRegistry(Context context, SensorManager sensorManager,
                           TextView accelView, TextView gyroView) {
@@ -47,6 +53,7 @@ public class SensorRegistry {
 
     public void start() {
         maybeStartMpu6500Sensor();
+        maybeStartBme280Sensor();
     }
 
     public void shutdown() {
@@ -54,6 +61,15 @@ public class SensorRegistry {
         mMpu6500SensorAccelDriver.unregisterSensor();
         mSensorManager.unregisterListener(mMpu6500SensorGyroListener);
         mMpu6500SensorGyroDriver.unregisterSensor();
+
+        mSensorManager.unregisterListener(mBme280SensorListener);
+        mBme280SensorDriver.unregisterTemperatureSensor();
+
+        try {
+            mBme280SensorDriver.close();
+        } catch (IOException e) {
+            Log.e(TAG, "SensorRegistry.shutdown: ", e);
+        }
     }
 
     private void maybeStartMpu6500Sensor() {
@@ -120,5 +136,41 @@ public class SensorRegistry {
         );
         mMpu6500SensorGyroDriver = mMpu6500SensorDriverFactory.createGyroDriver();
         mMpu6500SensorGyroDriver.registerSensor();
+    }
+
+    private void maybeStartBme280Sensor() {
+        mBme280SensorListener = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                Log.d(TAG, "SensorRegistry.onSensorChanged: on bme280 sensor data. length = "
+                        + event.values.length);
+                Log.d(TAG, "SensorRegistry.onSensorChanged: bme280 data = " + event.values[0]);
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+                // Do nothing for now.
+            }
+        };
+
+        mSensorManager.registerDynamicSensorCallback(
+                new SensorManager.DynamicSensorCallback() {
+            @Override
+            public void onDynamicSensorConnected(Sensor sensor) {
+                if (sensor.getType() == Sensor.TYPE_AMBIENT_TEMPERATURE) {
+                    mSensorManager.registerListener(
+                            mBme280SensorListener, sensor,
+                            SensorManager.SENSOR_DELAY_NORMAL);
+                }
+            }
+        });
+
+        try {
+            mBme280SensorDriver = new Bmx280SensorDriver(
+                    Constants.RPI_3_I2C_BUS);
+            mBme280SensorDriver.registerTemperatureSensor();
+        } catch (IOException e) {
+            Log.e(TAG, "SensorRegistry.maybeStartBme280Sensor: ", e);
+        }
     }
 }

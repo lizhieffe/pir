@@ -2,6 +2,7 @@ package com.android_things.sensor_experiment.drivers.apds_9301_sensor;
 
 import android.util.Log;
 
+import com.android_things.sensor_experiment.base.Constants;
 import com.android_things.sensor_experiment.drivers.MotionSensor;
 import com.google.android.things.pio.I2cDevice;
 import com.google.android.things.pio.PeripheralManagerService;
@@ -19,7 +20,6 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
 // TODO: change implementation interface.
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class Apds9301Sensor implements MotionSensor {
-    public static final String DEFAULT_I2C_BUS = "I2C1";
     public static final int DEFAULT_I2C_ADDRESS = 0x39;
 
     // I2C bus and address for the device.
@@ -29,7 +29,7 @@ public class Apds9301Sensor implements MotionSensor {
     private I2cDevice mDevice;
 
     public Apds9301Sensor() {
-        this(DEFAULT_I2C_BUS, DEFAULT_I2C_ADDRESS);
+        this(Constants.RPI_3_I2C_BUS, DEFAULT_I2C_ADDRESS);
     }
 
     public Apds9301Sensor(String bus, int address) {
