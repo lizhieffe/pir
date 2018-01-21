@@ -1,4 +1,4 @@
-package com.android_things.sensor_experiment.indicator;
+package com.android_things.sensor_experiment.controllers;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -11,11 +11,11 @@ import com.android_things.sensor_experiment.detectors.MotionDetectorListener;
  * Created by lizhieffe on 1/4/18.
  */
 
-public class DistanceIndicator
-        implements DetectionIndicator, MotionDetectorListener {
+public class DistanceController
+        implements DetectionController, MotionDetectorListener {
     private TextView mDistanceView;
 
-    public DistanceIndicator(TextView distanceView) {
+    public DistanceController(TextView distanceView) {
         mDistanceView = distanceView;
     }
 

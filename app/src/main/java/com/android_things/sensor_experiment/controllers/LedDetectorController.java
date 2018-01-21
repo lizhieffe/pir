@@ -1,4 +1,4 @@
-package com.android_things.sensor_experiment.indicator;
+package com.android_things.sensor_experiment.controllers;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -10,7 +10,6 @@ import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.PeripheralManagerService;
 
 import java.io.IOException;
-import java.io.StringReader;
 
 import static com.android_things.sensor_experiment.base.Constants.TAG;
 
@@ -18,8 +17,8 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
  * Created by lizhieffe on 12/23/17.
  */
 
-public class LedDetectorIndicator
-        implements MotionDetectorListener, DetectionIndicator {
+public class LedDetectorController
+        implements MotionDetectorListener, DetectionController {
     private Gpio ledBus = null;
 
     private long last_indication_unix_time_ms = 0;

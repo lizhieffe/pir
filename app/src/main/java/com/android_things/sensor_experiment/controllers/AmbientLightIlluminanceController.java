@@ -1,4 +1,4 @@
-package com.android_things.sensor_experiment.indicator;
+package com.android_things.sensor_experiment.controllers;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -6,17 +6,15 @@ import android.widget.TextView;
 
 import com.android_things.sensor_experiment.detectors.AmbientLightListener;
 
-import java.io.IOException;
-
 /**
  * Created by lizhieffe on 12/30/17.
  */
 
-public class AmbientLightIlluminanceIdicator
-        implements DetectionIndicator, AmbientLightListener {
+public class AmbientLightIlluminanceController
+        implements DetectionController, AmbientLightListener {
     private TextView mIlluminanceView;
 
-    public AmbientLightIlluminanceIdicator(TextView illuminanceView) {
+    public AmbientLightIlluminanceController(TextView illuminanceView) {
         mIlluminanceView = illuminanceView;
     }
 

@@ -1,4 +1,4 @@
-package com.android_things.sensor_experiment.indicator;
+package com.android_things.sensor_experiment.controllers;
 
 import android.os.Handler;
 import android.os.Looper;

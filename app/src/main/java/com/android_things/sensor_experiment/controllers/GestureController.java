@@ -1,4 +1,4 @@
-package com.android_things.sensor_experiment.indicator;
+package com.android_things.sensor_experiment.controllers;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -12,10 +12,10 @@ import com.android_things.sensor_experiment.drivers.zx_gesture_sensor.ZxGestureS
  * Created by lizhieffe on 1/2/18.
  */
 
-public class GestureIndicator implements DetectionIndicator, GestureListener {
+public class GestureController implements DetectionController, GestureListener {
     private TextView mGestureView;
 
-    public GestureIndicator(TextView gestureView) {
+    public GestureController(TextView gestureView) {
         mGestureView = gestureView;
     }
 

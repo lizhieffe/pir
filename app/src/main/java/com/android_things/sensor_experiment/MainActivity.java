@@ -17,12 +17,12 @@ import com.android_things.sensor_experiment.base.Features;
 import com.android_things.sensor_experiment.detectors.AirQualityDetector;
 import com.android_things.sensor_experiment.detectors.AmbientLightDetector;
 import com.android_things.sensor_experiment.detectors.GestureDetector;
-import com.android_things.sensor_experiment.indicator.AmbientLightIlluminanceIdicator;
-import com.android_things.sensor_experiment.indicator.DetectionIndicator;
-import com.android_things.sensor_experiment.indicator.DistanceIndicator;
-import com.android_things.sensor_experiment.indicator.GestureIndicator;
-import com.android_things.sensor_experiment.indicator.LedDetectorIndicator;
-import com.android_things.sensor_experiment.indicator.UIDetectorIndicator;
+import com.android_things.sensor_experiment.controllers.AmbientLightIlluminanceController;
+import com.android_things.sensor_experiment.controllers.DetectionController;
+import com.android_things.sensor_experiment.controllers.DistanceController;
+import com.android_things.sensor_experiment.controllers.GestureController;
+import com.android_things.sensor_experiment.controllers.LedDetectorController;
+import com.android_things.sensor_experiment.controllers.UIDetectorController;
 import com.android_things.sensor_experiment.detectors.MotionDetector;
 import com.android_things.sensor_experiment.logger.MicAmplitudeLogger;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
@@ -40,7 +40,7 @@ public class MainActivity extends Activity {
 
     private Context mContext;
 
-    private List<DetectionIndicator> detection_indicators;
+    private List<DetectionController> detection_indicators;
 
     private MotionDetector mMotionDetector;
     private AmbientLightDetector mAmbientLightDetector;
@@ -105,7 +105,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         if (Features.MOTION_DETECTION_ENABLED) {
-            for (DetectionIndicator d : detection_indicators) {
+            for (DetectionController d : detection_indicators) {
                 d.close();
             }
             mMotionDetector.shutdown();
@@ -148,7 +148,7 @@ public class MainActivity extends Activity {
     private void maybeStartAmbientLightDetection() {
         if (Features.AMBIENT_LIGHT_DETECTION_ENABLED) {
             mAmbientLightDetector = new AmbientLightDetector(mSensorManager);
-            mAmbientLightDetector.addListener(new AmbientLightIlluminanceIdicator(
+            mAmbientLightDetector.addListener(new AmbientLightIlluminanceController(
                     (TextView) findViewById(R.id.ambient_light_value_text_view)));
             mAmbientLightDetector.start();
         }
@@ -158,20 +158,20 @@ public class MainActivity extends Activity {
     private void maybeStartMotionDetection() {
         if (Features.MOTION_DETECTION_ENABLED) {
             Button movement_indicator = findViewById(R.id.movement_indicator);
-            UIDetectorIndicator ui_detection_indicator = new UIDetectorIndicator(
+            UIDetectorController ui_detection_indicator = new UIDetectorController(
                     getApplicationContext(), movement_indicator);
 
             TextView distanceTextView = findViewById(R.id.distance_text_view);
-            DistanceIndicator distanceIndicator = new DistanceIndicator(distanceTextView);
+            DistanceController distanceIndicator = new DistanceController(distanceTextView);
 
-            LedDetectorIndicator led_detection_indicator = new LedDetectorIndicator();
+            LedDetectorController led_detection_indicator = new LedDetectorController();
 
             MotionLogger sensorDataRecorder = new MotionLogger(getApplicationContext());
 
-            DetectionIndicator[] di_array = {ui_detection_indicator, led_detection_indicator};
+            DetectionController[] di_array = {ui_detection_indicator, led_detection_indicator};
             detection_indicators = new ArrayList<>(Arrays.asList(di_array));
 
-            for (DetectionIndicator d : detection_indicators) {
+            for (DetectionController d : detection_indicators) {
                 d.start();
             }
 
@@ -187,7 +187,7 @@ public class MainActivity extends Activity {
     private void maybeStartGestureDetection() {
         if (Features.GESTURE_DETECTION_ENABLED) {
             mGestureDetector = new GestureDetector(mSensorManager);
-            GestureIndicator gestureIndicator = new GestureIndicator(
+            GestureController gestureIndicator = new GestureController(
                     (TextView)findViewById(R.id.gesture_text_view));
             mGestureDetector.addListener(gestureIndicator);
             mGestureDetector.start();

@@ -1,4 +1,4 @@
-package com.android_things.sensor_experiment.indicator;
+package com.android_things.sensor_experiment.controllers;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -15,8 +15,8 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
  * Created by lizhieffe on 12/23/17.
  */
 
-public class UIDetectorIndicator
-        implements MotionDetectorListener, DetectionIndicator {
+public class UIDetectorController
+        implements MotionDetectorListener, DetectionController {
     private Context context;
     private Button movement_indicator;
 
@@ -24,7 +24,7 @@ public class UIDetectorIndicator
     final private int indication_cool_down_ms = 500;
     final private int indication_cool_down_error_ms = 50;
 
-    public UIDetectorIndicator(Context context, Button movement_indicator) {
+    public UIDetectorController(Context context, Button movement_indicator) {
         this.context = context;
         this.movement_indicator = movement_indicator;
     }
