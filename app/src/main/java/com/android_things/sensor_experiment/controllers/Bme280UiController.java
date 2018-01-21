@@ -4,11 +4,13 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.TextView;
 
+import com.android_things.sensor_experiment.drivers.bme_280_sensor.Bme280SensorListener;
+
 /**
  * Created by lizhieffe on 1/20/18.
  */
 
-public class Bme280UiController {
+public class Bme280UiController implements Bme280SensorListener {
     private TextView mTemperatureView;
     private TextView mPressureView;
     private TextView mHumidityView;
@@ -27,6 +29,7 @@ public class Bme280UiController {
         mHumidityView = humidityView;
     }
 
+    @Override
     public void onTemperatureData(float temp) {
         final float localTemp = temp;
         new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -46,6 +49,7 @@ public class Bme280UiController {
         });
     }
 
+    @Override
     public void onPressureData(float pressure) {
         final float localPressure = pressure;
         new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -65,6 +69,7 @@ public class Bme280UiController {
         });
     }
 
+    @Override
     public void onHumidityData(float data) {
         final float localData = data;
         new Handler(Looper.getMainLooper()).post(new Runnable() {
