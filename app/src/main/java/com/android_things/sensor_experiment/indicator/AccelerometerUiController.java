@@ -14,7 +14,7 @@ public class AccelerometerUiController implements Mpu6500SensorListener {
     private TextView mAccelView;
     private TextView mGyroView;
 
-    // Reading inside the deplay will not be shown on the screen.
+    // Reading inside the delay will not be shown on the screen.
     private final static long DISPLAY_DELAY_MS = 500;
     private long mLastAccelDisplayUpldate;
     private long mLastGyroDisplayUpldate;

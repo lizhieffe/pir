@@ -44,4 +44,25 @@
         android:layout_height="wrap_content"
         android:text="Gyro Placeholder"
         android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/temperature_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Temperature Placeholder"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/pressure_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pressure Placeholder"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/humidity_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Humidity Placeholder"
+        android:textSize="20sp" />
 </LinearLayout>
