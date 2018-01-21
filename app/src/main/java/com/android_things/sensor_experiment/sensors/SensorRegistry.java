@@ -15,6 +15,7 @@ import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500Senso
 import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500SensorGyroDriver;
 import com.android_things.sensor_experiment.controllers.AccelerometerUiController;
 import com.android_things.sensor_experiment.controllers.Bme280UiController;
+import com.android_things.sensor_experiment.logger.Bme280SensorLogger;
 import com.android_things.sensor_experiment.logger.Mpu6500SensorLogger;
 import com.google.android.things.contrib.driver.bmx280.Bmx280SensorDriver;
 
@@ -45,6 +46,7 @@ public class SensorRegistry {
     private SensorEventListener mBme280SensorHumidityListener;
     private Bmx280SensorDriver mBme280SensorDriver;
     private Bme280UiController mBme280UiController;
+    private Bme280SensorLogger mBme280SensorLogger;
     private TextView mTemperatureView;
     private TextView mPressureView;
     private TextView mHumidityView;
@@ -170,15 +172,15 @@ public class SensorRegistry {
         if (Features.BME_280_SENSOR_ENABLED) {
             mBme280UiController = new Bme280UiController(
                     mTemperatureView, mPressureView, mHumidityView);
+            mBme280SensorLogger = new Bme280SensorLogger(mContext);
+
             mBme280SensorTempuratureListener = new SensorEventListener() {
                 @Override
                 public void onSensorChanged(SensorEvent event) {
                     // Result contains on number representing the current
                     // temperature in degrees Celsius.
-                    Log.d(TAG, "SensorRegistry.onSensorChanged: on bme280 sensor temp data. length = "
-                            + event.values.length);
-                    Log.d(TAG, "SensorRegistry.onSensorChanged: bme280 temp data = " + event.values[0]);
                     mBme280UiController.onTemperatureData(event.values[0]);
+                    mBme280SensorLogger.onTemperatureData(event.values[0]);
                 }
 
                 @Override
@@ -191,10 +193,8 @@ public class SensorRegistry {
                 public void onSensorChanged(SensorEvent event) {
                     // Result contains on number representing the current
                     // barometric pressure in hPa units.
-                    Log.d(TAG, "SensorRegistry.onSensorChanged: on bme280 sensor pressure data. length = "
-                            + event.values.length);
-                    Log.d(TAG, "SensorRegistry.onSensorChanged: bme280 pressure data = " + event.values[0]);
                     mBme280UiController.onPressureData(event.values[0]);
+                    mBme280SensorLogger.onPressureData(event.values[0]);
                 }
 
                 @Override
@@ -207,10 +207,8 @@ public class SensorRegistry {
                 public void onSensorChanged(SensorEvent event) {
                     // Result contains on number representing the current
                     // relative humidity in RH percentage (100f means totally saturated air).
-                    Log.d(TAG, "SensorRegistry.onSensorChanged: on bme280 sensor humidity data. length = "
-                            + event.values.length);
-                    Log.d(TAG, "SensorRegistry.onSensorChanged: bme280 humidity data = " + event.values[0]);
                     mBme280UiController.onHumidityData(event.values[0]);
+                    mBme280SensorLogger.onHumidityData(event.values[0]);
                 }
 
                 @Override
