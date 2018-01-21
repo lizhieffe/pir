@@ -6,63 +6,63 @@
     <Button
         android:id="@+id/movement_indicator"
         android:layout_width="match_parent"
-        android:layout_height="89dp"
+        android:layout_height="40sp"
         android:text="No Movement "
-        android:textSize="20sp" />
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/distance_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Distance Placeholder"
-        android:textSize="20sp" />
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/ambient_light_value_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Luminance Placeholder"
-        android:textSize="20sp" />
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/gesture_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Gesture Placeholder"
-        android:textSize="20sp" />
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/accel_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Accel Placeholder"
-        android:textSize="20sp" />
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/gyro_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Gyro Placeholder"
-        android:textSize="20sp" />
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/temperature_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Temperature Placeholder"
-        android:textSize="20sp" />
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/pressure_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Pressure Placeholder"
-        android:textSize="20sp" />
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/humidity_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Humidity Placeholder"
-        android:textSize="20sp" />
+        android:textSize="15sp" />
 </LinearLayout>

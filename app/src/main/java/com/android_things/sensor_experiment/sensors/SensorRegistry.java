@@ -105,8 +105,6 @@ public class SensorRegistry {
             mMpu6500SensorAccelListener = new SensorEventListener() {
                 @Override
                 public void onSensorChanged(SensorEvent event) {
-                    Log.d(TAG, "onSensorChanged: accel " + event.values[0]
-                            + " " + event.values[1] + " " + event.values[2]);
                     float[] data = new float[3];
                     for (int i = 0; i < data.length; i++) {
                         data[i] = event.values[i];
@@ -137,8 +135,6 @@ public class SensorRegistry {
             mMpu6500SensorGyroListener = new SensorEventListener() {
                 @Override
                 public void onSensorChanged(SensorEvent event) {
-                    Log.d(TAG, "onSensorChanged: gyro " + event.values[0]
-                            + " " + event.values[1] + " " + event.values[2]);
                     float[] data = new float[3];
                     for (int i = 0; i < data.length; i++) {
                         data[i] = event.values[i];
