@@ -39,7 +39,9 @@ public class SensorRegistry {
     private TextView mAccelView;
     private TextView mGyroView;
 
-    private SensorEventListener mBme280SensorListener;
+    private SensorEventListener mBme280SensorTempuratureListener;
+    private SensorEventListener mBme280SensorPressureListener;
+    private SensorEventListener mBme280SensorHumidityListener;
     private Bmx280SensorDriver mBme280SensorDriver;
 
 
@@ -66,8 +68,12 @@ public class SensorRegistry {
         }
 
         if (Features.BME_280_SENSOR_ENABLED) {
-            mSensorManager.unregisterListener(mBme280SensorListener);
+            mSensorManager.unregisterListener(mBme280SensorTempuratureListener);
+            mSensorManager.unregisterListener(mBme280SensorPressureListener);
+            mSensorManager.unregisterListener(mBme280SensorHumidityListener);
             mBme280SensorDriver.unregisterTemperatureSensor();
+            mBme280SensorDriver.unregisterPressureSensor();
+            mBme280SensorDriver.unregisterHumiditySensor();
 
             try {
                 mBme280SensorDriver.close();
@@ -152,12 +158,38 @@ public class SensorRegistry {
 
     private void maybeStartBme280Sensor() {
         if (Features.BME_280_SENSOR_ENABLED) {
-            mBme280SensorListener = new SensorEventListener() {
+            mBme280SensorTempuratureListener = new SensorEventListener() {
                 @Override
                 public void onSensorChanged(SensorEvent event) {
-                    Log.d(TAG, "SensorRegistry.onSensorChanged: on bme280 sensor data. length = "
+                    Log.d(TAG, "SensorRegistry.onSensorChanged: on bme280 sensor temp data. length = "
                             + event.values.length);
-                    Log.d(TAG, "SensorRegistry.onSensorChanged: bme280 data = " + event.values[0]);
+                    Log.d(TAG, "SensorRegistry.onSensorChanged: bme280 temp data = " + event.values[0]);
+                }
+
+                @Override
+                public void onAccuracyChanged(Sensor sensor, int accuracy) {
+                    // Do nothing for now.
+                }
+            };
+            mBme280SensorPressureListener = new SensorEventListener() {
+                @Override
+                public void onSensorChanged(SensorEvent event) {
+                    Log.d(TAG, "SensorRegistry.onSensorChanged: on bme280 sensor pressure data. length = "
+                            + event.values.length);
+                    Log.d(TAG, "SensorRegistry.onSensorChanged: bme280 pressure data = " + event.values[0]);
+                }
+
+                @Override
+                public void onAccuracyChanged(Sensor sensor, int accuracy) {
+                    // Do nothing for now.
+                }
+            };
+            mBme280SensorHumidityListener = new SensorEventListener() {
+                @Override
+                public void onSensorChanged(SensorEvent event) {
+                    Log.d(TAG, "SensorRegistry.onSensorChanged: on bme280 sensor humidity data. length = "
+                            + event.values.length);
+                    Log.d(TAG, "SensorRegistry.onSensorChanged: bme280 humidity data = " + event.values[0]);
                 }
 
                 @Override
@@ -167,21 +199,33 @@ public class SensorRegistry {
             };
 
             mSensorManager.registerDynamicSensorCallback(
-                    new SensorManager.DynamicSensorCallback() {
-                        @Override
-                        public void onDynamicSensorConnected(Sensor sensor) {
-                            if (sensor.getType() == Sensor.TYPE_AMBIENT_TEMPERATURE) {
-                                mSensorManager.registerListener(
-                                        mBme280SensorListener, sensor,
-                                        SensorManager.SENSOR_DELAY_NORMAL);
-                            }
+                new SensorManager.DynamicSensorCallback() {
+                    @Override
+                    public void onDynamicSensorConnected(Sensor sensor) {
+                        if (sensor.getType() == Sensor.TYPE_AMBIENT_TEMPERATURE) {
+                            mSensorManager.registerListener(
+                                    mBme280SensorTempuratureListener, sensor,
+                                    SensorManager.SENSOR_DELAY_NORMAL);
+                        } else if (sensor.getType() == Sensor.TYPE_PRESSURE) {
+                            Log.e(TAG, "SensorRegistry.onDynamicSensorConnected: ==== pressure sensor");
+                            mSensorManager.registerListener(
+                                    mBme280SensorPressureListener, sensor,
+                                    SensorManager.SENSOR_DELAY_NORMAL);
+                        } else if (sensor.getType() == Sensor.TYPE_RELATIVE_HUMIDITY) {
+                            Log.e(TAG, "SensorRegistry.onDynamicSensorConnected: ==== humidity sensor");
+                            mSensorManager.registerListener(
+                                    mBme280SensorHumidityListener, sensor,
+                                    SensorManager.SENSOR_DELAY_NORMAL);
                         }
-                    });
+                    }
+                });
 
             try {
                 mBme280SensorDriver = new Bmx280SensorDriver(
                         Constants.RPI_3_I2C_BUS);
                 mBme280SensorDriver.registerTemperatureSensor();
+                mBme280SensorDriver.registerPressureSensor();
+                mBme280SensorDriver.registerHumiditySensor();
             } catch (IOException e) {
                 Log.e(TAG, "SensorRegistry.maybeStartBme280Sensor: ", e);
             }
