@@ -17,6 +17,23 @@ public class Color {
         this.clear = clear;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[red]");
+        sb.append(this.red);
+        sb.append(" ");
+        sb.append("[green]");
+        sb.append(this.green);
+        sb.append(" ");
+        sb.append("[blue]");
+        sb.append(this.blue);
+        sb.append(" ");
+        sb.append("[clear]");
+        sb.append(this.clear);
+        return sb.toString();
+    }
+
     /**
      * Create a {@link Color} from the given byte array
      * @param data [CL, CH, RL, RH, GL, GR, BL, BH]

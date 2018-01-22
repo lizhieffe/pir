@@ -13,6 +13,8 @@ public class Features {
 
     public final static boolean BME_280_SENSOR_ENABLED = true;
 
+    public final static boolean TCS_34725_SENSOR_ENABLED = true;
+
     public final static boolean MOTION_DETECTION_ENABLED = true;
     /*
      * These two fields are effective only when MOTION_DETECTION_ENABLED is true.

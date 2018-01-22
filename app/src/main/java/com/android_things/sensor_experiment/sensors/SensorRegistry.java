@@ -20,6 +20,8 @@ import com.android_things.sensor_experiment.logger.Mpu6500SensorLogger;
 import com.google.android.things.contrib.driver.bmx280.Bmx280SensorDriver;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.android_things.sensor_experiment.base.Constants.TAG;
 
@@ -52,6 +54,8 @@ public class SensorRegistry {
     private TextView mHumidityView;
 
 
+    private List<SensorRegisterBase> mSensorRegisters;
+
     public SensorRegistry(Context context, SensorManager sensorManager,
                           TextView accelView, TextView gyroView,
                           TextView temperatureView, TextView pressureView,
@@ -69,6 +73,15 @@ public class SensorRegistry {
     public void start() {
         maybeStartMpu6500Sensor();
         maybeStartBme280Sensor();
+
+        mSensorRegisters = new ArrayList<>();
+        mSensorRegisters.add(new Tcs34725SensorRegister(mContext, mSensorManager));
+
+        for (SensorRegisterBase srb : mSensorRegisters) {
+            if (srb.isSensorEnabled()) {
+                srb.start();
+            }
+        }
     }
 
     public void shutdown() {
@@ -91,6 +104,12 @@ public class SensorRegistry {
                 mBme280SensorDriver.close();
             } catch (IOException e) {
                 Log.e(TAG, "SensorRegistry.shutdown: ", e);
+            }
+        }
+
+        for (SensorRegisterBase srb : mSensorRegisters) {
+            if (srb.isSensorEnabled()) {
+                srb.shutdown();
             }
         }
     }

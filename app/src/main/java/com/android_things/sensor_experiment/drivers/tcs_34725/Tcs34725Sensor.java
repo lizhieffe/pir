@@ -7,8 +7,6 @@ import com.android_things.sensor_experiment.base.Constants;
 import com.android_things.sensor_experiment.drivers.MotionSensor;
 import com.google.android.things.pio.I2cDevice;
 import com.google.android.things.pio.PeripheralManagerService;
-import com.google.android.things.userdriver.UserDriverManager;
-import com.google.android.things.userdriver.UserSensor;
 import com.google.android.things.userdriver.UserSensorDriver;
 import com.google.android.things.userdriver.UserSensorReading;
 
@@ -74,9 +72,6 @@ public class Tcs34725Sensor implements MotionSensor {
     private static final int AINT = 0x10;   // RGBC clear channel Interrupt.
     private static final int AVALID = 0x01; // RGBC Valid. Indicates that the RGBC channels have completed an integration cycle.
 
-    private UserSensor luxSensor;
-    private LuxSensorDriver luxSensorDriver;
-
     private String mBus;
     private int mAddress;
 
@@ -103,12 +98,6 @@ public class Tcs34725Sensor implements MotionSensor {
     public void shutdown() {
         try {
             mDevice.close();
-
-            if (luxSensor != null) {
-                UserDriverManager manager = UserDriverManager.getManager();
-                manager.unregisterSensor(luxSensor);
-                luxSensor = null;
-            }
         } catch (IOException e) {
             Log.e(TAG, "Tcs34725Sensor.shutdown: ", e);
         }
@@ -116,8 +105,6 @@ public class Tcs34725Sensor implements MotionSensor {
 
     private void connect(I2cDevice device) throws IOException {
         mDevice = device;
-
-        luxSensorDriver = new LuxSensorDriver();
 
         setGain(Tcs34725Sensor.GAIN_16);
         setIntegrationTime(5f);
@@ -217,26 +204,11 @@ public class Tcs34725Sensor implements MotionSensor {
         return mDevice.readRegByte(ID);
     }
 
-    public void registerSensorDriver() {
-        UserDriverManager manager = UserDriverManager.getManager();
-        luxSensor = getUserSensor();
-        manager.registerSensor(luxSensor);
-    }
-
-    public UserSensor getUserSensor() {
-        UserSensor.Builder builder = new UserSensor.Builder();
-        return builder
-                .setName("tcs3472")
-                .setVendor("TAOS")
-                .setType(Sensor.TYPE_LIGHT)
-                .setDriver(luxSensorDriver)
-                .build();
-    }
-
     public Color readColor() throws IOException {
         byte[] buffer = new byte[8];
         mDevice.readRegBuffer((BLOCK_PROTOCOL | CDATAL), buffer, buffer.length);
-        return Color.fromByteArray(buffer);
+        Color result = Color.fromByteArray(buffer);
+        return result;
     }
 
     // private void updateLuxDriver(Color colour) {

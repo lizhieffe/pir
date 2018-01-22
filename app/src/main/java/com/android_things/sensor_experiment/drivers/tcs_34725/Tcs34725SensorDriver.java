@@ -1,6 +1,7 @@
 package com.android_things.sensor_experiment.drivers.tcs_34725;
 
 import android.hardware.Sensor;
+import android.util.Log;
 
 import com.google.android.things.userdriver.UserDriverManager;
 import com.google.android.things.userdriver.UserSensor;
@@ -10,11 +11,15 @@ import com.google.android.things.userdriver.UserSensorReading;
 import java.io.IOException;
 import java.util.UUID;
 
+import static com.android_things.sensor_experiment.base.Constants.TAG;
+
 /**
  * Created by lizhieffe on 1/21/18.
  */
 
 public class Tcs34725SensorDriver implements AutoCloseable {
+    public static final String SENSOR_STRING_TYPE = "RGB_sensor";
+
     private static final String DRIVER_VENDOR = "Adafruit";
     private static final String DRIVER_NAME = "TCS-34725";
     private static final int DRIVER_VERSION = 1;
@@ -23,7 +28,7 @@ public class Tcs34725SensorDriver implements AutoCloseable {
     private Tcs34725Sensor mDevice;
     private Tcs34725SensorUserDriver mUserDriver;
 
-    public void Tcs34725SensorDriver() throws IOException {
+    public Tcs34725SensorDriver() throws IOException {
         mDevice = new Tcs34725Sensor();
         mDevice.startup();
     }
@@ -61,12 +66,13 @@ public class Tcs34725SensorDriver implements AutoCloseable {
         private UserSensor getUserSensor() {
             if (mUserSensor == null) {
                 mUserSensor = new UserSensor.Builder()
-                        .setType(Sensor.TYPE_LIGHT)
+                        .setCustomType(Sensor.TYPE_DEVICE_PRIVATE_BASE,
+                                SENSOR_STRING_TYPE, Sensor.REPORTING_MODE_CONTINUOUS)
                         .setName(DRIVER_NAME)
                         .setVendor(DRIVER_VENDOR)
                         .setVersion(DRIVER_VERSION)
-                        .setMinDelay(100 * 1000)  // 100ms
-                        .setMaxDelay(150 * 1000)  // 150 ms
+                        .setMinDelay(1000 * 1000)  // 100ms
+                        .setMaxDelay(1500 * 1000)  // 150 ms
                         .setRequiredPermission(DRIVER_REQUIRED_PERMISSION)
                         .setUuid(UUID.randomUUID())
                         .setDriver(this)
@@ -78,11 +84,11 @@ public class Tcs34725SensorDriver implements AutoCloseable {
         @Override
         public UserSensorReading read() throws IOException {
             int[] color = mDevice.readColor().toIntArray();
-            float[] data = new float[4];
-            for (int i = 0;i < data.length; ++i) {
-                data[i] = (float)color[i];
-            }
-            return new UserSensorReading(data);
+            return new UserSensorReading(new float[]{
+                    color[0],
+                    color[1],
+                    color[2],
+                    color[3]});
         }
     }
 }
