@@ -17,9 +17,9 @@ public class Bme280UiController implements Bme280SensorListener {
 
     // Reading inside the delay will not be shown on the screen.
     private final static long DISPLAY_DELAY_MS = 500;
-    private long mLastTemperatureDisplayUpldate;
-    private long mLastPressureDisplayUpldate;
-    private long mLastHumidityDisplayUpldate;
+    private long mLastTemperatureDisplayUpldateMs;
+    private long mLastPressureDisplayUpldateMs;
+    private long mLastHumidityDisplayUpldateMs;
 
     public Bme280UiController(TextView temperatureView,
                               TextView pressureView,
@@ -35,7 +35,7 @@ public class Bme280UiController implements Bme280SensorListener {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             public void run() {
                 final long currTimeMs = System.currentTimeMillis();
-                if (currTimeMs - mLastTemperatureDisplayUpldate > DISPLAY_DELAY_MS) {
+                if (currTimeMs - mLastTemperatureDisplayUpldateMs > DISPLAY_DELAY_MS) {
                     StringBuilder sb = new StringBuilder();
 
                     sb.append("Temperature: ");
@@ -43,7 +43,7 @@ public class Bme280UiController implements Bme280SensorListener {
                     sb.append(" degree in C");
 
                     mTemperatureView.setText(sb.toString());
-                    mLastTemperatureDisplayUpldate = currTimeMs;
+                    mLastTemperatureDisplayUpldateMs = currTimeMs;
                 }
             }
         });
@@ -55,7 +55,7 @@ public class Bme280UiController implements Bme280SensorListener {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             public void run() {
                 final long currTimeMs = System.currentTimeMillis();
-                if (currTimeMs - mLastPressureDisplayUpldate > DISPLAY_DELAY_MS) {
+                if (currTimeMs - mLastPressureDisplayUpldateMs > DISPLAY_DELAY_MS) {
                     StringBuilder sb = new StringBuilder();
 
                     sb.append("Pressure: ");
@@ -63,7 +63,7 @@ public class Bme280UiController implements Bme280SensorListener {
                     sb.append(" hPa");
 
                     mPressureView.setText(sb.toString());
-                    mLastPressureDisplayUpldate = currTimeMs;
+                    mLastPressureDisplayUpldateMs = currTimeMs;
                 }
             }
         });
@@ -75,7 +75,7 @@ public class Bme280UiController implements Bme280SensorListener {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             public void run() {
                 final long currTimeMs = System.currentTimeMillis();
-                if (currTimeMs - mLastHumidityDisplayUpldate > DISPLAY_DELAY_MS) {
+                if (currTimeMs - mLastHumidityDisplayUpldateMs > DISPLAY_DELAY_MS) {
                     StringBuilder sb = new StringBuilder();
 
                     sb.append("Humidity: ");
@@ -83,7 +83,7 @@ public class Bme280UiController implements Bme280SensorListener {
                     sb.append(" RH percentage");
 
                     mHumidityView.setText(sb.toString());
-                    mLastHumidityDisplayUpldate = currTimeMs;
+                    mLastHumidityDisplayUpldateMs = currTimeMs;
                 }
             }
         });

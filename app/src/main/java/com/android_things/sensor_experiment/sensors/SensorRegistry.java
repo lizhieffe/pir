@@ -1,5 +1,6 @@
 package com.android_things.sensor_experiment.sensors;
 
+import android.app.Activity;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -30,6 +31,7 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
  */
 
 public class SensorRegistry {
+    private Activity mActivity;
     private Context mContext;
     private SensorManager mSensorManager;
 
@@ -56,10 +58,12 @@ public class SensorRegistry {
 
     private List<SensorRegisterBase> mSensorRegisters;
 
-    public SensorRegistry(Context context, SensorManager sensorManager,
+    public SensorRegistry(Activity activity, Context context,
+                          SensorManager sensorManager,
                           TextView accelView, TextView gyroView,
                           TextView temperatureView, TextView pressureView,
                           TextView humidityView) {
+        mActivity = activity;
         mContext = context;
         mSensorManager = sensorManager;
 
@@ -75,7 +79,8 @@ public class SensorRegistry {
         maybeStartBme280Sensor();
 
         mSensorRegisters = new ArrayList<>();
-        mSensorRegisters.add(new Tcs34725SensorRegister(mContext, mSensorManager));
+        mSensorRegisters.add(new Tcs34725SensorRegister(
+                mActivity, mContext, mSensorManager));
 
         for (SensorRegisterBase srb : mSensorRegisters) {
             if (srb.isSensorEnabled()) {

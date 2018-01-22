@@ -65,4 +65,11 @@
         android:layout_height="wrap_content"
         android:text="Humidity Placeholder"
         android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/rgb_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Humidity Placeholder"
+        android:textSize="15sp" />
 </LinearLayout>

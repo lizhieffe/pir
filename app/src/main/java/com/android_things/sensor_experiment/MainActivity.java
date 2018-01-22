@@ -239,11 +239,11 @@ public class MainActivity extends Activity {
                 Log.e(TAG, "MainActivity.maybeStartAudioRecord: ", e);
             }
         }
-
     }
 
     private void startSensorRegistry() {
-        mSensorRegistry = new SensorRegistry(mContext, mSensorManager,
+        mSensorRegistry = new SensorRegistry(this,
+                mContext, mSensorManager,
                 (TextView) findViewById(R.id.accel_text_view),
                 (TextView) findViewById(R.id.gyro_text_view),
                 (TextView) findViewById(R.id.temperature_text_view),
