@@ -11,16 +11,12 @@ import com.android_things.sensor_experiment.controllers.MainUiController;
  */
 
 abstract public class SensorRegisterBase {
-    // TODO: passing activity looks not good. Instead makes the activity UI controller
-    // a listener to this, etc.
-    Activity mActivity;
     Context mContext;
     SensorManager mSensorManager;
     MainUiController mMainUiController;
 
-    SensorRegisterBase(Activity activity, Context context, SensorManager sensorManager,
+    SensorRegisterBase(Context context, SensorManager sensorManager,
                        MainUiController mainUiController) {
-        mActivity = activity;
         mContext = context;
         mSensorManager = sensorManager;
         mMainUiController = mainUiController;

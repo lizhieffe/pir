@@ -5,5 +5,5 @@ package com.android_things.sensor_experiment.drivers.tcs_34725;
  */
 
 public interface Tcs34725SensorListener {
-    public void onColorData(Color color);
+    public void onTcs34725SensorData(Color color);
 }

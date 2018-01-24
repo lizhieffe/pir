@@ -25,15 +25,13 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
  */
 
 public class Tcs34725SensorRegister extends SensorRegisterBase {
-    Tcs34725SensorRegister(Activity activity, Context context, SensorManager sensorManager,
+    Tcs34725SensorRegister(Context context, SensorManager sensorManager,
                            MainUiController mainUiController) {
-        super(activity, context, sensorManager, mainUiController);
+        super(context, sensorManager, mainUiController);
     }
 
     private Tcs34725SensorDriver mDriver;
     private SensorEventListener mListener;
-
-    private RgbUiController mUiController;
 
     @Override
     public boolean isSensorEnabled() {
@@ -42,9 +40,6 @@ public class Tcs34725SensorRegister extends SensorRegisterBase {
 
     @Override
     public void start() {
-        mUiController = new RgbUiController(
-                (TextView) mActivity.findViewById(R.id.rgb_text_view));
-
         mListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
@@ -57,7 +52,7 @@ public class Tcs34725SensorRegister extends SensorRegisterBase {
                 sb.append(" ");
                 sb.append(event.values[3]);
 
-                mUiController.onColorData(new Color(
+                mMainUiController.onTcs34725SensorData(new Color(
                         (int) event.values[0],
                         (int) event.values[1],
                         (int) event.values[2],

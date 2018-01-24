@@ -23,7 +23,7 @@ public class RgbUiController implements Tcs34725SensorListener {
     }
 
     @Override
-    public void onColorData(Color color) {
+    public void onTcs34725SensorData(Color color) {
         final Color localColor = color;
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             public void run() {

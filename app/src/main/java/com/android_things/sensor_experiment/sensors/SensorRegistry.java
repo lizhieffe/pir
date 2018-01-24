@@ -86,9 +86,9 @@ public class SensorRegistry {
 
         mSensorRegisters = new ArrayList<>();
         mSensorRegisters.add(new Pms7003SensorRegister(
-                mActivity, mContext, mSensorManager, mMainUiController));
+                mContext, mSensorManager, mMainUiController));
         mSensorRegisters.add(new Tcs34725SensorRegister(
-                mActivity, mContext, mSensorManager, mMainUiController));
+                mContext, mSensorManager, mMainUiController));
 
         for (SensorRegisterBase srb : mSensorRegisters) {
             if (srb.isSensorEnabled()) {
