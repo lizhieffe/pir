@@ -8,12 +8,16 @@ import matplotlib.dates as mdates
 import sys
 from matplotlib import gridspec
 from enum import Enum
+from datetime import datetime, timedelta
 
 class DataSource(Enum):
     PIR = 1
     MIC_AMPLITUDE = 2
     ACCEL = 3
     GYRO = 4
+    TEMPERATURE = 5
+    PRESSURE = 6
+    HUMIDITY = 7
 
 def getPlotRow(dataSource):
     if dataSource == DataSource.PIR:
@@ -24,6 +28,12 @@ def getPlotRow(dataSource):
         return 3
     elif dataSource == DataSource.GYRO:
         return 3
+    elif dataSource == DataSource.TEMPERATURE:
+        return 1
+    elif dataSource == DataSource.PRESSURE:
+        return 1
+    elif dataSource == DataSource.HUMIDITY:
+        return 1
     else:
         assert False, "ERROR: Plot row is not defined"
 
@@ -32,6 +42,9 @@ enabledPlotDataSource = [
                          DataSource.MIC_AMPLITUDE,
                          DataSource.ACCEL,
                          DataSource.GYRO,
+                         DataSource.TEMPERATURE,
+                         # DataSource.PRESSURE,
+                         # DataSource.HUMIDITY,
                         ]
 
 def getGridSpec():
@@ -40,6 +53,12 @@ def getGridSpec():
         rows += getPlotRow(pds)
     return rows
 
+def isValidTimestamp(timestamp):
+    validSince = datetime(2017, 11, 1)
+    epoch = datetime(1970, 1, 1)
+    validSincePosixMs = (validSince - epoch) // timedelta(microseconds=1) // 1000
+    return timestamp >= validSincePosixMs
+    
 def addPirPlot(dataDir, gridSpec, currGridRow, sharedXAxis):
     print "Start ploting PIR data"
 
@@ -69,7 +88,8 @@ def addMicAmplitudePlot(dataDir, gridSpec, currGridRow, sharedXAxis):
       with open(filePath) as f:
           for line in f:
               nums = [float(x) for x in line.split(" ")]
-              amplitude_data.append(nums)
+              if isValidTimestamp(nums[0]):
+                  amplitude_data.append(nums)
     
     x = map(lambda x: mdates.epoch2num(int(x[0] / 1000)), amplitude_data)
     y = map(lambda x: x[1], amplitude_data)
@@ -92,7 +112,8 @@ def addAccelPlot(dataDir, gridSpec, currGridRow, sharedXAxis):
       with open(filePath) as f:
           for line in f:
               nums = [float(x) for x in line.split(" ")]
-              accel_data.append(nums)
+              if isValidTimestamp(nums[0]):
+                  accel_data.append(nums)
     
     x = map(lambda x: mdates.epoch2num(int(x[0] / 1000)), accel_data)
     y = map(lambda x: x[1], accel_data)
@@ -129,7 +150,8 @@ def addGyroPlot(dataDir, gridSpec, currGridRow, sharedXAxis):
       with open(filePath) as f:
           for line in f:
               nums = [float(x) for x in line.split(" ")]
-              gyro_data.append(nums)
+              if isValidTimestamp(nums[0]):
+                  gyro_data.append(nums)
     
     x = map(lambda x: mdates.epoch2num(int(x[0] / 1000)), gyro_data)
     y = map(lambda x: x[1], gyro_data)
@@ -156,11 +178,35 @@ def addGyroPlot(dataDir, gridSpec, currGridRow, sharedXAxis):
     print "GYRO plot is done."
     return [ax4, ax5, ax6]
 
+def addTemperaturePlot(dataDir, gridSpec, currGridRow, sharedXAxis):
+    print "Start ploting Temperature data"
+    
+    dataFileList = glob.glob(dataDir + '/bme_280_temperature_*')
+    data = []  # list of ndarray
+    for filePath in dataFileList:
+      print filePath
+      with open(filePath) as f:
+          for line in f:
+              nums = [float(x) for x in line.split(" ")]
+              if isValidTimestamp(nums[0]):
+                  data.append(nums)
+    
+    x = map(lambda x: mdates.epoch2num(int(x[0] / 1000)), data)
+    y = map(lambda x: x[1], data)
+    ax = plt.subplot(gridSpec[currGridRow], sharex = sharedXAxis)
+    ax.plot(x, y)
+    # remove last tick label for the second subplot
+    yticks = ax.yaxis.get_major_ticks()
+    yticks[-1].label1.set_visible(False)
+
+    print "MIC Amplitude plot is done."
+    return [ax]
+
 def main(argv):
     currGridRow = 0
     gs = gridspec.GridSpec(getGridSpec(), 1)
     
-    dataDir = "/tmp/sensor_data"
+    dataDir = "/tmp/sensor_data/sensor_data"
     # dataDir = "./sensor_data"
 
     # Set timezone which will be used by x-axis.
@@ -183,6 +229,9 @@ def main(argv):
             plotted = True
         elif pds == DataSource.GYRO:
             localAx = addGyroPlot(dataDir, gs, currGridRow, ax0)
+            plotted = True
+        elif pds == DataSource.TEMPERATURE:
+            localAx = addTemperaturePlot(dataDir, gs, currGridRow, ax0)
             plotted = True
     
         if plotted == True:
