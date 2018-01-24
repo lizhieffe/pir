@@ -6,15 +6,17 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.android_things.sensor_experiment.base.Features;
-import com.android_things.sensor_experiment.drivers.pms_7003.Pms7003Sensor;
+import com.android_things.sensor_experiment.controllers.MainUiController;
 import com.android_things.sensor_experiment.drivers.pms_7003.Pms7003SensorData;
 import com.android_things.sensor_experiment.drivers.pms_7003.Pms7003SensorDriver;
+import com.android_things.sensor_experiment.drivers.pms_7003.Pms7003SensorListener;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.android_things.sensor_experiment.base.Constants.TAG;
 
@@ -24,12 +26,17 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
 
 public class Pms7003SensorRegister extends SensorRegisterBase {
     Pms7003SensorRegister(Activity activity,
-                          Context context, SensorManager sensorManager) {
+                          Context context, SensorManager sensorManager,
+                          MainUiController mainUiController) {
         super(activity, context, sensorManager);
+        mMainUiController = mainUiController;
     }
+
+    private MainUiController mMainUiController;
 
     private Pms7003SensorDriver mDriver;
     private SensorEventListener mListener;
+    volatile private List<Pms7003SensorListener> mListeners = new ArrayList<>();
 
     @Override
     public boolean isSensorEnabled() {
@@ -47,6 +54,8 @@ public class Pms7003SensorRegister extends SensorRegisterBase {
                 }
                 Pms7003SensorData structuredData = new Pms7003SensorData(data);
                 Log.d(TAG, "onSensorChanged: get data: " + structuredData.toString());
+
+                mMainUiController.onPms7003SensorData(structuredData);
             }
 
             @Override

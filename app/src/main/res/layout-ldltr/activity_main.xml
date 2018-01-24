@@ -29,7 +29,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Gesture Placeholder"
-        android:textSize="15sp" />
+        android:textSize="5sp" />
 
     <TextView
         android:id="@+id/accel_text_view"
@@ -70,6 +70,14 @@
         android:id="@+id/rgb_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Humidity Placeholder"
+        android:text="RGB Placeholder"
         android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/air_quality_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Air Quality Placeholder"
+        android:textSize="15sp" />
+
 </LinearLayout>

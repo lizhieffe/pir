@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.android_things.sensor_experiment.base.Constants;
 import com.android_things.sensor_experiment.base.Features;
+import com.android_things.sensor_experiment.controllers.MainUiController;
 import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500SensorAccelDriver;
 import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500SensorDriverFactory;
 import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500SensorGyroDriver;
@@ -58,6 +59,9 @@ public class SensorRegistry {
 
     private List<SensorRegisterBase> mSensorRegisters;
 
+
+    private MainUiController mMainUiController;
+
     public SensorRegistry(Activity activity, Context context,
                           SensorManager sensorManager,
                           TextView accelView, TextView gyroView,
@@ -72,6 +76,8 @@ public class SensorRegistry {
         mTemperatureView = temperatureView;
         mPressureView = pressureView;
         mHumidityView = humidityView;
+
+        mMainUiController = new MainUiController(mActivity);
     }
 
     public void start() {
@@ -80,7 +86,7 @@ public class SensorRegistry {
 
         mSensorRegisters = new ArrayList<>();
         mSensorRegisters.add(new Pms7003SensorRegister(
-                mActivity, mContext, mSensorManager));
+                mActivity, mContext, mSensorManager, mMainUiController));
         mSensorRegisters.add(new Tcs34725SensorRegister(
                 mActivity, mContext, mSensorManager));
 
