@@ -55,7 +55,6 @@ public class Tcs34725SensorRegister extends SensorRegisterBase {
                 sb.append(event.values[2]);
                 sb.append(" ");
                 sb.append(event.values[3]);
-                // Log.d(TAG, "Tcs34725SensorRegister.onSensorChanged: data is " + sb.toString());
 
                 mUiController.onColorData(new Color(
                         (int) event.values[0],

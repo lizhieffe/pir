@@ -2,6 +2,7 @@ package com.android_things.sensor_experiment.drivers.zx_gesture_sensor;
 
 import android.util.Log;
 
+import com.android_things.sensor_experiment.base.Constants;
 import com.google.android.things.pio.PeripheralManagerService;
 import com.google.android.things.pio.UartDevice;
 import com.google.android.things.pio.UartDeviceCallback;
@@ -20,8 +21,6 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
  */
 
 public class ZxGestureSensorUart {
-    private final static String DEFAULT_UART_PORT = "UART0";
-
     private UartDevice mDevice;
     private String mPort;
 
@@ -29,7 +28,7 @@ public class ZxGestureSensorUart {
     private PeripheralManagerService mPioService;
 
     public ZxGestureSensorUart() {
-        this(DEFAULT_UART_PORT);
+        this(Constants.RPI_3_UART_PORT);
     }
 
     public ZxGestureSensorUart(String port) {

@@ -79,6 +79,8 @@ public class SensorRegistry {
         maybeStartBme280Sensor();
 
         mSensorRegisters = new ArrayList<>();
+        mSensorRegisters.add(new Pms7003SensorRegister(
+                mActivity, mContext, mSensorManager));
         mSensorRegisters.add(new Tcs34725SensorRegister(
                 mActivity, mContext, mSensorManager));
 
