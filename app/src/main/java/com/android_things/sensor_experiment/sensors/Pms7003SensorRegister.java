@@ -28,15 +28,11 @@ public class Pms7003SensorRegister extends SensorRegisterBase {
     Pms7003SensorRegister(Activity activity,
                           Context context, SensorManager sensorManager,
                           MainUiController mainUiController) {
-        super(activity, context, sensorManager);
-        mMainUiController = mainUiController;
+        super(activity, context, sensorManager, mainUiController);
     }
-
-    private MainUiController mMainUiController;
 
     private Pms7003SensorDriver mDriver;
     private SensorEventListener mListener;
-    volatile private List<Pms7003SensorListener> mListeners = new ArrayList<>();
 
     @Override
     public boolean isSensorEnabled() {

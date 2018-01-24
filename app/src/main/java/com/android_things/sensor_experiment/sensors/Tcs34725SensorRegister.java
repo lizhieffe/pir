@@ -10,6 +10,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.android_things.sensor_experiment.base.Features;
+import com.android_things.sensor_experiment.controllers.MainUiController;
 import com.android_things.sensor_experiment.controllers.RgbUiController;
 import com.android_things.sensor_experiment.drivers.tcs_34725.Color;
 import com.android_things.sensor_experiment.drivers.tcs_34725.Tcs34725SensorDriver;
@@ -24,9 +25,9 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
  */
 
 public class Tcs34725SensorRegister extends SensorRegisterBase {
-    Tcs34725SensorRegister(Activity activity,
-                           Context context, SensorManager sensorManager) {
-        super(activity, context, sensorManager);
+    Tcs34725SensorRegister(Activity activity, Context context, SensorManager sensorManager,
+                           MainUiController mainUiController) {
+        super(activity, context, sensorManager, mainUiController);
     }
 
     private Tcs34725SensorDriver mDriver;
