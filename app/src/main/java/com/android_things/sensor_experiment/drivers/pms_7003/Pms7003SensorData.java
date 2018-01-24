@@ -51,6 +51,14 @@ public class Pms7003SensorData {
         return sb.toString();
     }
 
+    public float[] toFloatArray() {
+        float[] data = new float[3];
+        data[0] = mPm1_0;
+        data[1] = mPm2_5;
+        data[2] = mPm10;
+        return data;
+    }
+
     void clear() {
         mPm1_0 = 0;
         mPm2_5 = 0;

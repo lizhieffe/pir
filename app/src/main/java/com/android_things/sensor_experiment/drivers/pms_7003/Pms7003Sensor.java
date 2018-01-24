@@ -27,6 +27,8 @@ public class Pms7003Sensor {
 
     private PeripheralManagerService mPioService;
 
+    volatile private Pms7003SensorData mData = new Pms7003SensorData();
+
     public Pms7003Sensor() {
         this(Constants.RPI_3_UART_PORT);
         mParser = new Pms7003SensorDataParser();
@@ -87,8 +89,8 @@ public class Pms7003Sensor {
         mDevice.registerUartDeviceCallback(onUart);
     }
 
-    public void read() throws IOException {
-        readUartBuffer(mDevice);
+    public Pms7003SensorData read() throws IOException {
+        return mData;
     }
 
     private void readUartBuffer(UartDevice uart) throws IOException {
@@ -104,6 +106,7 @@ public class Pms7003Sensor {
                     + String.format("%02X ", buffer[i]));
             Pms7003SensorData result = mParser.parse(buffer[i]);
             if (result != null) {
+                mData = result;
                 Log.e(TAG, "Pms7003Sensor.readUartBuffer: data ready");
                 Log.d(TAG, "Pms7003Sensor.readUartBuffer: data = " + result.toString());
             }
