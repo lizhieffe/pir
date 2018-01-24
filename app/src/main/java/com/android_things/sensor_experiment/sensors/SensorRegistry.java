@@ -254,12 +254,10 @@ public class SensorRegistry {
                                     mBme280SensorTempuratureListener, sensor,
                                     SensorManager.SENSOR_DELAY_NORMAL);
                         } else if (sensor.getType() == Sensor.TYPE_PRESSURE) {
-                            Log.e(TAG, "SensorRegistry.onDynamicSensorConnected: ==== pressure sensor");
                             mSensorManager.registerListener(
                                     mBme280SensorPressureListener, sensor,
                                     SensorManager.SENSOR_DELAY_NORMAL);
                         } else if (sensor.getType() == Sensor.TYPE_RELATIVE_HUMIDITY) {
-                            Log.e(TAG, "SensorRegistry.onDynamicSensorConnected: ==== humidity sensor");
                             mSensorManager.registerListener(
                                     mBme280SensorHumidityListener, sensor,
                                     SensorManager.SENSOR_DELAY_NORMAL);

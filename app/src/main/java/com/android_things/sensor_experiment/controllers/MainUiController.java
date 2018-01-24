@@ -21,7 +21,8 @@ public class MainUiController implements Pms7003SensorListener, Tcs34725SensorLi
 
     // Reading inside the delay will not be shown on the screen.
     private final static long DISPLAY_DELAY_MS = 500;
-    private long mLastDisplayUpdateMs;
+    private long mLastDisplayUpdatePms7003Ms;
+    private long mLastDisplayUpdateTcs34725Ms;
 
     private TextView mPms7003View;
     private TextView mTcs34725View;
@@ -39,9 +40,9 @@ public class MainUiController implements Pms7003SensorListener, Tcs34725SensorLi
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             public void run() {
                 final long currTimeMs = System.currentTimeMillis();
-                if (currTimeMs - mLastDisplayUpdateMs > DISPLAY_DELAY_MS) {
+                if (currTimeMs - mLastDisplayUpdatePms7003Ms > DISPLAY_DELAY_MS) {
                     mPms7003View.setText(localData.toString());
-                    mLastDisplayUpdateMs = currTimeMs;
+                    mLastDisplayUpdatePms7003Ms = currTimeMs;
                 }
             }
         });
@@ -53,9 +54,9 @@ public class MainUiController implements Pms7003SensorListener, Tcs34725SensorLi
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             public void run() {
                 final long currTimeMs = System.currentTimeMillis();
-                if (currTimeMs - mLastDisplayUpdateMs > DISPLAY_DELAY_MS) {
+                if (currTimeMs - mLastDisplayUpdateTcs34725Ms > DISPLAY_DELAY_MS) {
                     mTcs34725View.setText(localData.toString());
-                    mLastDisplayUpdateMs = currTimeMs;
+                    mLastDisplayUpdateTcs34725Ms = currTimeMs;
                 }
             }
         });
