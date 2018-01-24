@@ -99,53 +99,17 @@ public class Pms7003Sensor {
 
         int count;  // number of bytes read
         count = uart.read(buffer, buffer.length);
-        Log.d(TAG, "Pms7003Sensor.readUartBuffer: read count = " + count);
+        // Log.d(TAG, "Pms7003Sensor.readUartBuffer: read count = " + count);
         for (int i = 0; i < count; i++) {
-            Log.d(TAG, "Pms7003Sensor.readUartBuffer: i = " + i + ", count = " + count);
-            Log.d(TAG, "Pms7003Sensor.readUartBuffer: "
-                    + String.format("%02X ", buffer[i]));
+            // Log.d(TAG, "Pms7003Sensor.readUartBuffer: i = " + i + ", count = " + count);
+            // Log.d(TAG, "Pms7003Sensor.readUartBuffer: "
+            //         + String.format("%02X ", buffer[i]));
             Pms7003SensorData result = mParser.parse(buffer[i]);
             if (result != null) {
                 mData = result;
-                Log.e(TAG, "Pms7003Sensor.readUartBuffer: data ready");
-                Log.d(TAG, "Pms7003Sensor.readUartBuffer: data = " + result.toString());
+                // Log.e(TAG, "Pms7003Sensor.readUartBuffer: data ready");
+                // Log.d(TAG, "Pms7003Sensor.readUartBuffer: data = " + result.toString());
             }
         }
-        // SensorResult result = null;
-        // while ((count = uart.read(buffer, buffer.length)) > 0) {
-        //     // Log.d(TAG, "ZxGestureSensorUart.readUartBuffer: count = " + count);
-        //     for (int i = 0; i < count; i++) {
-        //         try {
-        //             result = mParser.parse(buffer[i]);
-        //         } catch (InvalidByteException e) {
-        //             Log.e(TAG, "Invalid byte sequence encountered " +
-        //                     "while reading from sensor connected to UART", e);
-        //         }
-        //         if (result != null) {
-        //             switch (result.resultType) {
-        //                 case PEN_UP:
-        //                     // mGestureDetector.penUp();
-        //                     break;
-        //                 case X_POS:
-        //                     // mGestureDetector.setXpos(result.xPosition);
-        //                     break;
-        //                 case Z_POS:
-        //                     // mGestureDetector.setZpos(result.zPosition);
-        //                     break;
-        //                 case GESTURE:
-        //                     mLatestGesture = result.gesture;
-        //                     // mGestureDetector.setGesture(result.gesture,
-        //                     //        result.gestureParams);
-        //                     break;
-        //                 case RANGE:
-        //                     // mGestureDetector.setRanges(result.rangeL, result.rangeR);
-        //                     break;
-        //                 case ID:
-        //                     break;
-        //             }
-        //             result = null;
-        //         }
-        //     }
-        // }
     }
 }

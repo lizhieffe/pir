@@ -23,8 +23,14 @@ public class Pms7003SensorData {
         clear();
     }
 
-    Pms7003SensorData(Pms7003SensorData data) {
-        clear();
+    public Pms7003SensorData(int[] data) {
+        assert (data.length == 3);
+        mPm1_0 = data[0];
+        mPm2_5 = data[1];
+        mPm10 = data[2];
+    }
+
+    public Pms7003SensorData(Pms7003SensorData data) {
         mPm1_0 = data.mPm1_0;
         mPm2_5 = data.mPm2_5;
         mPm10 = data.mPm10;

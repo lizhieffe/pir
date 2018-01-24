@@ -28,7 +28,7 @@ class Pms7003SensorDataParser {
     // data read from sensor.
     @Nullable
     Pms7003SensorData parse(byte b) {
-        Log.d(TAG, "Pms7003SensorDataParser.parse: stage = " +parseStage);
+        // Log.d(TAG, "Pms7003SensorDataParser.parse: stage = " +parseStage);
         switch (parseStage) {
             case 0:
                 if (b == START_BYTE_1) {
