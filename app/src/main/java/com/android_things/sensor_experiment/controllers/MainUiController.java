@@ -1,20 +1,15 @@
 package com.android_things.sensor_experiment.controllers;
 
 import android.app.Activity;
-import android.os.Handler;
-import android.os.Looper;
 import android.widget.TextView;
 
-import com.android_things.sensor_experiment.detectors.MotionDetectionEvent;
-import com.android_things.sensor_experiment.detectors.MotionDetectorListener;
 import com.android_things.sensor_experiment.drivers.bme_280_sensor.Bme280SensorListener;
 import com.android_things.sensor_experiment.drivers.pms_7003.Pms7003SensorData;
 import com.android_things.sensor_experiment.drivers.pms_7003.Pms7003SensorListener;
 import com.android_things.sensor_experiment.drivers.tcs_34725.Color;
-import com.android_things.sensor_experiment.drivers.tcs_34725.Tcs34725SensorDriver;
 import com.android_things.sensor_experiment.drivers.tcs_34725.Tcs34725SensorListener;
-import com.android_things.sensor_experiment.logger.Bme280SensorLogger;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
+import com.android_things.sensor_experiment.utils.Throttler;
 
 /**
  * Created by lizhi on 1/24/18.
@@ -51,91 +46,87 @@ public class MainUiController implements
         mTcs34725View = mActivity.findViewById(R.id.rgb_text_view);
     }
 
+    private Throttler<Pms7003SensorData> mPms7003Updater;
     @Override
     public void onPms7003SensorData(Pms7003SensorData data) {
-        final Pms7003SensorData localData = data;
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            public void run() {
-                final long currTimeMs = System.currentTimeMillis();
-                if (currTimeMs - mLastDisplayUpdatePms7003Ms > DISPLAY_DELAY_MS) {
-                    mPms7003View.setText(localData.toString());
-                    mLastDisplayUpdatePms7003Ms = currTimeMs;
+        if (mPms7003Updater == null) {
+            mPms7003Updater = new Throttler<Pms7003SensorData>() {
+                @Override
+                public void processData(Pms7003SensorData data) {
+                    mPms7003View.setText(data.toString());
                 }
-            }
-        });
+            };
+        }
+        mPms7003Updater.throttleOnNonUiThread(data);
     }
 
+    private Throttler<Color> mTcs34725Updater;
     @Override
     public void onTcs34725SensorData(Color color) {
-        final Color localData = color;
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            public void run() {
-                final long currTimeMs = System.currentTimeMillis();
-                if (currTimeMs - mLastDisplayUpdateTcs34725Ms > DISPLAY_DELAY_MS) {
-                    mTcs34725View.setText(localData.toString());
-                    mLastDisplayUpdateTcs34725Ms = currTimeMs;
+        if (mTcs34725Updater == null) {
+            mTcs34725Updater = new Throttler<Color>() {
+                @Override
+                public void processData(Color data) {
+                    mTcs34725View.setText(data.toString());
                 }
-            }
-        });
+            };
+        }
+        mTcs34725Updater.throttleOnNonUiThread(color);
     }
 
+    private Throttler<Float> mTemperatureUpdater;
     @Override
     public void onTemperatureData(float temp) {
-        final float localTemp = temp;
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            public void run() {
-                final long currTimeMs = System.currentTimeMillis();
-                if (currTimeMs - mLastTemperatureDisplayUpldateMs > DISPLAY_DELAY_MS) {
+        if (mTemperatureUpdater == null) {
+            mTemperatureUpdater = new Throttler<Float>() {
+                @Override
+                public void processData(Float data) {
                     StringBuilder sb = new StringBuilder();
-
                     sb.append("Temperature: ");
-                    sb.append(String.format("%.4f", localTemp));
+                    sb.append(String.format("%.4f", data));
                     sb.append(" degree in C");
-
                     mTemperatureView.setText(sb.toString());
-                    mLastTemperatureDisplayUpldateMs = currTimeMs;
                 }
-            }
-        });
+            };
+        }
+        mTemperatureUpdater.throttleOnNonUiThread(temp);
     }
 
+    private Throttler<Float> mPressureUpdater;
     @Override
-    public void onPressureData(float pressure) {
-        final float localPressure = pressure;
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            public void run() {
-                final long currTimeMs = System.currentTimeMillis();
-                if (currTimeMs - mLastPressureDisplayUpldateMs > DISPLAY_DELAY_MS) {
+    public void onPressureData(final float pressure) {
+        if (mPressureUpdater == null) {
+            mPressureUpdater = new Throttler<Float>() {
+                @Override
+                public void processData(Float data) {
                     StringBuilder sb = new StringBuilder();
-
                     sb.append("Pressure: ");
-                    sb.append(String.format("%.4f", localPressure));
+                    sb.append(String.format("%.4f", pressure));
                     sb.append(" hPa");
-
                     mPressureView.setText(sb.toString());
-                    mLastPressureDisplayUpldateMs = currTimeMs;
+
                 }
-            }
-        });
+            };
+        }
+        mPressureUpdater.throttleOnNonUiThread(pressure);
     }
 
+    private Throttler<Float> mHumidityUpdater;
     @Override
     public void onHumidityData(float data) {
-        final float localData = data;
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            public void run() {
-                final long currTimeMs = System.currentTimeMillis();
-                if (currTimeMs - mLastHumidityDisplayUpldateMs > DISPLAY_DELAY_MS) {
+        if (mHumidityUpdater == null) {
+            mHumidityUpdater = new Throttler<Float>() {
+                @Override
+                public void processData(Float data) {
                     StringBuilder sb = new StringBuilder();
-
                     sb.append("Humidity: ");
-                    sb.append(String.format("%.4f", localData));
+                    sb.append(String.format("%.4f", data));
                     sb.append(" RH percentage");
-
                     mHumidityView.setText(sb.toString());
-                    mLastHumidityDisplayUpldateMs = currTimeMs;
+
                 }
-            }
-        });
+            };
+        }
+        mHumidityUpdater.throttleOnNonUiThread(data);
     }
 }
