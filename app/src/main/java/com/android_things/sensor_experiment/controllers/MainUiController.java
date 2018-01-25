@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.TextView;
 
+import com.android_things.sensor_experiment.detectors.MotionDetectionEvent;
+import com.android_things.sensor_experiment.detectors.MotionDetectorListener;
 import com.android_things.sensor_experiment.drivers.pms_7003.Pms7003SensorData;
 import com.android_things.sensor_experiment.drivers.pms_7003.Pms7003SensorListener;
 import com.android_things.sensor_experiment.drivers.tcs_34725.Color;
@@ -16,7 +18,8 @@ import com.android_things.sensor_experiment.pir.sensor_test.R;
  * Created by lizhi on 1/24/18.
  */
 
-public class MainUiController implements Pms7003SensorListener, Tcs34725SensorListener {
+public class MainUiController implements
+        Pms7003SensorListener, Tcs34725SensorListener {
     private Activity mActivity;
 
     // Reading inside the delay will not be shown on the screen.
