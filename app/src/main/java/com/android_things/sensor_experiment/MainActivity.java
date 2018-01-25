@@ -198,10 +198,7 @@ public class MainActivity extends Activity {
         mSensorRegistry = new SensorRegistry(this,
                 mContext, mSensorManager,
                 (TextView) findViewById(R.id.accel_text_view),
-                (TextView) findViewById(R.id.gyro_text_view),
-                (TextView) findViewById(R.id.temperature_text_view),
-                (TextView) findViewById(R.id.pressure_text_view),
-                (TextView) findViewById(R.id.humidity_text_view));
+                (TextView) findViewById(R.id.gyro_text_view));
         mSensorRegistry.start();
     }
 }

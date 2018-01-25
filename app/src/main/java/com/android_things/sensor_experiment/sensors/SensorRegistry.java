@@ -6,26 +6,18 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.util.Log;
 import android.widget.TextView;
 
-import com.android_things.sensor_experiment.base.Constants;
 import com.android_things.sensor_experiment.base.Features;
 import com.android_things.sensor_experiment.controllers.MainUiController;
 import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500SensorAccelDriver;
 import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500SensorDriverFactory;
 import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500SensorGyroDriver;
 import com.android_things.sensor_experiment.controllers.AccelerometerUiController;
-import com.android_things.sensor_experiment.controllers.Bme280UiController;
-import com.android_things.sensor_experiment.logger.Bme280SensorLogger;
 import com.android_things.sensor_experiment.logger.Mpu6500SensorLogger;
-import com.google.android.things.contrib.driver.bmx280.Bmx280SensorDriver;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.android_things.sensor_experiment.base.Constants.TAG;
 
 /**
  * Registry for sensors which manages the sensor resource and listeners.
@@ -46,17 +38,6 @@ public class SensorRegistry {
     private TextView mAccelView;
     private TextView mGyroView;
 
-    private SensorEventListener mBme280SensorTempuratureListener;
-    private SensorEventListener mBme280SensorPressureListener;
-    private SensorEventListener mBme280SensorHumidityListener;
-    private Bmx280SensorDriver mBme280SensorDriver;
-    private Bme280UiController mBme280UiController;
-    private Bme280SensorLogger mBme280SensorLogger;
-    private TextView mTemperatureView;
-    private TextView mPressureView;
-    private TextView mHumidityView;
-
-
     private List<SensorRegisterBase> mSensorRegisters;
 
 
@@ -64,27 +45,23 @@ public class SensorRegistry {
 
     public SensorRegistry(Activity activity, Context context,
                           SensorManager sensorManager,
-                          TextView accelView, TextView gyroView,
-                          TextView temperatureView, TextView pressureView,
-                          TextView humidityView) {
+                          TextView accelView, TextView gyroView) {
         mActivity = activity;
         mContext = context;
         mSensorManager = sensorManager;
 
         mAccelView = accelView;
         mGyroView = gyroView;
-        mTemperatureView = temperatureView;
-        mPressureView = pressureView;
-        mHumidityView = humidityView;
 
         mMainUiController = new MainUiController(mActivity);
     }
 
     public void start() {
         maybeStartMpu6500Sensor();
-        maybeStartBme280Sensor();
 
         mSensorRegisters = new ArrayList<>();
+        mSensorRegisters.add(new Bme280SensorRegister(
+                mContext, mSensorManager, mMainUiController));
         mSensorRegisters.add(new HcSr04SensorRegister(
                 mContext, mSensorManager, mMainUiController, mActivity));
         mSensorRegisters.add(new HcSr501SensorRegister(
@@ -107,21 +84,6 @@ public class SensorRegistry {
             mMpu6500SensorAccelDriver.unregisterSensor();
             mSensorManager.unregisterListener(mMpu6500SensorGyroListener);
             mMpu6500SensorGyroDriver.unregisterSensor();
-        }
-
-        if (Features.BME_280_SENSOR_ENABLED) {
-            mSensorManager.unregisterListener(mBme280SensorTempuratureListener);
-            mSensorManager.unregisterListener(mBme280SensorPressureListener);
-            mSensorManager.unregisterListener(mBme280SensorHumidityListener);
-            mBme280SensorDriver.unregisterTemperatureSensor();
-            mBme280SensorDriver.unregisterPressureSensor();
-            mBme280SensorDriver.unregisterHumiditySensor();
-
-            try {
-                mBme280SensorDriver.close();
-            } catch (IOException e) {
-                Log.e(TAG, "SensorRegistry.shutdown: ", e);
-            }
         }
 
         for (SensorRegisterBase srb : mSensorRegisters) {
@@ -197,87 +159,6 @@ public class SensorRegistry {
             );
             mMpu6500SensorGyroDriver = mMpu6500SensorDriverFactory.createGyroDriver();
             mMpu6500SensorGyroDriver.registerSensor();
-        }
-    }
-
-    private void maybeStartBme280Sensor() {
-        if (Features.BME_280_SENSOR_ENABLED) {
-            mBme280UiController = new Bme280UiController(
-                    mTemperatureView, mPressureView, mHumidityView);
-            mBme280SensorLogger = new Bme280SensorLogger(mContext);
-
-            mBme280SensorTempuratureListener = new SensorEventListener() {
-                @Override
-                public void onSensorChanged(SensorEvent event) {
-                    // Result contains on number representing the current
-                    // temperature in degrees Celsius.
-                    mBme280UiController.onTemperatureData(event.values[0]);
-                    mBme280SensorLogger.onTemperatureData(event.values[0]);
-                }
-
-                @Override
-                public void onAccuracyChanged(Sensor sensor, int accuracy) {
-                    // Do nothing for now.
-                }
-            };
-            mBme280SensorPressureListener = new SensorEventListener() {
-                @Override
-                public void onSensorChanged(SensorEvent event) {
-                    // Result contains on number representing the current
-                    // barometric pressure in hPa units.
-                    mBme280UiController.onPressureData(event.values[0]);
-                    mBme280SensorLogger.onPressureData(event.values[0]);
-                }
-
-                @Override
-                public void onAccuracyChanged(Sensor sensor, int accuracy) {
-                    // Do nothing for now.
-                }
-            };
-            mBme280SensorHumidityListener = new SensorEventListener() {
-                @Override
-                public void onSensorChanged(SensorEvent event) {
-                    // Result contains on number representing the current
-                    // relative humidity in RH percentage (100f means totally saturated air).
-                    mBme280UiController.onHumidityData(event.values[0]);
-                    mBme280SensorLogger.onHumidityData(event.values[0]);
-                }
-
-                @Override
-                public void onAccuracyChanged(Sensor sensor, int accuracy) {
-                    // Do nothing for now.
-                }
-            };
-
-            mSensorManager.registerDynamicSensorCallback(
-                new SensorManager.DynamicSensorCallback() {
-                    @Override
-                    public void onDynamicSensorConnected(Sensor sensor) {
-                        if (sensor.getType() == Sensor.TYPE_AMBIENT_TEMPERATURE) {
-                            mSensorManager.registerListener(
-                                    mBme280SensorTempuratureListener, sensor,
-                                    SensorManager.SENSOR_DELAY_NORMAL);
-                        } else if (sensor.getType() == Sensor.TYPE_PRESSURE) {
-                            mSensorManager.registerListener(
-                                    mBme280SensorPressureListener, sensor,
-                                    SensorManager.SENSOR_DELAY_NORMAL);
-                        } else if (sensor.getType() == Sensor.TYPE_RELATIVE_HUMIDITY) {
-                            mSensorManager.registerListener(
-                                    mBme280SensorHumidityListener, sensor,
-                                    SensorManager.SENSOR_DELAY_NORMAL);
-                        }
-                    }
-                });
-
-            try {
-                mBme280SensorDriver = new Bmx280SensorDriver(
-                        Constants.RPI_3_I2C_BUS);
-                mBme280SensorDriver.registerTemperatureSensor();
-                mBme280SensorDriver.registerPressureSensor();
-                mBme280SensorDriver.registerHumiditySensor();
-            } catch (IOException e) {
-                Log.e(TAG, "SensorRegistry.maybeStartBme280Sensor: ", e);
-            }
         }
     }
 }
