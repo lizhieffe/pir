@@ -1,6 +1,7 @@
 package com.android_things.sensor_experiment.drivers.ncs_36000_sensor;
 
 import android.hardware.Sensor;
+import android.util.Log;
 
 import com.google.android.things.userdriver.UserDriverManager;
 import com.google.android.things.userdriver.UserSensor;
@@ -9,6 +10,8 @@ import com.google.android.things.userdriver.UserSensorReading;
 
 import java.io.IOException;
 import java.util.UUID;
+
+import static com.android_things.sensor_experiment.base.Constants.TAG;
 
 /**
  * Created by lizhieffe on 1/25/18.
@@ -64,7 +67,7 @@ public class Ncs36000SensorDriver implements AutoCloseable {
                         .setName(DRIVER_NAME)
                         .setVendor(DRIVER_VENDOR)
                         .setVersion(DRIVER_VERSION)
-                        .setMinDelay(100 * 1000)  // 100ms
+                        .setMinDelay(100 * 1000)  // 100 ms
                         .setMaxDelay(150 * 1000)  // 150 ms
                         .setRequiredPermission(DRIVER_REQUIRED_PERMISSION)
                         .setUuid(UUID.randomUUID())

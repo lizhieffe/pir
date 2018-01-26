@@ -64,8 +64,10 @@ public class SensorRegistry {
                 mContext, mSensorManager, mMainUiController));
         mSensorRegisters.add(new HcSr04SensorRegister(
                 mContext, mSensorManager, mMainUiController, mActivity));
-        mSensorRegisters.add(new HcSr501SensorRegister(
+        mSensorRegisters.add(new Ncs36000SensorRegister(
                 mContext, mSensorManager, mMainUiController, mActivity));
+        // mSensorRegisters.add(new HcSr501SensorRegister(
+        //         mContext, mSensorManager, mMainUiController, mActivity));
         mSensorRegisters.add(new Pms7003SensorRegister(
                 mContext, mSensorManager, mMainUiController));
         mSensorRegisters.add(new Tcs34725SensorRegister(

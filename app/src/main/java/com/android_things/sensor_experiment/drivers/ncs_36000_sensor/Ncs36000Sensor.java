@@ -13,11 +13,13 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
 
 /**
  * Created by lizhieffe on 1/25/18.
+ *
+ * Driver for NCS-36000 PIR sensor produced by Sparkfun.
  */
 
 public class Ncs36000Sensor implements MotionSensor {
     // Default GPIO to connect to the OUT pin for the sensor.
-    private static final String DEFAULT_GPIO_PIN = "BCM27";
+    private static final String DEFAULT_GPIO_PIN = "BCM4";
 
     private String mGpioPin;
     private Gpio mBus;
@@ -34,6 +36,7 @@ public class Ncs36000Sensor implements MotionSensor {
 
     @Override
     public void startup() {
+        Log.d(TAG, "Ncs36000Sensor.startup: starttt..");
         try {
             mBus = new PeripheralManagerService().openGpio(mGpioPin);
             // What direction we expect data to travel. This is a sensor so we expect it to send us
@@ -62,6 +65,7 @@ public class Ncs36000Sensor implements MotionSensor {
         public boolean onGpioEdge(Gpio gpio) {
             try {
                 mIsMotionDetected = gpio.getValue();
+                Log.d(TAG, "Ncs36000Sensor.onGpioEdge: callback " + gpio.getValue());
             } catch (IOException e) {
                 Log.e(TAG, "Ncs36000Sensor.onGpioEdge: ", e);
             }
