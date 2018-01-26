@@ -1,6 +1,5 @@
 package com.android_things.sensor_experiment.drivers.tcs_34725;
 
-import android.hardware.Sensor;
 import android.util.Log;
 
 import com.android_things.sensor_experiment.base.Constants;
