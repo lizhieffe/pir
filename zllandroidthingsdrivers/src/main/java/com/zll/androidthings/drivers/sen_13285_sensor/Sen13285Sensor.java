@@ -1,23 +1,22 @@
-package com.android_things.sensor_experiment.drivers.sen_13285_sensor;
+package com.zll.androidthings.drivers.sen_13285_sensor;
 
 import android.util.Log;
 
-import com.android_things.sensor_experiment.drivers.MotionSensor;
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.GpioCallback;
 import com.google.android.things.pio.PeripheralManagerService;
+import com.zll.androidthings.drivers.MotionSensor;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.android_things.sensor_experiment.base.Constants.TAG;
 
 /**
  * Driver for Sparkfun SEN-13285 PIR Motion sensor.
  */
 
 public class Sen13285Sensor implements MotionSensor {
+    private static final String TAG = "SEN-13285 Sensor";
 
     private Gpio mBus;
 

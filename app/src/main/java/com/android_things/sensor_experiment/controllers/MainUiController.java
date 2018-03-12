@@ -4,10 +4,10 @@ import android.app.Activity;
 import android.widget.TextView;
 
 import com.zll.androidthings.drivers.bme_280_sensor.Bme280SensorListener;
-import com.android_things.sensor_experiment.drivers.pms_7003.Pms7003SensorData;
-import com.android_things.sensor_experiment.drivers.pms_7003.Pms7003SensorListener;
-import com.android_things.sensor_experiment.drivers.tcs_34725.Color;
-import com.android_things.sensor_experiment.drivers.tcs_34725.Tcs34725SensorListener;
+import com.zll.androidthings.drivers.pms_7003.Pms7003SensorData;
+import com.zll.androidthings.drivers.pms_7003.Pms7003SensorListener;
+import com.zll.androidthings.drivers.tcs_34725.Color;
+import com.zll.androidthings.drivers.tcs_34725.Tcs34725SensorListener;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
 import com.android_things.sensor_experiment.utils.Throttler;
 

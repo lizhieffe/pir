@@ -4,8 +4,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.TextView;
 
-import com.android_things.sensor_experiment.drivers.tcs_34725.Color;
-import com.android_things.sensor_experiment.drivers.tcs_34725.Tcs34725SensorListener;
+import com.zll.androidthings.drivers.tcs_34725.Color;
+import com.zll.androidthings.drivers.tcs_34725.Tcs34725SensorListener;
 
 /**
  * Created by lizhieffe on 1/21/18.

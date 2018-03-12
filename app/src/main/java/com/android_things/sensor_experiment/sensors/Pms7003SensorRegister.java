@@ -1,6 +1,5 @@
 package com.android_things.sensor_experiment.sensors;
 
-import android.app.Activity;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -10,8 +9,8 @@ import android.util.Log;
 
 import com.android_things.sensor_experiment.base.Features;
 import com.android_things.sensor_experiment.controllers.MainUiController;
-import com.android_things.sensor_experiment.drivers.pms_7003.Pms7003SensorData;
-import com.android_things.sensor_experiment.drivers.pms_7003.Pms7003SensorDriver;
+import com.zll.androidthings.drivers.pms_7003.Pms7003SensorData;
+import com.zll.androidthings.drivers.pms_7003.Pms7003SensorDriver;
 
 import java.io.IOException;
 

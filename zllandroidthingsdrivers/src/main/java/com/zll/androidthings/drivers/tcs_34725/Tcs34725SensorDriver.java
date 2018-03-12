@@ -1,7 +1,6 @@
-package com.android_things.sensor_experiment.drivers.tcs_34725;
+package com.zll.androidthings.drivers.tcs_34725;
 
 import android.hardware.Sensor;
-import android.util.Log;
 
 import com.google.android.things.userdriver.UserDriverManager;
 import com.google.android.things.userdriver.UserSensor;
@@ -11,13 +10,13 @@ import com.google.android.things.userdriver.UserSensorReading;
 import java.io.IOException;
 import java.util.UUID;
 
-import static com.android_things.sensor_experiment.base.Constants.TAG;
-
 /**
  * Created by lizhieffe on 1/21/18.
  */
 
 public class Tcs34725SensorDriver implements AutoCloseable {
+    private static final String TAG = "TCS-34725 Sensor Driver";
+
     public static final String SENSOR_STRING_TYPE = "RGB_sensor";
 
     private static final String DRIVER_VENDOR = "Adafruit";

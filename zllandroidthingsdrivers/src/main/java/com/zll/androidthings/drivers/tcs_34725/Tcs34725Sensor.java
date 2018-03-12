@@ -1,23 +1,23 @@
-package com.android_things.sensor_experiment.drivers.tcs_34725;
+package com.zll.androidthings.drivers.tcs_34725;
 
 import android.util.Log;
 
-import com.android_things.sensor_experiment.base.Constants;
-import com.android_things.sensor_experiment.drivers.MotionSensor;
 import com.google.android.things.pio.I2cDevice;
 import com.google.android.things.pio.PeripheralManagerService;
 import com.google.android.things.userdriver.UserSensorDriver;
 import com.google.android.things.userdriver.UserSensorReading;
+import com.zll.androidthings.base.Constants;
+import com.zll.androidthings.drivers.MotionSensor;
 
 import java.io.IOException;
-
-import static com.android_things.sensor_experiment.base.Constants.TAG;
 
 /**
  * Created by lizhieffe on 1/21/18.
  */
 
 public class Tcs34725Sensor implements MotionSensor {
+    private static final String TAG = "TCS-34725 Sensor";
+
     private static final int DEFAULT_I2C_ADDRESS = 0x29;
 
     private static final int UPDATE_PERIOD = 200;

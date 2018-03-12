@@ -9,8 +9,8 @@ import android.util.Log;
 
 import com.android_things.sensor_experiment.base.Features;
 import com.android_things.sensor_experiment.controllers.MainUiController;
-import com.android_things.sensor_experiment.drivers.tcs_34725.Color;
-import com.android_things.sensor_experiment.drivers.tcs_34725.Tcs34725SensorDriver;
+import com.zll.androidthings.drivers.tcs_34725.Color;
+import com.zll.androidthings.drivers.tcs_34725.Tcs34725SensorDriver;
 
 import java.io.IOException;
 

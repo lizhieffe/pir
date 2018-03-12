@@ -1,15 +1,13 @@
-package com.android_things.sensor_experiment.drivers.pms_7003;
+package com.zll.androidthings.drivers.pms_7003;
 
 import android.util.Log;
 
-import com.android_things.sensor_experiment.base.Constants;
 import com.google.android.things.pio.PeripheralManagerService;
 import com.google.android.things.pio.UartDevice;
 import com.google.android.things.pio.UartDeviceCallback;
+import com.zll.androidthings.base.Constants;
 
 import java.io.IOException;
-
-import static com.android_things.sensor_experiment.base.Constants.TAG;
 
 /**
  * Created by lizhieffe on 1/23/18.
@@ -20,6 +18,8 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
  */
 
 public class Pms7003Sensor {
+    private static final String TAG = "PMS-7003 Sensor";
+
     private UartDevice mDevice;
     private String mPort;
     private Pms7003SensorDataParser mParser;

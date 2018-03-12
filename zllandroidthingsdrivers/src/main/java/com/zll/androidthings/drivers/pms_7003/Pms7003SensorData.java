@@ -1,4 +1,4 @@
-package com.android_things.sensor_experiment.drivers.pms_7003;
+package com.zll.androidthings.drivers.pms_7003;
 
 /**
  * Created by lizhieffe on 1/24/18.
