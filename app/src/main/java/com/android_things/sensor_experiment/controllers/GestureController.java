@@ -5,7 +5,7 @@ import android.os.Looper;
 import android.widget.TextView;
 
 import com.android_things.sensor_experiment.detectors.GestureListener;
-import com.android_things.sensor_experiment.drivers.zx_gesture_sensor.ZxGestureSensor;
+import com.zll.androidthings.drivers.zx_gesture_sensor.ZxGestureSensor;
 
 
 /**

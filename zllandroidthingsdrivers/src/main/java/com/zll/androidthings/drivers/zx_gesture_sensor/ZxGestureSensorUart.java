@@ -1,15 +1,13 @@
-package com.android_things.sensor_experiment.drivers.zx_gesture_sensor;
+package com.zll.androidthings.drivers.zx_gesture_sensor;
 
 import android.util.Log;
 
-import com.android_things.sensor_experiment.base.Constants;
 import com.google.android.things.pio.PeripheralManagerService;
 import com.google.android.things.pio.UartDevice;
 import com.google.android.things.pio.UartDeviceCallback;
+import com.zll.androidthings.base.Constants;
 
 import java.io.IOException;
-
-import static com.android_things.sensor_experiment.base.Constants.TAG;
 
 /**
  * Created by lizhieffe on 1/1/18.
@@ -21,6 +19,8 @@ import static com.android_things.sensor_experiment.base.Constants.TAG;
  */
 
 public class ZxGestureSensorUart {
+    private static final String TAG = "ZX Gesture Sensor Uart";
+
     private UartDevice mDevice;
     private String mPort;
 

@@ -1,4 +1,4 @@
-package com.android_things.sensor_experiment.drivers.zx_gesture_sensor;
+package com.zll.androidthings.drivers.zx_gesture_sensor;
 
 import android.hardware.Sensor;
 import android.util.Log;
@@ -11,13 +11,13 @@ import com.google.android.things.userdriver.UserSensorReading;
 import java.io.IOException;
 import java.util.UUID;
 
-import static com.android_things.sensor_experiment.base.Constants.TAG;
-
 /**
  * Created by lizhieffe on 1/2/18.
  */
 
 public class ZxGestureSensorDriver implements AutoCloseable {
+    private static final String TAG = "ZX Gesture Sensor Driver";
+
     public static final String SENSOR_STRING_TYPE = "gesture_sensor";
 
     private static final String DRIVER_VENDOR = "Sparkfun";

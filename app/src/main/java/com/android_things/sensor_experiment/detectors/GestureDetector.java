@@ -6,8 +6,8 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
 
-import com.android_things.sensor_experiment.drivers.zx_gesture_sensor.ZxGestureSensor;
-import com.android_things.sensor_experiment.drivers.zx_gesture_sensor.ZxGestureSensorDriver;
+import com.zll.androidthings.drivers.zx_gesture_sensor.ZxGestureSensor;
+import com.zll.androidthings.drivers.zx_gesture_sensor.ZxGestureSensorDriver;
 import com.android_things.sensor_experiment.utils.EnvDetector;
 
 import java.util.ArrayList;
