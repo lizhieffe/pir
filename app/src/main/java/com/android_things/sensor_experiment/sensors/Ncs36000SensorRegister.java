@@ -6,7 +6,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.hardware.TriggerEvent;
 import android.hardware.TriggerEventListener;
-import android.util.Log;
 import android.widget.Button;
 
 import com.android_things.sensor_experiment.base.Features;
@@ -15,14 +14,12 @@ import com.android_things.sensor_experiment.controllers.MainUiController;
 import com.android_things.sensor_experiment.controllers.UIDetectorController;
 import com.android_things.sensor_experiment.detectors.MotionDetectionEvent;
 import com.android_things.sensor_experiment.detectors.MotionDetectorListener;
-import com.android_things.sensor_experiment.drivers.ncs_36000_sensor.Ncs36000SensorDriver;
+import com.zll.androidthings.drivers.ncs_36000_sensor.Ncs36000SensorDriver;
 import com.android_things.sensor_experiment.logger.MotionLogger;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.android_things.sensor_experiment.base.Constants.TAG;
 
 /**
  * Created by lizhieffe on 1/25/18.

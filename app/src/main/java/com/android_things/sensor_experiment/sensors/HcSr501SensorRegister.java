@@ -14,8 +14,8 @@ import com.android_things.sensor_experiment.controllers.MainUiController;
 import com.android_things.sensor_experiment.controllers.UIDetectorController;
 import com.android_things.sensor_experiment.detectors.MotionDetectionEvent;
 import com.android_things.sensor_experiment.detectors.MotionDetectorListener;
-import com.android_things.sensor_experiment.drivers.hc_sr501_sensor.HcSr501Sensor;
-import com.android_things.sensor_experiment.drivers.hc_sr501_sensor.HcSr501SensorDriver;
+import com.zll.androidthings.drivers.hc_sr501_sensor.HcSr501Sensor;
+import com.zll.androidthings.drivers.hc_sr501_sensor.HcSr501SensorDriver;
 import com.android_things.sensor_experiment.logger.MotionLogger;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
 

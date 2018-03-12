@@ -1,4 +1,4 @@
-package com.android_things.sensor_experiment.drivers.ccs_811_sensor;
+package com.zll.androidthings.drivers.hc_sr501_sensor;
 
 import android.hardware.Sensor;
 
@@ -11,45 +11,30 @@ import java.io.IOException;
 import java.util.UUID;
 
 /**
- * Created by lizhieffe on 12/30/17.
+ * Created by lizhieffe on 1/2/18.
  */
 
-public class Ccs811SensorDriver implements AutoCloseable {
-    public static final String SENSOR_STRING_TYPE = "air_quality_sensor";
-
-    private static final String DRIVER_VENDOR = "Sparkfun";
-    private static final String DRIVER_NAME = "Ccs811";
+public class HcSr501SensorDriver implements AutoCloseable {
+    private static final String DRIVER_VENDOR = "DiyMall";
+    private static final String DRIVER_NAME = "HC_SR501";
     private static final int DRIVER_VERSION = 1;
     private static final String DRIVER_REQUIRED_PERMISSION = "";
 
-    private Ccs811Sensor mDevice;
-    private Ccs811UserDriver mUserDriver;
+    private HcSr501Sensor mDevice;
+    HcSr501SensorUserDriver mUserDriver;
 
-    public Ccs811SensorDriver() throws IOException {
-        mDevice = new Ccs811Sensor();
-        mDevice.setMode(Ccs811Sensor.MODE_10S);
-    }
-
-    public Ccs811SensorDriver(String bus, int address) throws IOException {
-        mDevice = new Ccs811Sensor(bus, address);
-        mDevice.setMode(Ccs811Sensor.MODE_10S);
-    }
-
-    @Override
-    public void close() throws IOException {
-        try {
-            mDevice.close();
-        } finally {
-            mDevice = null;
-        }
+    public HcSr501SensorDriver() {
+        mDevice = new HcSr501Sensor();
+        mDevice.startup();
     }
 
     public void registerSensor() {
         if (mDevice == null) {
             throw new IllegalStateException("Cannot register closed driver");
         }
+
         if (mUserDriver == null) {
-            mUserDriver = new Ccs811UserDriver();
+            mUserDriver = new HcSr501SensorUserDriver();
             UserDriverManager.getManager()
                     .registerSensor(mUserDriver.getUserSensor());
         }
@@ -63,22 +48,28 @@ public class Ccs811SensorDriver implements AutoCloseable {
         }
     }
 
-    private class Ccs811UserDriver extends UserSensorDriver {
+    @Override
+    public void close() {
+        unregisterSensor();
+        mDevice.shutdown();
+        mDevice = null;
+    }
+
+    private class HcSr501SensorUserDriver extends UserSensorDriver {
         private UserSensor mUserSensor;
 
         private UserSensor getUserSensor() {
             if (mUserSensor == null) {
                 mUserSensor = new UserSensor.Builder()
-                        .setCustomType(Sensor.TYPE_DEVICE_PRIVATE_BASE,
-                                SENSOR_STRING_TYPE, Sensor.REPORTING_MODE_CONTINUOUS)
+                        .setType(Sensor.TYPE_MOTION_DETECT)
                         .setName(DRIVER_NAME)
                         .setVendor(DRIVER_VENDOR)
                         .setVersion(DRIVER_VERSION)
+                        .setMinDelay(100 * 1000)  // 100ms
+                        .setMaxDelay(150 * 1000)  // 150 ms
                         .setRequiredPermission(DRIVER_REQUIRED_PERMISSION)
-                        .setMinDelay(20000000)  // 20 seconds
-                        .setMaxDelay(30000000)
-                        .setDriver(this)
                         .setUuid(UUID.randomUUID())
+                        .setDriver(this)
                         .build();
             }
             return mUserSensor;
@@ -86,12 +77,8 @@ public class Ccs811SensorDriver implements AutoCloseable {
 
         @Override
         public UserSensorReading read() throws IOException {
-            return new UserSensorReading(new float[]{
-                    mDevice.readAlgorithmResults()[0],
-                    mDevice.readAlgorithmResults()[1],
-                    mDevice.readAlgorithmResults()[2],
-                    mDevice.readAlgorithmResults()[3],
-            });
+            boolean detected  = mDevice.readData();
+            return new UserSensorReading(new float[]{detected ? 1 : 0});
         }
     }
 }

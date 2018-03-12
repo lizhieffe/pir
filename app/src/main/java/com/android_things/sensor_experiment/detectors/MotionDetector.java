@@ -10,8 +10,8 @@ import android.util.Log;
 
 import com.android_things.sensor_experiment.base.Features;
 import com.zll.androidthings.drivers.hc_sr04_sensor.HcSr04SensorDriver;
-import com.android_things.sensor_experiment.drivers.hc_sr501_sensor.HcSr501Sensor;
-import com.android_things.sensor_experiment.drivers.hc_sr501_sensor.HcSr501SensorDriver;
+import com.zll.androidthings.drivers.hc_sr501_sensor.HcSr501Sensor;
+import com.zll.androidthings.drivers.hc_sr501_sensor.HcSr501SensorDriver;
 import com.android_things.sensor_experiment.utils.EnvDetector;
 
 import java.util.ArrayList;

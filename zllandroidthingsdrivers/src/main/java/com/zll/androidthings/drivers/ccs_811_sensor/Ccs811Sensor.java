@@ -1,12 +1,12 @@
-package com.android_things.sensor_experiment.drivers.ccs_811_sensor;
+package com.zll.androidthings.drivers.ccs_811_sensor;
 
 /**
  * Created by lizhieffe on 12/29/17.
  */
 
-import com.android_things.sensor_experiment.base.Constants;
 import com.google.android.things.pio.I2cDevice;
 import com.google.android.things.pio.PeripheralManagerService;
+import com.zll.androidthings.base.Constants;
 
 import java.io.IOException;
 import java.lang.annotation.Retention;
