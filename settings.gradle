@@ -1,1 +1,1 @@
-include ':app', ':zllandroidthingsdrivers', ':mylibrary'
+include ':app', ':zllandroidthingsdrivers', ':mylibrary', ':caraccelmeter'

@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/caraccelmeter/caraccelmeter.iml" filepath="$PROJECT_DIR$/caraccelmeter/caraccelmeter.iml" />
       <module fileurl="file://$PROJECT_DIR$/mylibrary/mylibrary.iml" filepath="$PROJECT_DIR$/mylibrary/mylibrary.iml" />
       <module fileurl="file://$PROJECT_DIR$/pir.iml" filepath="$PROJECT_DIR$/pir.iml" />
       <module fileurl="file://$PROJECT_DIR$/zllandroidthingsdrivers/zllandroidthingsdrivers.iml" filepath="$PROJECT_DIR$/zllandroidthingsdrivers/zllandroidthingsdrivers.iml" />
