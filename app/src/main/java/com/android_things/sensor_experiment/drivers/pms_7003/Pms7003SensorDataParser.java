@@ -1,11 +1,8 @@
 package com.android_things.sensor_experiment.drivers.pms_7003;
 
 import android.support.annotation.Nullable;
-import android.util.Log;
 
-import com.android_things.sensor_experiment.utils.ByteUtil;
-
-import static com.android_things.sensor_experiment.base.Constants.TAG;
+import com.zll.androidthings.utils.ByteUtil;
 
 /**
  * Created by lizhieffe on 1/24/18.

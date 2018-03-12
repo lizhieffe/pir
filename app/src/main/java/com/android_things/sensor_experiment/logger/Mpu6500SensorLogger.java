@@ -3,7 +3,7 @@ package com.android_things.sensor_experiment.logger;
 import android.content.Context;
 import android.util.Log;
 
-import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500SensorListener;
+import com.zll.androidthings.drivers.mpu_6500_sensor.Mpu6500SensorListener;
 import com.android_things.sensor_experiment.utils.FileSystemUtil;
 
 import java.io.BufferedWriter;

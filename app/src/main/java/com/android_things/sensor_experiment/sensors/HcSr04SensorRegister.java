@@ -13,7 +13,7 @@ import com.android_things.sensor_experiment.base.Features;
 import com.android_things.sensor_experiment.controllers.DistanceController;
 import com.android_things.sensor_experiment.controllers.MainUiController;
 import com.android_things.sensor_experiment.detectors.MotionDetectionEvent;
-import com.android_things.sensor_experiment.drivers.hc_sr04_sensor.HcSr04SensorDriver;
+import com.zll.androidthings.drivers.hc_sr04_sensor.HcSr04SensorDriver;
 import com.android_things.sensor_experiment.pir.sensor_test.R;
 
 import static com.android_things.sensor_experiment.base.Constants.TAG;

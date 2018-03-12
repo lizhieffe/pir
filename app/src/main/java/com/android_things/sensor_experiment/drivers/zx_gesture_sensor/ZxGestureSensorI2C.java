@@ -3,8 +3,7 @@ package com.android_things.sensor_experiment.drivers.zx_gesture_sensor;
 import android.util.Log;
 
 import com.android_things.sensor_experiment.base.Constants;
-import com.android_things.sensor_experiment.base.Features;
-import com.android_things.sensor_experiment.utils.ByteUtil;
+import com.zll.androidthings.utils.ByteUtil;
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.GpioCallback;
 import com.google.android.things.pio.I2cDevice;

@@ -10,9 +10,9 @@ import android.widget.TextView;
 
 import com.android_things.sensor_experiment.base.Features;
 import com.android_things.sensor_experiment.controllers.MainUiController;
-import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500SensorAccelDriver;
-import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500SensorDriverFactory;
-import com.android_things.sensor_experiment.drivers.mpu_6500_sensor.Mpu6500SensorGyroDriver;
+import com.zll.androidthings.drivers.mpu_6500_sensor.Mpu6500SensorAccelDriver;
+import com.zll.androidthings.drivers.mpu_6500_sensor.Mpu6500SensorDriverFactory;
+import com.zll.androidthings.drivers.mpu_6500_sensor.Mpu6500SensorGyroDriver;
 import com.android_things.sensor_experiment.controllers.AccelerometerUiController;
 import com.android_things.sensor_experiment.logger.Mpu6500SensorLogger;
 

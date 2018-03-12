@@ -3,7 +3,6 @@ package com.android_things.sensor_experiment.drivers.pms_7003;
 import android.util.Log;
 
 import com.android_things.sensor_experiment.base.Constants;
-import com.android_things.sensor_experiment.utils.ByteUtil;
 import com.google.android.things.pio.PeripheralManagerService;
 import com.google.android.things.pio.UartDevice;
 import com.google.android.things.pio.UartDeviceCallback;
