@@ -1,9 +1,14 @@
 package com.zll.androidthings.caraccelmeter;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +18,11 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.zll.androidthings.drivers.mpu_6500_sensor.Mpu6500SensorAccelDriver;
+import com.zll.androidthings.drivers.mpu_6500_sensor.Mpu6500SensorDriverFactory;
+
 import java.io.IOException;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -21,11 +30,32 @@ public class MainActivity extends AppCompatActivity {
     private View mDecorView;
     private AccelMeterView mView;
 
+    private Mpu6500SensorAccelDriver mAccelSensorDriver;
+    private Mpu6500SensorDriverFactory mAccelSensorDriverFactory;
+    private SensorEventListener mListener;
+    SensorManager mSensorManager;
+
+    private AccelDataBank mAccelDataBank;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
+        mAccelDataBank = new AccelDataBank();
 
+        setUpView();
+        setUpSensor();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mSensorManager.unregisterListener(mListener);
+        mAccelSensorDriver.unregisterSensor();
+        mAccelSensorDriver.close();
+
+        super.onDestroy();
+    }
+
+    private void setUpView() {
         //set up notitle
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         //set up full screen
@@ -44,20 +74,47 @@ public class MainActivity extends AppCompatActivity {
 
         mView =  new AccelMeterView(MainActivity.this);
         setContentView(mView);
+    }
 
+    private void setUpSensor() {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-                for (int i = 0; i < 100; i++) {
-                    Log.d(TAG, "MainActivity.run: i = " + i);
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
+                mAccelSensorDriverFactory = new Mpu6500SensorDriverFactory();
+                mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
 
+                mListener = new SensorEventListener() {
+                    @Override
+                    public void onSensorChanged(SensorEvent event) {
+                        float[] data = new float[3];
+                        for (int i = 0; i < data.length; i++) {
+                            data[i] = event.values[i];
+                        }
+                        Log.d(TAG, "MainActivity.onSensorChanged: " + data[0] + " " + data[1] + " " + data[2]);
+                        //mView.updateAccelValues(data[1], data[0]);
+                        mAccelDataBank.addData(data[1], data[0]);
+                        mView.updateAccelData(mAccelDataBank.getData());
                     }
-                    mView.updateAccelValues((double)i/100, (double)i/100);
-                }
 
+                    @Override
+                    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+                        // Do nothing for now.
+                    }
+                };
+                mSensorManager.registerDynamicSensorCallback(
+                        new SensorManager.DynamicSensorCallback() {
+                            @Override
+                            public void onDynamicSensorConnected(Sensor sensor) {
+                                if (sensor.getType() ==  Sensor.TYPE_ACCELEROMETER) {
+                                    mSensorManager.registerListener(
+                                            mListener, sensor,
+                                            SensorManager.SENSOR_DELAY_NORMAL);
+                                }
+                            }
+                        });
+
+                mAccelSensorDriver = mAccelSensorDriverFactory.createAccelDriver();
+                mAccelSensorDriver.registerSensor();
             }
         });
     }
