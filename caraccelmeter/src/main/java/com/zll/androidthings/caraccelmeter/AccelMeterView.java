@@ -64,7 +64,9 @@ public class AccelMeterView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        plotBackground(canvas);
+        plotFrame(canvas);
+        plotCircleMeterBackground(canvas);
+
         if (mAccelData != null) {
             for (int i = 0; i < mAccelData.size(); i++) {
                 plotSingleAccelData(mAccelData.get(i), i == mAccelData.size() - 1, canvas);
@@ -82,8 +84,8 @@ public class AccelMeterView extends View {
     }
 
     private void plotSingleAccelData(AccelData data, boolean isLatestData, Canvas canvas) {
-        double xPosition = mScreenXCenter + mPixelsPerG * data.right;
-        double yPosition = mScreenYCenter + mPixelsPerG * data.ahead;
+        double xPosition = mCircleMeterXCenter + mPixelsPerG * data.right;
+        double yPosition = mCircleMeterYCenter + mPixelsPerG * data.ahead;
 
         int color;
         int radius;
@@ -111,7 +113,15 @@ public class AccelMeterView extends View {
         canvas.drawCircle((float)xPosition, (float)yPosition, radius, p);
     }
 
-    private void plotBackground(Canvas canvas) {
+    private void plotFrame(Canvas canvas) {
+        // Vertical line.
+        Paint p = new Paint();
+        p.setColor(Color.GRAY);
+        p.setStrokeWidth(5);
+        canvas.drawLine(mCircleMeterXCenter * 2, 0, mCircleMeterXCenter * 2, mScreenHeight, p);
+    }
+
+    private void plotCircleMeterBackground(Canvas canvas) {
         setBackgroundColor(Color.BLACK);
 
         Paint p;
@@ -119,31 +129,31 @@ public class AccelMeterView extends View {
         p = new Paint();
         p.setStyle(Paint.Style.STROKE);
         p.setColor(Color.WHITE);
-        canvas.drawCircle(mScreenXCenter, mScreenYCenter, mRadius_0_50_G, p);
+        canvas.drawCircle(mCircleMeterXCenter, mCircleMeterYCenter, mRadius_0_50_G, p);
 
         p = new Paint();
         p.setColor(Color.WHITE);
         p.setTextSize(20);
-        canvas.drawText("0.5 G", mScreenXCenter, mScreenYCenter - mRadius_0_50_G, p);
+        canvas.drawText("0.5 G", mCircleMeterXCenter, mCircleMeterYCenter - mRadius_0_50_G, p);
 
         p = new Paint();
         p.setStyle(Paint.Style.STROKE);
         p.setColor(Color.WHITE);
-        canvas.drawCircle(mScreenXCenter, mScreenYCenter, mRadius_1_00_G, p);
+        canvas.drawCircle(mCircleMeterXCenter, mCircleMeterYCenter, mRadius_1_00_G, p);
 
         p = new Paint();
         p.setColor(Color.WHITE);
         p.setTextSize(20);
-        canvas.drawText("1.0 G", mScreenXCenter, mScreenYCenter - mRadius_1_00_G, p);
+        canvas.drawText("1.0 G", mCircleMeterXCenter, mCircleMeterYCenter - mRadius_1_00_G, p);
 
         // Vertical line.
         p = new Paint();
         p.setColor(Color.YELLOW);
-        canvas.drawLine(mScreenXCenter, 0, mScreenXCenter, mScreenHeight, p);
+        canvas.drawLine(mCircleMeterXCenter, 0, mCircleMeterYCenter, mScreenHeight, p);
 
         // Horizontal line.
         p = new Paint();
         p.setColor(Color.YELLOW);
-        canvas.drawLine(0, mScreenYCenter, mScreenWidth, mScreenYCenter, p);
+        canvas.drawLine(0, mCircleMeterYCenter, mCircleMeterYCenter * 2, mScreenYCenter, p);
     }
 }
