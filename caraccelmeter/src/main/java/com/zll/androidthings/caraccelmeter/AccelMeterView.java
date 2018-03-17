@@ -31,6 +31,9 @@ public class AccelMeterView extends View {
     private int mRadius_0_50_G;
     private int mRadius_1_00_G;
 
+    private int mCircleMeterXCenter;
+    private int mCircleMeterYCenter;
+
     // Acceleration ahead.
     private double mAhead;
     // Acceleration to the right side.
@@ -49,6 +52,8 @@ public class AccelMeterView extends View {
         mScreenHeight = metrics.heightPixels;
         mScreenXCenter = mScreenWidth / 2;
         mScreenYCenter = mScreenHeight / 2;
+        mCircleMeterXCenter = Math.min(mScreenXCenter, mScreenYCenter);
+        mCircleMeterYCenter = mCircleMeterXCenter;
 
         int screenOutmostRadius = Math.min(mScreenHeight / 2, mScreenHeight / 2);
         mPixelsPerG = (int)((screenOutmostRadius - SCREEN_MARGIN_PIXELS) / MAX_G_IN_DISPLAY);
@@ -77,6 +82,9 @@ public class AccelMeterView extends View {
     }
 
     private void plotSingleAccelData(AccelData data, boolean isLatestData, Canvas canvas) {
+        double xPosition = mScreenXCenter + mPixelsPerG * data.right;
+        double yPosition = mScreenYCenter + mPixelsPerG * data.ahead;
+
         int color;
         int radius;
         Paint.Style style;
@@ -84,6 +92,12 @@ public class AccelMeterView extends View {
             color = Color.RED;
             radius = CURR_INDICATOR_RADIUS;
             style = Paint.Style.FILL;
+
+            Paint p = new Paint();
+            p.setColor(Color.RED);
+            p.setTextSize(30);
+            // canvas.drawText(String.valueOf(Math.pow(Math.pow(data.ahead, 2) + Math.pow(data.right, 2), 0.5)), (float)xPosition + 20, (float)yPosition, p);
+            canvas.drawText(String.format("%.2f", (float)Math.pow(Math.pow(data.ahead, 2) + Math.pow(data.right, 2), 0.5)), (float)xPosition + 20, (float)yPosition, p);
         } else {
             color = Color.YELLOW;
             radius = PAST_INDICATOR_RADIUS;
@@ -94,8 +108,6 @@ public class AccelMeterView extends View {
         p = new Paint();
         p.setColor(color);
         p.setStyle(style);
-        double xPosition = mScreenXCenter + mPixelsPerG * data.right;
-        double yPosition = mScreenYCenter + mPixelsPerG * data.ahead;
         canvas.drawCircle((float)xPosition, (float)yPosition, radius, p);
     }
 

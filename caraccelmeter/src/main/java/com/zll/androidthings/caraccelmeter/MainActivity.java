@@ -91,8 +91,7 @@ public class MainActivity extends AppCompatActivity {
                             data[i] = event.values[i];
                         }
                         Log.d(TAG, "MainActivity.onSensorChanged: " + data[0] + " " + data[1] + " " + data[2]);
-                        //mView.updateAccelValues(data[1], data[0]);
-                        mAccelDataBank.addData(data[1], data[0]);
+                        mAccelDataBank.addData(-data[0], data[1]);
                         mView.updateAccelData(mAccelDataBank.getData());
                     }
 
